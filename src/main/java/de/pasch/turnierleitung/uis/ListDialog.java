@@ -7,9 +7,11 @@ package de.pasch.turnierleitung.uis;
 
 import java.util.ArrayList;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
@@ -20,7 +22,7 @@ import javafx.stage.Stage;
  * @author pasch
  */
 public class ListDialog<T> {
-    public ListDialog(ArrayList<T> al,Stage primStage,
+    public ListDialog(ArrayList<T> al,Stage primStage,double width,
             String messageString,String title,LDHandler<T> ldh){
         Stage stage=new Stage();
         if(primStage!=null){
@@ -32,21 +34,27 @@ public class ListDialog<T> {
         gp.setPadding(new Insets(5,5,5,5));
         gp.setVgap(5);
         gp.setHgap(5);
+        gp.setAlignment(Pos.CENTER);
         
-        Text messageText=new Text(messageString);
-        gp.add(messageText, 0, 0,2,1);
+        Label messageLabel=new Label(messageString);
+        gp.add(messageLabel, 0, 0,2,1);
         Button ok=new Button("OK");
         gp.add(ok,1,1);
         ComboBox<T> listTaker=new ComboBox();
+        listTaker.setValue(al.get(0));
         listTaker.getItems().addAll(al);
         gp.add(listTaker,0,1);
-        
-        Scene scene=new Scene(gp,300,200);
+        Scene scene=new Scene(gp,width,100);
         stage.setScene(scene);
         stage.show();
         ok.setOnAction((e)->{
             stage.hide();
             ldh.handle(listTaker.getValue());
         });
+    }
+    
+    public ListDialog(ArrayList<T> al,Stage primStage,
+            String messageString,String title,LDHandler<T> ldh){
+        new ListDialog(al,primStage,250,messageString,title,ldh);
     }
 }

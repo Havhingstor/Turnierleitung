@@ -118,17 +118,11 @@ public class Einstellungsfenster {
         });
         
         sLoe.setOnAction((e)->{
-            String eingabe=JOptionPane.showInputDialog(null,"Welche Strafenart soll gelöscht werden?");
-            if(!eingabe.equals("")){
-                if(steuerung.getStrafenarten().contains(eingabe)){
-                    steuerung.getStrafenarten().remove(eingabe);
-                    akt.aktualisieren();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Diese Strafenart existiert nicht!","FEHLER!",0);
-                }
-            }else{
-                 JOptionPane.showMessageDialog(null,"Es wurde nichts eingegeben!","FEHLER!",0);
-            } 
+            new ListDialog<String>(steuerung.getStrafenarten(),stage,300,"Welche Strafenart soll gelöscht werden?",
+            "Strafenart löschen",(f)->{
+                steuerung.getStrafenarten().remove(f);
+                akt.aktualisieren();
+            });
         });
     }
 }
