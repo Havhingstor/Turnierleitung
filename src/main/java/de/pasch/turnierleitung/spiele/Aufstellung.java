@@ -204,10 +204,10 @@ public class Aufstellung implements Pickable{
 						}
 					}
 				}else {
-					throw new IllegalArgumentException("Diese Spieler sind aktuell nicht für einen Wechsel verfügbar!");
+					throw new IllegalArgumentException("Diese Spieler sind aktuell nicht fÃ¼r einen Wechsel verfÃ¼gbar!");
 				}
 			}else {
-				throw new IllegalArgumentException("Wechselmöglichkeiten ausgeschöpft!");
+				throw new IllegalArgumentException("WechselmÃ¶glichkeiten ausgeschÃ¶pft!");
 			}
 		}else {
 			throw new IllegalArgumentException("Die Aufstellung ist bereits abgeschlossen!");
