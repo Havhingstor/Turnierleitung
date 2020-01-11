@@ -96,17 +96,11 @@ public class Einstellungsfenster {
         });
         
         tLoe.setOnAction((e)->{
-            String eingabe=JOptionPane.showInputDialog(null,"Welche Torart soll gelöscht werden?");
-            if(!eingabe.equals("")){
-                if(steuerung.getTorarten().contains(eingabe)){
-                    steuerung.getTorarten().remove(eingabe);
-                    akt.aktualisieren();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Diese Torart existiert nicht!","FEHLER!",0);
-                }
-            }else{
-                 JOptionPane.showMessageDialog(null,"Es wurde nichts eingegeben!","FEHLER!",0);
-            } 
+            new ListDialog<String>(steuerung.getTorarten(),stage,"Welche Torart soll gelöscht werden?",
+            "Torart löschen",(f)->{
+                steuerung.getTorarten().remove(f);
+                akt.aktualisieren();
+            });
         });
         
         sNeu.setOnAction((e)->{
