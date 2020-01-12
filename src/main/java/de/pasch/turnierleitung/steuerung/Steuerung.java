@@ -94,16 +94,28 @@ public class Steuerung {
 	
 	public void removeSpieler(long ID) {
 		boolean erlaubt=true;
-		for(SpielerTeamConnector stc:as.connectoren) {
-			if(stc.getSpielerID()==ID) {
+		for(Tor t:as.tore) {
+			if(t.getAusfuehrerID()==ID) {
+				erlaubt=false;
+			}
+			if(t.getVorbereiterID()==ID) {
+				erlaubt=false;
+			}
+		}
+		for(Strafe s:as.strafen) {
+			if(s.getAusfuehrerID()==ID) {
+				erlaubt=false;
+			}
+			if(s.getGefoultenID()==ID) {
 				erlaubt=false;
 			}
 		}
 		if(erlaubt) {
+			as.connectoren.removeIf((e)->(e.getSpielerID()==ID));
 			Spieler spieler=IDPicker.pick(as.spieler, ID);
 			as.spieler.remove(spieler);
 		}else {
-			throw new IllegalArgumentException("Dieser Spieler wurde bereits einem Verein zugeordnet und kann nicht entfernt werden!");
+			throw new IllegalArgumentException("Dieser Spieler wurde bereits bei einem Tor oder einer Strafe erfasst und kann nicht entfernt werden!");
 		}
 	}
 	

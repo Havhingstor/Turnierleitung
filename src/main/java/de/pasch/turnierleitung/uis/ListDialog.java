@@ -5,7 +5,7 @@
  */
 package de.pasch.turnierleitung.uis;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,38 +22,42 @@ import javafx.stage.Stage;
  * @author pasch
  */
 public class ListDialog<T> {
-    public ListDialog(ArrayList<T> al,Stage primStage,double width,
+    public ListDialog(List<T> list,Stage primStage,double width,
             String messageString,String title,LDHandler<T> ldh){
-        Stage stage=new Stage();
-        if(primStage!=null){
-            stage.initModality(Modality.WINDOW_MODAL);
-            stage.initOwner(primStage);
-        }
-        stage.setTitle(title);
-        GridPane gp=new GridPane();
-        gp.setPadding(new Insets(5,5,5,5));
-        gp.setVgap(5);
-        gp.setHgap(5);
-        gp.setAlignment(Pos.CENTER);
-        
-        Label messageLabel=new Label(messageString);
-        gp.add(messageLabel, 0, 0,2,1);
-        Button ok=new Button("OK");
-        gp.add(ok,1,1);
-        ComboBox<T> listTaker=new ComboBox<T>();
-        listTaker.setValue(al.get(0));
-        listTaker.getItems().addAll(al);
-        gp.add(listTaker,0,1);
-        Scene scene=new Scene(gp,width,100);
-        stage.setScene(scene);
-        stage.show();
-        ok.setOnAction((e)->{
-            stage.hide();
-            ldh.handle(listTaker.getValue());
-        });
+    	if(list.size()>0) {
+	        Stage stage=new Stage();
+	        if(primStage!=null){
+	            stage.initModality(Modality.WINDOW_MODAL);
+	            stage.initOwner(primStage);
+	        }
+	        stage.setTitle(title);
+	        GridPane gp=new GridPane();
+	        gp.setPadding(new Insets(5,5,5,5));
+	        gp.setVgap(5);
+	        gp.setHgap(5);
+	        gp.setAlignment(Pos.CENTER);
+	        
+	        Label messageLabel=new Label(messageString);
+	        gp.add(messageLabel, 0, 0,2,1);
+	        Button ok=new Button("OK");
+	        gp.add(ok,1,1);
+	        ComboBox<T> listTaker=new ComboBox<T>();
+	        listTaker.setValue(list.get(0));
+	        listTaker.getItems().addAll(list);
+	        gp.add(listTaker,0,1);
+	        Scene scene=new Scene(gp,width,100);
+	        stage.setScene(scene);
+	        stage.show();
+	        ok.setOnAction((e)->{
+	            stage.hide();
+	            ldh.handle(listTaker.getValue());
+	        });
+    	}else {
+    		throw new IllegalArgumentException("List has no Object!");
+    	}
     }
     
-    public ListDialog(ArrayList<T> al,Stage primStage,
+    public ListDialog(List<T> al,Stage primStage,
             String messageString,String title,LDHandler<T> ldh){
         new ListDialog<T>(al,primStage,250,messageString,title,ldh);
     }

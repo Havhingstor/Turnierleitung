@@ -10,6 +10,9 @@ import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.swing.JOptionPane;
+
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -103,7 +106,6 @@ public class HFSpieleruebersicht {
                 spielerGes[i].setPrefWidth(395);
                 Spieler spielerEinz=steuerung.getSpieler().get(i);
                 spielerGes[i].setOnAction((var f)->{
-                    System.out.println("nvhbf");
                    new TeamDetail(steuerung,stage,spielerEinz,akt); 
                 });
             }box2.getChildren().addAll(Arrays.asList(spielerGes));
@@ -125,6 +127,43 @@ public class HFSpieleruebersicht {
                     }
                 }
                 new SpielerHinzufuegen(stage,t.getID(),akt,steuerung);
+            }
+        });
+        
+        
+        VBox gap2=new VBox();
+        gap2.setPrefHeight(20);
+        schaltungen.getChildren().add(gap2);
+        
+        Button loe=new Button("Spieler löschen");
+        loe.setPrefSize(100,100);
+        schaltungen.getChildren().add(loe);
+        loe.setOnAction((e)->{
+            String s=(String)team.getValue();
+            ArrayList<Spieler>als=new ArrayList<Spieler>();
+            if(s.equals("Alle")){ 
+                als.addAll(steuerung.getSpieler());
+            }else{
+                Team t = null;
+                for(Team team2:steuerung.getTeams()){
+                    if(team2.getName().equals(s)){
+                        t=team2;
+                    }
+                }
+                als.addAll(steuerung.getSpielerEinesTeams(t.getID()));
+            }
+            if(als.size()>0) {
+	            new ListDialog<Spieler>(als, stage,
+	            		"Welchen Spieler möchten sie löschen?","Spieler löschen",(f)->{
+	            	try{
+	            		steuerung.removeSpieler(f.getID());
+	            		akt.aktualisieren();
+	            	}catch(IllegalArgumentException iae) {
+	            		JOptionPane.showMessageDialog(null, iae.getMessage(),"FEHLER!",JOptionPane.ERROR_MESSAGE);
+	            	}
+	            });
+            }else {
+            	JOptionPane.showMessageDialog(null, "Kein Team vorhanden!","FEHLER!",JOptionPane.ERROR_MESSAGE);
             }
         });
         
