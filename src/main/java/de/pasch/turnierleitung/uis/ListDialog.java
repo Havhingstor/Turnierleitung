@@ -6,6 +6,7 @@
 package de.pasch.turnierleitung.uis;
 
 import java.util.ArrayList;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -13,7 +14,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -40,7 +40,7 @@ public class ListDialog<T> {
         gp.add(messageLabel, 0, 0,2,1);
         Button ok=new Button("OK");
         gp.add(ok,1,1);
-        ComboBox<T> listTaker=new ComboBox();
+        ComboBox<T> listTaker=new ComboBox<T>();
         listTaker.setValue(al.get(0));
         listTaker.getItems().addAll(al);
         gp.add(listTaker,0,1);
@@ -55,6 +55,6 @@ public class ListDialog<T> {
     
     public ListDialog(ArrayList<T> al,Stage primStage,
             String messageString,String title,LDHandler<T> ldh){
-        new ListDialog(al,primStage,250,messageString,title,ldh);
+        new ListDialog<T>(al,primStage,250,messageString,title,ldh);
     }
 }

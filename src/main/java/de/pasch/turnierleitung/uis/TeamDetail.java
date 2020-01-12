@@ -43,7 +43,6 @@ public class TeamDetail {
         gp.add(nachnameLabelR, 1, 1);
         Label teamLabelL=new Label("Aktuelles Team:");
         Team t = null;
-        long tID;
         for(SpielerTeamConnector stc:steuerung.getSTC()){
             if(stc.getSpielerID()==spieler.getID()&&(!stc.getAusgetreten())){
              t=IDPicker.pick(steuerung.getTeams(),stc.getTeamID());   

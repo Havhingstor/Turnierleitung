@@ -53,7 +53,7 @@ public class HFSpieleruebersicht {
         
         VBox schaltungen=new VBox();
         
-        ComboBox team=new ComboBox<String>();
+        ComboBox<String> team=new ComboBox<String>();
         team.getItems().add("Alle");
         team.setValue("Alle");
         for(Team t:steuerung.getTeams()){

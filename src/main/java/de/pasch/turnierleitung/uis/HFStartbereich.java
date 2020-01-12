@@ -27,8 +27,8 @@ import javafx.stage.Stage;
  * @author pasch
  */
 public class HFStartbereich {
-        private Stage stage;
-        private Steuerung steuerung;
+        Stage stage;
+        Steuerung steuerung;
         VBox spielerBox2,teamBox2,korBox2,ligBox2,sptBox2,rsBox2;
         Text[] teamTexte,spielerTexte,korTexte,ligTexte,sptTexte,rsTexte;
         HFTeamuebersicht hft;

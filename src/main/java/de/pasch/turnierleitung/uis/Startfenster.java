@@ -6,6 +6,7 @@
 package de.pasch.turnierleitung.uis;
 
 import java.io.File;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -18,7 +19,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javax.swing.JFileChooser;
 
 /**
  *
@@ -27,7 +27,7 @@ import javax.swing.JFileChooser;
 public class Startfenster extends Application {
     private boolean dateiLadenBool=false;
     private File dateiLadenFile=null;
-    private Hauptfenster hf=null;
+    Hauptfenster hf=null;
     
     public void start(Stage primaryStage){    
         GridPane grid=new GridPane();
