@@ -34,6 +34,7 @@ public class HFSpieleruebersicht {
     Steuerung steuerung;
     GridPane gp;
     Button[]spielerGes;
+    SpielerDetail spd=null;
     
     public HFSpieleruebersicht(Stage stage,MenuBar mb,Steuerung steuerung,Aktualisierer akt){
         this.akt=akt;
@@ -77,7 +78,7 @@ public class HFSpieleruebersicht {
             spielerGes[i].setPrefWidth(395);
             Spieler spielerEinz=steuerung.getSpieler().get(i);
             spielerGes[i].setOnAction((var e)->{
-               new TeamDetail(steuerung,stage,spielerEinz,akt);
+               spd=new SpielerDetail(steuerung,stage,spielerEinz,akt);
             });
         }
        
@@ -96,7 +97,7 @@ public class HFSpieleruebersicht {
                         t=team2;
                     }
                 }
-                spieler=steuerung.getSpielerEinesTeams(t.getID());
+                spieler=steuerung.getAktiveSpielerEinesTeams(t.getID());
             }
             VBox box2=new VBox();
             sp.setContent(box2);
@@ -106,7 +107,7 @@ public class HFSpieleruebersicht {
                 spielerGes[i].setPrefWidth(395);
                 Spieler spielerEinz=steuerung.getSpieler().get(i);
                 spielerGes[i].setOnAction((var f)->{
-                   new TeamDetail(steuerung,stage,spielerEinz,akt); 
+                   new SpielerDetail(steuerung,stage,spielerEinz,akt); 
                 });
             }box2.getChildren().addAll(Arrays.asList(spielerGes));
         });
@@ -170,5 +171,8 @@ public class HFSpieleruebersicht {
         VBox boxl=new VBox();
         boxl.setPrefSize(400,50);
         gp.add(boxl, 0,1);
+        if(spd!=null) {
+        	spd.aktualisiere();
+        }
     }
 }

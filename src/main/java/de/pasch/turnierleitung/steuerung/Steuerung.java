@@ -78,18 +78,25 @@ public class Steuerung {
 	}
 	
 	public void editSpieler(String vorname,String nachname,int trikotnummer,long teamID,long spielerID) {
-            as.spieler.stream().filter((s) -> (s.getID()==spielerID)).forEachOrdered((s) -> {
-                s.setName(vorname, nachname);
-            });
-            as.connectoren.stream().filter((stc) -> (stc.getSpielerID()==spielerID)).forEachOrdered((stc) -> {
-                if(teamID!=stc.getTeamID()) {
-                    stc.setAusgetreten(true);
-                    SpielerTeamConnector stc2=new SpielerTeamConnector(spielerID, teamID, trikotnummer, spielerID,as);
-                    as.connectoren.add(stc2);
-                }else {
-                    stc.setTrikotnummer(trikotnummer);
-                }
-            });
+        as.spieler.stream().filter((s) -> (s.getID()==spielerID)).forEachOrdered((s) -> {
+            s.setName(vorname, nachname);
+        });
+        boolean wechsel=false;
+        for(int i=0;i<as.connectoren.size();i++) {
+        	SpielerTeamConnector stc=as.connectoren.get(i);
+        	if(spielerID==stc.getSpielerID()) {
+	            if(teamID!=stc.getTeamID()) {
+	                stc.setAusgetreten(true);
+	                wechsel=true;
+	            }else {
+	                stc.setTrikotnummer(trikotnummer);
+	            }
+        	}
+        } 
+        if(wechsel) {
+	        SpielerTeamConnector stc2=new SpielerTeamConnector(spielerID, teamID, trikotnummer, spielerID,as);
+	        as.connectoren.add(stc2);
+		}
 	}
 	
 	public void removeSpieler(long ID) {
@@ -125,6 +132,10 @@ public class Steuerung {
 	
 	public ArrayList<Spieler>getSpielerEinesTeams(long ID){
 		return IDPicker.pickSpielerEinesTeams(as.spieler,as.connectoren,IDPicker.pick(as.teams,ID));
+	}
+	
+	public ArrayList<Spieler>getAktiveSpielerEinesTeams(long ID){
+		return IDPicker.pickAktiveSpielerEinesTeams(as.spieler,as.connectoren,IDPicker.pick(as.teams,ID));
 	}
 	
         public ArrayList<SpielerTeamConnector>getSTC(){

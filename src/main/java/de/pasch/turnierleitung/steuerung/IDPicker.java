@@ -28,6 +28,17 @@ public class IDPicker {
 		return spieler;
 	}
 	
+	static public ArrayList<Spieler> pickAktiveSpielerEinesTeams(ArrayList<Spieler>insgSpieler,
+			ArrayList<SpielerTeamConnector>connectoren,Team team){
+		ArrayList<Spieler>spieler=new ArrayList<Spieler>();
+		for(SpielerTeamConnector stc:connectoren) {
+			if(stc.getTeamID()==team.getID()&&!stc.getAusgetreten()) {
+				spieler.add(stc.getSpieler());
+			}
+		}
+		return spieler;
+	}
+	
 	static public ArrayList<Team> pickTeamsEinesSpielers(ArrayList<Team>insgTeams,
 			ArrayList<SpielerTeamConnector>connectoren,Spieler spieler){
 		ArrayList<Team>teams=new ArrayList<Team>();

@@ -5,6 +5,8 @@
  */
 package de.pasch.turnierleitung.uis;
 
+import java.util.ArrayList;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
 import de.pasch.turnierleitung.protagonisten.Team;
@@ -13,6 +15,7 @@ import de.pasch.turnierleitung.steuerung.Steuerung;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
@@ -22,12 +25,23 @@ import javafx.stage.Stage;
  *
  * @author pasch
  */
-public class TeamDetail {
-    
-    public TeamDetail(Steuerung steuerung,Stage primStage,Spieler spieler,Aktualisierer akt){
-        Stage stage=new Stage();
+public class SpielerDetail {
+    Stage stage=null;
+    private Spieler spieler;
+    private Steuerung steuerung;
+    private Aktualisierer akt;
+	
+    public SpielerDetail(Steuerung steuerung,Stage primStage,Spieler spieler,Aktualisierer akt){
+        stage=new Stage();
         stage.initModality(Modality.WINDOW_MODAL);
-        stage.initOwner(primStage);
+        stage.initOwner(primStage);  
+        this.spieler=spieler;
+        this.steuerung=steuerung;
+        this.akt=akt;
+        aktualisiere();
+    }
+    
+    public void aktualisiere() {
         GridPane gp=new GridPane();
         gp.setAlignment(Pos.TOP_CENTER);
         gp.setPadding(new Insets(5,5,5,5));
@@ -57,11 +71,32 @@ public class TeamDetail {
         gp.add(teamLabelL, 0,2);
         gp.add(teamLabelR, 1,2);
         
-        
+        Button wechsel=new Button("Wechsel");
+        gp.add(wechsel,1,3);
+        wechsel.setOnAction((e)->{
+        	ArrayList<Team>teams=new ArrayList<Team>();
+        	Team team = null;
+            for(SpielerTeamConnector stc:steuerung.getSTC()){
+                if(stc.getSpielerID()==spieler.getID()&&(!stc.getAusgetreten())){
+                 team=IDPicker.pick(steuerung.getTeams(),stc.getTeamID());   
+                }
+            }
+
+        	for(Team team1:steuerung.getTeams()) {
+        		if(!team1.equals(team)) {
+        			teams.add(team1);
+        		}
+        	}
+        	new ListDialog<Team>(teams, stage, "Wohin soll der Spieler wechseln?",
+        			"Wechsel",(f)->{
+        		steuerung.editSpieler(spieler.getVorname(), spieler.getNachname(),
+        				0, f.getID(),spieler.getID());
+        		akt.aktualisieren();
+        	});
+        });
         
         Scene scene=new Scene(gp,500,500);
         stage.setScene(scene);
         stage.show();
-        
     }
 }
