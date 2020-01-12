@@ -89,9 +89,9 @@ public class SpielerDetail {
         	}
         	new ListDialog<Team>(teams, stage, "Wohin soll der Spieler wechseln?",
         			"Wechsel",(f)->{
-        		steuerung.editSpieler(spieler.getVorname(), spieler.getNachname(),
-        				0, f.getID(),spieler.getID());
-        		akt.aktualisieren();
+	        		steuerung.editSpieler(spieler.getVorname(), spieler.getNachname(),
+	        				0, f.getID(),spieler.getID());
+	        		akt.aktualisieren();
         	});
         });
         
