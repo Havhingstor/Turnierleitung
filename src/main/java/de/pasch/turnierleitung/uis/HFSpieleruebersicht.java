@@ -39,6 +39,7 @@ public class HFSpieleruebersicht {
     GridPane gp;
     Button[]spielerGes;
     SpielerDetail spd=null;
+    String letztesTeam="";
     
     public HFSpieleruebersicht(Stage stage,MenuBar mb,Steuerung steuerung,Aktualisierer akt){
         this.akt=akt;
@@ -52,6 +53,7 @@ public class HFSpieleruebersicht {
         gp.setPadding(new Insets(5,5,5,5));
         gp.setHgap(5);
         gp.setVgap(5);
+        letztesTeam=steuerung.getTeams().get(0).getName();
         aktualisiere();
         Scene scene=new Scene(bp,1200,725);
         stage.setScene(scene);
@@ -71,7 +73,7 @@ public class HFSpieleruebersicht {
 	        for(Team t:steuerung.getTeams()){
 	          team.getItems().add(t.getName());  
 	        }
-	        team.setValue(steuerung.getTeams().get(0).getName());
+	        team.setValue(letztesTeam);
 	        schaltungen.getChildren().add(team);
 	        
 	        VBox gap=new VBox();
@@ -96,7 +98,7 @@ public class HFSpieleruebersicht {
                 spielerGes[i].setPrefWidth(395);
                 Spieler spielerEinz=steuerung.getSpieler().get(i);
                 spielerGes[i].setOnAction((var f)->{
-                   new SpielerDetail(steuerung,stage,spielerEinz,akt); 
+                   spd=new SpielerDetail(steuerung,stage,spielerEinz,akt); 
                 });
             }
 	       
@@ -105,6 +107,7 @@ public class HFSpieleruebersicht {
 	        
 	        team.setOnAction((e)->{
 	            String s2=(String)team.getValue();
+	            letztesTeam=s2;
 	            ArrayList<Spieler>spieler2;
 	            Team t2 = null;
                 for(Team team2:steuerung.getTeams()){
@@ -121,7 +124,7 @@ public class HFSpieleruebersicht {
 	                spielerGes[i].setPrefWidth(395);
 	                Spieler spielerEinz=steuerung.getSpieler().get(i);
 	                spielerGes[i].setOnAction((var f)->{
-	                   new SpielerDetail(steuerung,stage,spielerEinz,akt); 
+	                   spd=new SpielerDetail(steuerung,stage,spielerEinz,akt); 
 	                });
 	            }
 	            box2.getChildren().addAll(Arrays.asList(spielerGes));

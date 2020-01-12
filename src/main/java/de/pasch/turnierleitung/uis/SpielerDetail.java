@@ -95,7 +95,10 @@ public class SpielerDetail {
         	});
         });
         
-        Scene scene=new Scene(gp,500,500);
+        Button bearbeiten=new Button("Bearbeiten");
+        gp.add(bearbeiten,0,3);
+        
+        Scene scene=new Scene(gp,400,200);
         stage.setScene(scene);
         stage.show();
     }
