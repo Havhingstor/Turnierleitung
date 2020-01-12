@@ -18,6 +18,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -71,8 +72,23 @@ public class SpielerDetail {
         gp.add(teamLabelL, 0,2);
         gp.add(teamLabelR, 1,2);
         
+        Label kapitaenLabel=new Label("Kapitän");
+        kapitaenLabel.setPrefWidth(145);
+        String kapitaenTextStr;
+        Team zwTeam=steuerung.getAktivesTeamEinesSpielers(spieler.getID());
+        if(zwTeam.getKapitaen()==spieler) {
+        	kapitaenTextStr="Kapitän";
+        }else if(zwTeam.getVizekapitaen()==spieler){
+        	kapitaenTextStr="Vizekapitän";
+        }else {
+        	kapitaenTextStr="Nein";
+        }
+        gp.add(kapitaenLabel,0,3);
+        Text kapitaenText=new Text(kapitaenTextStr);
+        gp.add(kapitaenText,1,3);
+        
         Button wechsel=new Button("Wechsel");
-        gp.add(wechsel,1,3);
+        gp.add(wechsel,1,4);
         wechsel.setOnAction((e)->{
         	ArrayList<Team>teams=new ArrayList<Team>();
         	Team team = null;
@@ -96,7 +112,10 @@ public class SpielerDetail {
         });
         
         Button bearbeiten=new Button("Bearbeiten");
-        gp.add(bearbeiten,0,3);
+        gp.add(bearbeiten,0,4);
+        bearbeiten.setOnAction((e)->{
+        	new SpielerBearbeiten(steuerung, stage, spieler, akt);
+        });
         
         Scene scene=new Scene(gp,400,200);
         stage.setScene(scene);
