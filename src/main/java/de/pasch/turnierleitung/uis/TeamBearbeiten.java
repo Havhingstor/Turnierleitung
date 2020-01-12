@@ -25,11 +25,11 @@ import javafx.stage.Stage;
  *
  * @author pasch
  */
-public class TeamBearbeitung {
+public class TeamBearbeiten {
     Steuerung steuerung;
     long ID;
     
-    public TeamBearbeitung(Steuerung steuerung,Stage primStage,Team team,Aktualisierer akt){
+    public TeamBearbeiten(Steuerung steuerung,Stage primStage,Team team,Aktualisierer akt){
         this.ID=team.getID();
         Stage stage=new Stage();
         stage.setTitle("Team bearbeiten");
@@ -82,7 +82,6 @@ public class TeamBearbeitung {
             if(!nameFeld.getText().equals("")){
                 steuerung.editTeam(kurznFeld.getText(),nameFeld.getText(),
                 stadionFeld.getText(),ID);
-                System.out.println(steuerung.getTeams().get(0).toString());
                 akt.aktualisieren();
                 stage.hide();
             }else{

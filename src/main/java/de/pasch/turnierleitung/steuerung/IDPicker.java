@@ -49,4 +49,15 @@ public class IDPicker {
 		}
 		return teams;
 	}
+	
+	static public Team pickAktivesTeamEinesSpielers(ArrayList<Team>insgTeams,
+			ArrayList<SpielerTeamConnector>connectoren,Spieler spieler){
+		Team team=null;
+		for(SpielerTeamConnector stc:connectoren) {
+			if(stc.getSpielerID()==spieler.getID()&&!stc.getAusgetreten()) {
+				team=stc.getTeam();
+			}
+		}
+		return team;
+	}
 }

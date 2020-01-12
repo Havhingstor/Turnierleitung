@@ -103,7 +103,7 @@ public class HFSpieleruebersicht {
             }
 	       
 	        box.getChildren().addAll(Arrays.asList(spielerGes));
-	        gp.add(sp,1,0,1,2);
+	        gp.add(sp,0,0,1,2);
 	        
 	        team.setOnAction((e)->{
 	            String s2=(String)team.getValue();
@@ -133,7 +133,7 @@ public class HFSpieleruebersicht {
 	        Button neu=new Button("Neuer Spieler");
 	        neu.setPrefSize(100,100);
 	        schaltungen.getChildren().add(neu);
-	        gp.add(schaltungen,2,0);
+	        gp.add(schaltungen,1,0);
 	        neu.setOnAction((e)->{
 	            String s2=(String)team.getValue();
 	            Team t2 = null;
@@ -168,21 +168,21 @@ public class HFSpieleruebersicht {
 	            if(als.size()>0) {
 		            new ListDialog<Spieler>(als, stage,
 		            		"Welchen Spieler möchten sie löschen?","Spieler löschen",(f)->{
-		            	try{
-		            		steuerung.removeSpieler(f.getID());
-		            		akt.aktualisieren();
-		            	}catch(IllegalArgumentException iae) {
-		            		JOptionPane.showMessageDialog(null, iae.getMessage(),"FEHLER!",JOptionPane.ERROR_MESSAGE);
-		            	}
+	                    int best=JOptionPane.showConfirmDialog(null,"Wollen sie dieses Team wirklich löschen?","ACHTUNG!",2,2);
+	                    if (best==0){
+	                        try{
+			            		steuerung.removeSpieler(f.getID());
+			            		akt.aktualisieren();
+	                        }catch(IllegalArgumentException iae){
+	                           JOptionPane.showMessageDialog(null,iae.getMessage(),"Fehler",0);
+	                        }
+	                    }		            	
 		            });
 	            }else {
 	            	JOptionPane.showMessageDialog(null, "Kein Spieler vorhanden!","FEHLER!",JOptionPane.ERROR_MESSAGE);
 	            }
 	        });
 	        
-	        VBox boxl=new VBox();
-	        boxl.setPrefSize(400,50);
-	        gp.add(boxl, 0,1);
 	        if(spd!=null) {
 	        	spd.aktualisiere();
 	        }

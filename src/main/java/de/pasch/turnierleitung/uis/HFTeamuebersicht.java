@@ -49,7 +49,7 @@ public class HFTeamuebersicht {
             teams[i].setPrefWidth(395);
             Team team=steuerung.getTeams().get(i);
             teams[i].setOnAction((var e)->{
-               new TeamBearbeitung(steuerung,stage,team,akt); 
+               new TeamBearbeiten(steuerung,stage,team,akt); 
             });
         }
        
@@ -83,7 +83,7 @@ public class HFTeamuebersicht {
             teams[i].setPrefWidth(395);
             Team team=steuerung.getTeams().get(i);
             teams[i].setOnAction((var e)->{
-               new TeamBearbeitung(steuerung,stage,team,akt); 
+               new TeamBearbeiten(steuerung,stage,team,akt); 
             });
         }
        

@@ -235,6 +235,10 @@ public class Steuerung {
 		return IDPicker.pickTeamsEinesSpielers(as.teams,as.connectoren,IDPicker.pick(as.spieler,ID));
 	}
 	
+	public Team getAktivesTeamEinesSpielers(long ID){
+		return IDPicker.pickAktivesTeamEinesSpielers(as.teams,as.connectoren,IDPicker.pick(as.spieler,ID));
+	}
+	
 	public void createRundensammlung(String name) {
 		Rundensammlung rs=new Rundensammlung(name,idc.createID(),as);
 		as.rs.add(rs);
