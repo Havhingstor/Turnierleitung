@@ -56,6 +56,9 @@ public class TeamDetail {
         }
         gp.add(teamLabelL, 0,2);
         gp.add(teamLabelR, 1,2);
+        
+        
+        
         Scene scene=new Scene(gp,500,500);
         stage.setScene(scene);
         stage.show();
