@@ -52,17 +52,7 @@ public class SpielerBearbeiten {
         gp.add(nachnameLabel,0,1);
         gp.add(nachnameAlt,1,1);
         gp.add(nachnameFeld,2,1);
-        //Label kapitaenLabel=new Label("Kapitän");
-        //kapitaenLabel.setPrefWidth(145);
-        //String kapitaenAltStr;
         Team team=steuerung.getAktivesTeamEinesSpielers(ID);
-        //if(team.getKapitaen().getID()==ID) {
-        	//kapitaenAltStr="Kapitän";
-        //}else if(team.getVizekapitaen().getID()==ID){
-        	//kapitaenAltStr="Vizekapitän";
-        //}else {
-        	//kapitaenAltStr="Nichts";
-        //}
        
         Button speichern=new Button("Speichern");
         speichern.setPrefWidth(145);
