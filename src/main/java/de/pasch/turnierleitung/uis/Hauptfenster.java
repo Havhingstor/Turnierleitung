@@ -50,11 +50,16 @@ public class Hauptfenster {
         MenuBar menuBar=new MenuBar();
         Menu datei=new Menu("Datei");
         Menu ansichten=new Menu("Ansichten");
-        menuBar.getMenus().addAll(datei,ansichten);
+        Menu hilfe=new Menu("Hilfe");
+        menuBar.getMenus().addAll(datei,ansichten,hilfe);
         MenuItem zuProtuebersichtMenu=new MenuItem("Protagonisten");
         MenuItem zuKORundenuebersicht=new MenuItem("Turnierelemente");
+        MenuItem zuEinstellungen=new MenuItem("Einstellungen");
+        MenuItem ueber=new MenuItem("Über");
+        hilfe.getItems().add(ueber);
         ansichten.getItems().addAll(zuProtuebersichtMenu,
         		zuKORundenuebersicht);
+        datei.getItems().add(zuEinstellungen);
         Aktualisierer akt=new Aktualisierer(this);
        
         
@@ -75,7 +80,15 @@ public class Hauptfenster {
         zuProtuebersichtbSchn.setOnAction((e)->{
         	 hfp= new HFProtagonisten(stage,bp,steuerung,akt);
         });
-        Scene scene=new Scene(bp,1200,725);
+        ueber.setOnAction((e)->{
+        	new UeberFenster(steuerung);
+        });
+        zuEinstellungen.setOnAction((e)->{
+        	new Einstellungsfenster(stage, steuerung, akt);
+        });        
+        
+        stage.setMaximized(true);
+        Scene scene=new Scene(bp,1200,800);
         stage.setScene(scene);
         hfp=new HFProtagonisten(stage, bp, steuerung, akt);
     }

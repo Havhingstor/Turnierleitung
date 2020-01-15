@@ -5,6 +5,8 @@
  */
 package de.pasch.turnierleitung.uis;
 
+import javax.swing.JOptionPane;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import javafx.event.ActionEvent;
@@ -52,18 +54,14 @@ public class SpielerHinzufuegen {
         stage.setScene(scene);
         stage.show();
         speichern.setOnAction((ActionEvent e) -> {
-            boolean erlaubt=true;
-            for(Spieler s:steuerung.getSpieler()){
-                if(s.getNachname().equals(nachnameFeld.getText())&&
-                        s.getVorname().equals(vornameFeld.getText())){
-                    erlaubt=false;
-                }
-            }
-            if(erlaubt){
+            
+        	try{
                 steuerung.addSpieler(vornameFeld.getText(), nachnameFeld.getText(),teamID, 0);
                 akt.aktualisieren();
                 stage.hide();
                 
+            }catch(IllegalArgumentException iae) {
+            	JOptionPane.showMessageDialog(null,iae.getMessage(),"Fehler",0);
             }
         });
     }

@@ -60,6 +60,9 @@ public class Steuerung {
         
 	public void addSpieler(String vorname,String nachname,long teamID,int trikotnummer) {
 		Spieler s=new Spieler(vorname,nachname,idc.createID());
+		if(s.getName().equals("")) {
+			throw new IllegalArgumentException("Dieser Spieler hat keinen Namen!");
+		}
 		boolean erlaubt=true;
 		for(Spieler s2:as.spieler) {
 			if(s2.getName().equals(s.getName())) {

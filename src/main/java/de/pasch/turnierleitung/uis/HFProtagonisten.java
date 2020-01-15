@@ -40,6 +40,7 @@ public class HFProtagonisten {
 	int letzterTab=1;
 	ComboBox<Team>spielerTeamAuswahl;
 	GridPane spielerGP;
+	GridPane std;
 	
 	public HFProtagonisten(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.stage=stage;
@@ -141,6 +142,8 @@ public class HFProtagonisten {
 		Team t=null;
 		if(letztesTeam!=0) {
 			t=IDPicker.pick(steuerung.getTeams(),letztesTeam);
+		}else if(steuerung.getTeams().size()>0) {
+			t=steuerung.getTeams().get(0);
 		}
 		aktualisiereTeamDetails(t,teamGP);
 		
@@ -155,7 +158,7 @@ public class HFProtagonisten {
 		teamDetailGP.setHgap(25);
 		
 		String[]beschriftungen=aktualisiereTeamDetailsBeschr(team);
-		
+				
 		Label teamDetailNameLab=new Label("Name:");
 		teamDetailNameLab.setFont(Font.font(25));
 		Text teamDetailNameText=new Text(beschriftungen[0]);
@@ -194,7 +197,7 @@ public class HFProtagonisten {
 		Button teamBearbeiten=new Button("Bearbeiten");
 		teamBearbeiten.setFont(Font.font(15));
 		teamBearbeiten.setPrefSize(100,50);
-		teamDetailGP.add(teamBearbeiten, 0,5);
+		teamDetailGP.add(teamBearbeiten, 0,6);
 		teamBearbeiten.setOnAction((e)->{
 			if(team!=null) {
 				new TeamBearbeiten(steuerung, stage, team, akt);
@@ -204,11 +207,13 @@ public class HFProtagonisten {
 		Button teamSpieler=new Button("Spieler");
 		teamSpieler.setFont(Font.font(15));
 		teamSpieler.setPrefSize(100,50);
-		teamDetailGP.add(teamSpieler, 1,5);
+		teamDetailGP.add(teamSpieler, 1,6);
 		teamSpieler.setOnAction((e)->{
-			inhalt.getSelectionModel().select(1);
-			spielerTeamAuswahl.setValue(team);
-			//aktualisiereSpielerTeamDetails(team,spielerGP);
+				if(team!=null) {
+				inhalt.getSelectionModel().select(1);
+				spielerTeamAuswahl.setValue(team);
+				aktualisiereSpielerTeamDetails(team,spielerGP);
+			}
 		});
 		
 		teamGP.add(teamDetailGP, 1,0);
@@ -259,11 +264,11 @@ public class HFProtagonisten {
 		
     	VBox spielerListeBox=new VBox();
         ScrollPane spielerListeSP=new ScrollPane(spielerListeBox);
-        spielerListeBox.setPrefSize(250,500);
-        aktualisiereSpielerListe(spielerTeamAuswahl.getValue().getID(), spielerListeBox, spielerGP);
+        spielerListeBox.setPrefSize(370,500);
+        aktualisiereSpielerListe(spielerTeamAuswahl.getValue(), spielerListeBox, spielerGP);
 
         spielerTeamAuswahl.setOnAction((e)->{
-			aktualisiereSpielerListe(spielerTeamAuswahl.getValue().getID(), spielerListeBox, spielerGP);
+			aktualisiereSpielerListe(spielerTeamAuswahl.getValue(), spielerListeBox, spielerGP);
 		});
 		        
         HBox schaltungen=new HBox();
@@ -297,32 +302,35 @@ public class HFProtagonisten {
         });
         
         spielerGP.add(spielerTeamAuswahl, 0,0);
-        spielerGP.add(spielerListeSP, 0, 1);
-        spielerGP.add(schaltungen,0,2);
+        spielerGP.add(spielerListeSP, 1, 1);
+        spielerGP.add(schaltungen,1,2);
 		
 		Spieler s=null;
+		long team=spielerTeamAuswahl.getValue().getID();
 		if(letzterSpieler!=0) {
 			s=IDPicker.pick(steuerung.getSpieler(),letzterSpieler);
-		}else {
-			
+		}else if(steuerung.getAktiveSpielerEinesTeams(team).size()>0){
+			s=steuerung.getAktiveSpielerEinesTeams(team).get(0);
 		}
 		aktualisiereSpielerDetails(s,spielerGP); 
 		
 		return spielerGP;		
 	}
 	
-	private void aktualisiereSpielerListe(long ID,VBox spielerListeBox,
+	private void aktualisiereSpielerListe(Team team,VBox spielerListeBox,
 			GridPane spielerGP) {
 		spielerListeBox.getChildren().clear();
-		 for(Spieler s:steuerung.getAktiveSpielerEinesTeams(ID)){
+		 for(Spieler s:steuerung.getAktiveSpielerEinesTeams(team.getID()
+				 )){
 	        	Button spielerButton=new Button(s.getName());
-	        	spielerButton.setPrefWidth(250);
+	        	spielerButton.setPrefWidth(370);
 	        	spielerListeBox.getChildren().add(spielerButton);
 	        	spielerButton.setOnAction((e)->{
 	        		letzterSpieler=s.getID();
 	        		aktualisiereSpielerDetails(s,spielerGP);
 	        	});
-	        }
+	     }
+		 aktualisiereSpielerTeamDetails(team, spielerGP);
 	}
 	
 	private void aktualisiereSpielerDetails(Spieler spieler,GridPane spielerGP) {
@@ -331,6 +339,7 @@ public class HFProtagonisten {
 		spielerDetailGP.setPadding(new Insets(10));
 		spielerDetailGP.setVgap(50);
 		spielerDetailGP.setHgap(25);
+		spielerDetailGP.setPrefWidth(370);
 		
 		String[]beschriftungen=aktualisiereSpielerDetailsBeschr(spieler);
 		
@@ -433,7 +442,84 @@ public class HFProtagonisten {
 		 return strings;
 	}
 	
-	private void createSpielerTeamDetails(Team team,GridPane spielerGP) {
+	private void aktualisiereSpielerTeamDetails(Team team,GridPane spielerGP) {
+		spielerGP.getChildren().remove(std);
+		std=new GridPane();
+		std.setPadding(new Insets(10));
+		std.setVgap(50);
+		std.setHgap(25);
+		std.setPrefWidth(370);
 		
+		String teamName;
+		if(team.getKurzname().length()>0) {
+			teamName=team.getKurzname();
+		}else {
+			teamName=team.getName();
+		}
+		Text titel=new Text(teamName+"-Spieler");
+		titel.setFont(Font.font(30));
+		std.add(titel, 0, 0);
+		
+		Label kapitaenLab=new Label("Kapitän");
+		kapitaenLab.setFont(Font.font(25));
+		std.add(kapitaenLab, 0, 1);
+		String kaptString="Nicht gewählt";
+		if(team.getKapitaen()!=null) {
+			kaptString=team.getKapitaen().getName();
+		}
+		Text kapitaenText=new Text(kaptString);
+		kapitaenText.setFont(Font.font(25));
+		std.add(kapitaenText, 1, 1);
+		
+		Label vizekapitaenLab=new Label("Vizekapitän");
+		vizekapitaenLab.setFont(Font.font(25));
+		std.add(vizekapitaenLab, 0, 2);
+		String vizekaptString="Nicht gewählt";
+		if(team.getVizekapitaen()!=null) {
+			vizekaptString=team.getVizekapitaen().getName();
+		}
+		Text vizekapitaenText=new Text(vizekaptString);
+		vizekapitaenText.setFont(Font.font(25));
+		std.add(vizekapitaenText, 1, 2);
+		
+		Button kapitaenSetzen=new Button("Kapitän bestimmen");
+		kapitaenSetzen.setFont(Font.font(15));
+		kapitaenSetzen.setOnAction((e)->{
+			if(steuerung.getAktiveSpielerEinesTeams(team.getID()).size()>0) {
+				new ListDialog<Spieler>(steuerung.getAktiveSpielerEinesTeams(team.getID()),stage,
+						300,"Welcher Spieler soll zum Kapitän werden?",
+						"Kapitän bestimmen",(f)->{
+							team.setKapitaen(f);
+							if(team.getVizekapitaen()==f) {
+								team.setVizekapitaen(0);
+							}
+							akt.aktualisieren();
+						});
+			}else {
+				JOptionPane.showMessageDialog(null, "In diesem Team ist kein Spieler eingetragen!","FEHLER!",0);
+			}
+		});
+		std.add(kapitaenSetzen,0,3,2,1);
+		
+		Button vizekapitaenSetzen=new Button("Vizekapitän bestimmen");
+		vizekapitaenSetzen.setFont(Font.font(15));
+		vizekapitaenSetzen.setOnAction((e)->{
+			if(steuerung.getAktiveSpielerEinesTeams(team.getID()).size()>0) {
+				new ListDialog<Spieler>(steuerung.getAktiveSpielerEinesTeams(team.getID()),
+						stage,300,"Welcher Spieler soll zum Vizekapitän werden?",
+						"Vizekapitän bestimmen",(f)->{
+							team.setVizekapitaen(f);
+							if(team.getKapitaen()==f) {
+								team.setKapitaen(0);
+							}
+							akt.aktualisieren();
+						});
+			}else {
+				JOptionPane.showMessageDialog(null, "In diesem Team ist kein Spieler eingetragen!","FEHLER!",0);
+			}
+		});
+		std.add(vizekapitaenSetzen,0,4,2,1);
+		
+		spielerGP.add(std,0, 1);
 	}
 }
