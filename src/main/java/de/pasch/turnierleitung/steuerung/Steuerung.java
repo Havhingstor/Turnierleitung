@@ -81,6 +81,15 @@ public class Steuerung {
 		}
 	}
 	
+	public int getTrikotnummerEinesSpielers(long ID) {
+		for(SpielerTeamConnector stc:as.connectoren) {
+			if(stc.getSpielerID()==ID&&!stc.getAusgetreten()) {
+				return stc.getTrikotnummer();
+			}
+		}
+		return 0;
+	}
+	
 	public void editSpieler(String vorname,String nachname,int trikotnummer,long teamID,long spielerID) {
         as.spieler.stream().filter((s) -> (s.getID()==spielerID)).forEachOrdered((s) -> {
             s.setName(vorname, nachname);

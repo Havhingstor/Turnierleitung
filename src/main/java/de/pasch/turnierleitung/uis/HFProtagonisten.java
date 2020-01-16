@@ -344,37 +344,44 @@ public class HFProtagonisten {
 		String[]beschriftungen=aktualisiereSpielerDetailsBeschr(spieler);
 		
 		Label spielerDetailVornameLab=new Label("Vorname:");
-		spielerDetailVornameLab.setFont(Font.font(25));
+		spielerDetailVornameLab.setFont(Font.font(20));
 		Text spielerDetailVornameText=new Text(beschriftungen[0]);
-		spielerDetailVornameText.setFont(Font.font(25));
+		spielerDetailVornameText.setFont(Font.font(20));
 		spielerDetailGP.add(spielerDetailVornameLab, 0, 0);
 		spielerDetailGP.add(spielerDetailVornameText, 1,0);
 		
 		Label spielerDetailNachnameLab=new Label("Nachname:");
-		spielerDetailNachnameLab.setFont(Font.font(25));
+		spielerDetailNachnameLab.setFont(Font.font(20));
 		Text teamDetailKurznameText=new Text(beschriftungen[1]);
-		teamDetailKurznameText.setFont(Font.font(25));
+		teamDetailKurznameText.setFont(Font.font(20));
 		spielerDetailGP.add(spielerDetailNachnameLab, 0,1);
 		spielerDetailGP.add(teamDetailKurznameText, 1,1);
 		
 		Label spielerDetailTeamLab=new Label("Team:");
-		spielerDetailTeamLab.setFont(Font.font(25));
+		spielerDetailTeamLab.setFont(Font.font(20));
 		Text spielerDetailTeamText=new Text(beschriftungen[2]);
-		spielerDetailTeamText.setFont(Font.font(25));
+		spielerDetailTeamText.setFont(Font.font(20));
 		spielerDetailGP.add(spielerDetailTeamLab, 0, 2);
 		spielerDetailGP.add(spielerDetailTeamText, 1,2);
 		
 		Label spielerDetailKapitaenLab=new Label("Kapitän:");
-		spielerDetailKapitaenLab.setFont(Font.font(25));
+		spielerDetailKapitaenLab.setFont(Font.font(20));
 		Text spielerDetailKapitaenText=new Text(beschriftungen[3]);
-		spielerDetailKapitaenText.setFont(Font.font(25));
+		spielerDetailKapitaenText.setFont(Font.font(20));
 		spielerDetailGP.add(spielerDetailKapitaenLab, 0, 3);
 		spielerDetailGP.add(spielerDetailKapitaenText, 1,3);
+		
+		Label spielerDetailTrikotNLab=new Label("Trikotnummer:");
+		spielerDetailTrikotNLab.setFont(Font.font(20));
+		Text spielerDetailTrikotNText=new Text(beschriftungen[4]);
+		spielerDetailTrikotNText.setFont(Font.font(20));
+		spielerDetailGP.add(spielerDetailTrikotNLab, 0, 4);
+		spielerDetailGP.add(spielerDetailTrikotNText, 1,4);
 				
 		Button spielerBearbeiten=new Button("Bearbeiten");
 		spielerBearbeiten.setFont(Font.font(15));
 		spielerBearbeiten.setPrefSize(100,50);
-		spielerDetailGP.add(spielerBearbeiten, 0,4);
+		spielerDetailGP.add(spielerBearbeiten, 0,5);
 		spielerBearbeiten.setOnAction((e)->{
 			if(spieler!=null) {
 				new SpielerBearbeiten(steuerung, stage, spieler, akt);
@@ -384,7 +391,7 @@ public class HFProtagonisten {
 		Button spielerWechsel=new Button("Wechsel");
 		spielerWechsel.setFont(Font.font(15));
 		spielerWechsel.setPrefSize(100,50);
-		spielerDetailGP.add(spielerWechsel,1,4);
+		spielerDetailGP.add(spielerWechsel,1,5);
         spielerWechsel.setOnAction((e)->{
         	ArrayList<Team>teams=new ArrayList<Team>();
         	Team team = null;
@@ -418,12 +425,13 @@ public class HFProtagonisten {
 	}
 	
 	private String[] aktualisiereSpielerDetailsBeschr(Spieler spieler){
-		 String[]strings=new String[4];
+		 String[]strings=new String[5];
 		 
 		 if(spieler==null) {
 			 strings[0]="";
 			 strings[1]="";
 			 strings[1]="";
+			 strings[3]="";
 			 strings[3]="";
 		 }else {
 			 strings[0]=spieler.getVorname();
@@ -436,6 +444,12 @@ public class HFProtagonisten {
 				 strings[3]="Vizekapitän";
 			 }else {
 				 strings[3]="Nein";
+			 }
+			 int trikotnummer=steuerung.getTrikotnummerEinesSpielers(spieler.getID());
+			 if(trikotnummer>0) {
+				 strings[4]=""+trikotnummer;
+			 }else {
+				 strings[4]="-------";
 			 }
 		 }
 		 
@@ -457,29 +471,29 @@ public class HFProtagonisten {
 			teamName=team.getName();
 		}
 		Text titel=new Text(teamName+"-Spieler");
-		titel.setFont(Font.font(30));
+		titel.setFont(Font.font(25));
 		std.add(titel, 0, 0);
 		
 		Label kapitaenLab=new Label("Kapitän");
-		kapitaenLab.setFont(Font.font(25));
+		kapitaenLab.setFont(Font.font(20));
 		std.add(kapitaenLab, 0, 1);
 		String kaptString="Nicht gewählt";
 		if(team.getKapitaen()!=null) {
 			kaptString=team.getKapitaen().getName();
 		}
 		Text kapitaenText=new Text(kaptString);
-		kapitaenText.setFont(Font.font(25));
+		kapitaenText.setFont(Font.font(20));
 		std.add(kapitaenText, 1, 1);
 		
 		Label vizekapitaenLab=new Label("Vizekapitän");
-		vizekapitaenLab.setFont(Font.font(25));
+		vizekapitaenLab.setFont(Font.font(20));
 		std.add(vizekapitaenLab, 0, 2);
 		String vizekaptString="Nicht gewählt";
 		if(team.getVizekapitaen()!=null) {
 			vizekaptString=team.getVizekapitaen().getName();
 		}
 		Text vizekapitaenText=new Text(vizekaptString);
-		vizekapitaenText.setFont(Font.font(25));
+		vizekapitaenText.setFont(Font.font(20));
 		std.add(vizekapitaenText, 1, 2);
 		
 		Button kapitaenSetzen=new Button("Kapitän bestimmen");
@@ -519,6 +533,13 @@ public class HFProtagonisten {
 			}
 		});
 		std.add(vizekapitaenSetzen,0,4,2,1);
+		
+		Button trikotnummern=new Button("Trinkotnummern");
+		trikotnummern.setFont(Font.font(15));
+		trikotnummern.setOnAction((e)->{
+			new Trikotnummerzuweiser(steuerung, team, stage, akt);	
+		});
+		std.add(trikotnummern, 0,5,2,1);
 		
 		spielerGP.add(std,0, 1);
 	}
