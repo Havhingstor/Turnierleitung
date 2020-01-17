@@ -20,7 +20,7 @@ public class Steuerung {
 	private String name="";
 	private final ArrayList<String>torarten=new ArrayList<>();
 	private final ArrayList<String>strafenarten=new ArrayList<>();
-	public final String version="1.0";
+	public final String version="0.9";
 	
 	public Steuerung() {
 		torarten.add("Rechtsschuss");

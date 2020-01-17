@@ -1,6 +1,8 @@
 package de.pasch.turnierleitung.turnierelemente;
 
-public class Turnierelement implements Comparable<Turnierelement> {
+import de.pasch.turnierleitung.steuerung.Pickable;
+
+public class Turnierelement implements Comparable<Turnierelement>,Pickable {
 	private long ID;
 	private String name;
 	
