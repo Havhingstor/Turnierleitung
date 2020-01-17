@@ -566,7 +566,7 @@ public class Steuerung {
             });
 	}
 	
-	public void createKORunde(String name) {
+	public void addKORunde(String name) {
 		KORunde kor=new KORunde(idc.createID(),as,name);
 		as.koRunden.add(kor);
 	}

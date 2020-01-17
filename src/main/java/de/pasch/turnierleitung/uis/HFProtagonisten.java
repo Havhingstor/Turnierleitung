@@ -49,6 +49,9 @@ public class HFProtagonisten {
 		this.akt=akt;
 		inhalt=new TabPane();
 		inhalt.setPadding(new Insets(5,5,5,5));
+		try {
+			bp.getChildren().remove(1);
+		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(inhalt);
 		aktualisiere();
 	}

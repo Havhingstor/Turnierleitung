@@ -6,7 +6,7 @@ import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
 
-public class KORunde implements Pickable{
+public class KORunde extends Turnierelement implements Pickable{
 	private final ArrayList<Long>rundensammlungen=new ArrayList<>();
 	private final ArrayList<PlatzierungInKORunde>platzierungen=new ArrayList<>();
 	private long ID=0;

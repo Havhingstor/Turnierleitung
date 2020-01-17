@@ -11,7 +11,7 @@ import de.pasch.turnierleitung.steuerung.IDCreator;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
 
-public class Liga implements Pickable {
+public class Liga extends Turnierelement implements Pickable {
 	private long ID=0;
 	private final ArrayList<Long>spt=new ArrayList<>();
 	private final ArrayList<Long>teams=new ArrayList<>();

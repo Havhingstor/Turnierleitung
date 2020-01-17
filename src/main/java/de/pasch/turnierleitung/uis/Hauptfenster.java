@@ -26,6 +26,7 @@ public class Hauptfenster {
     HFProtagonisten hfp;
     Steuerung steuerung;
     Stage stage;
+    HFTurnierelemente hft;
     
     public  Hauptfenster(Startfenster startfenster) {
         Startfenster sf=startfenster;
@@ -53,12 +54,12 @@ public class Hauptfenster {
         Menu hilfe=new Menu("Hilfe");
         menuBar.getMenus().addAll(datei,ansichten,hilfe);
         MenuItem zuProtuebersichtMenu=new MenuItem("Protagonisten");
-        MenuItem zuKORundenuebersicht=new MenuItem("Turnierelemente");
+        MenuItem zuTurnierelementeuebersichtMenu=new MenuItem("Turnierelemente");
         MenuItem zuEinstellungen=new MenuItem("Einstellungen");
         MenuItem ueber=new MenuItem("Über");
         hilfe.getItems().add(ueber);
         ansichten.getItems().addAll(zuProtuebersichtMenu,
-        		zuKORundenuebersicht);
+        		zuTurnierelementeuebersichtMenu);
         datei.getItems().add(zuEinstellungen);
         Aktualisierer akt=new Aktualisierer(this);
        
@@ -85,7 +86,13 @@ public class Hauptfenster {
         });
         zuEinstellungen.setOnAction((e)->{
         	new Einstellungsfenster(stage, steuerung, akt);
-        });        
+        });  
+        zuTurnierelementeuebersichtMenu.setOnAction((e)->{
+        	hft=new HFTurnierelemente(stage, bp, steuerung, akt);
+        });
+        zuTurnuebersichtbSchn.setOnAction((e)->{
+        	hft=new HFTurnierelemente(stage, bp, steuerung, akt);
+        });
         
         stage.setMaximized(true);
         Scene scene=new Scene(bp,1200,800);
@@ -99,6 +106,9 @@ public class Hauptfenster {
         }
         if(hfp!=null){
             hfp.aktualisiere();
+        }
+        if(hft!=null){
+            hft.aktualisiere();
         }
     }
 }
