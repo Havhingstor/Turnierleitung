@@ -12,8 +12,11 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -25,6 +28,8 @@ public class HFTurnierelemente {
 	Aktualisierer akt;
 	GridPane gp;
 	long letztesTE;
+	GridPane detGP;
+	TabPane inhalt;
 	
 	public HFTurnierelemente(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -64,8 +69,21 @@ public class HFTurnierelemente {
         		aktualisiereTEDetails(t,gp);
         	});
         }
+        HBox schaltungen=new HBox();
+        Button neu=new Button("Turnierelement hinzufügen");
+        schaltungen.getChildren().add(neu);
+        neu.setOnAction((e)->{
+        	new TEHinzufuegen(steuerung, stage,akt);
+        });
+        
+        Button loe=new Button("Turnierelement löschen");
+        schaltungen.getChildren().add(loe);
+        loe.setOnAction((e)->{
+        	
+        });
         
         gp.add(listeSP, 0, 0);
+        gp.add(schaltungen, 0, 1);
         
         Turnierelement te=IDPicker.pick(tes,letztesTE);
         aktualisiereTEDetails(te,gp);
@@ -81,7 +99,9 @@ public class HFTurnierelemente {
 			className=t.getClass().getName();
 		}catch(NullPointerException npe) {}
 		
-		GridPane detGP=new GridPane();
+		gp.getChildren().removeAll(inhalt,detGP);
+		
+		detGP=new GridPane();
 		detGP.setPadding(new Insets(5));
 		detGP.setVgap(5);
 		detGP.setHgap(5);
@@ -100,8 +120,16 @@ public class HFTurnierelemente {
 		nameText.setFont(Font.font(20));
 		detGP.add(nameText, 1, 1);
 		
-		if(className.equals("Liga")) {
+		if(className.equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
+			inhalt=new TabPane();
+			inhalt.setPrefWidth(630);
+			Tab uebersichtTab=new Tab("Übersicht",detGP);
+			uebersichtTab.setClosable(false);
+			inhalt.getTabs().add(uebersichtTab);
 			
+			
+			
+			gp.add(inhalt, 1, 0);
 		}else {
 			gp.add(detGP, 1,0);
 		}
@@ -111,7 +139,7 @@ public class HFTurnierelemente {
 	private String[] TEDetailsBeschriftungen(Turnierelement t) {
 		String[]beschr=null;
 		if(t!=null) {
-			if(t.getClass().getName().equals("Liga")) {
+			if(t.getClass().getName().equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
 				beschr=new String[10];
 				Liga liga=(Liga)t;
 				beschr[0]="Liga";
@@ -144,7 +172,7 @@ public class HFTurnierelemente {
 				beschr=new String[2];
 				KORunde kor=(KORunde)t;
 				beschr[0]="KO-Runde";
-				beschr[1]=kor.getName();
+				beschr[1]=t.getName();
 			}
 		}else {
 			beschr=new String[2];

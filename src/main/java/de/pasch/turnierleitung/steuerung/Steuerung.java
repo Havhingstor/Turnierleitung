@@ -567,8 +567,23 @@ public class Steuerung {
 	}
 	
 	public void addKORunde(String name) {
-		KORunde kor=new KORunde(idc.createID(),as,name);
-		as.koRunden.add(kor);
+		boolean erlaubt=true;
+		for(KORunde kor:as.koRunden) {
+			if(kor.getName().equals(name)) {
+				erlaubt=false;
+			}
+		}
+		for(Liga liga:as.ligen) {
+			if(liga.getName()==name) {
+				erlaubt=false;
+			}
+		}
+		if(erlaubt) {
+			KORunde kor=new KORunde(idc.createID(),as,name);
+			as.koRunden.add(kor);
+		}else {
+			throw new IllegalArgumentException("Dieser Name ist schon für eine Turnierelement vergeben");
+		}
 	}
 	
 	public KORunde getKORunde(long ID) {
