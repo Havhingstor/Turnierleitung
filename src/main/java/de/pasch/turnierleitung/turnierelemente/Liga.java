@@ -48,6 +48,11 @@ public class Liga extends Turnierelement implements Pickable {
 	public String getName() {
 		return name;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 
 	public final void setName(String name) {
 		this.name = name;

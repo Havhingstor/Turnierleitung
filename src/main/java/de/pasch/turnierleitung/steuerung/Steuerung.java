@@ -489,7 +489,9 @@ public class Steuerung {
 	
 	public void removeLiga(long ID) {
 		if(IDPicker.pick(as.ligen, ID).getSpieltage().size()>0) {
-			throw new IllegalArgumentException("Diese Liga enth�lt bereits Spieltage!");
+			throw new IllegalArgumentException("Diese Liga enthält bereits Spieltage!");
+		}else {
+			as.ligen.remove(IDPicker.pick(as.ligen, ID));
 		}
 	}
 	
@@ -589,12 +591,20 @@ public class Steuerung {
 	public KORunde getKORunde(long ID) {
 		return IDPicker.pick(as.koRunden,ID);
 	}
-        
-        public ArrayList<KORunde> getKORunden(){
-            return as.koRunden;
-        }
-        
-        public Liga getLiga(long ID){
-            return IDPicker.pick(as.ligen,ID);
-        }
+     
+	public void removeKORunde(long ID) {
+		if(IDPicker.pick(as.koRunden, ID).getRundensammlungen().size()>0) {
+			throw new IllegalArgumentException("Diese KO-Runde enthält bereits Runden!");
+		}else {
+			as.koRunden.remove(IDPicker.pick(as.koRunden, ID));
+		}
+	}
+	
+    public ArrayList<KORunde> getKORunden(){
+        return as.koRunden;
+    }
+    
+    public Liga getLiga(long ID){
+        return IDPicker.pick(as.ligen,ID);
+    }
 }

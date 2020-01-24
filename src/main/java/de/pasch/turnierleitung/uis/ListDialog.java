@@ -42,8 +42,8 @@ public class ListDialog<T> {
 	        Button ok=new Button("OK");
 	        gp.add(ok,1,1);
 	        ComboBox<T> listTaker=new ComboBox<T>();
-	        listTaker.setValue(list.get(0));
 	        listTaker.getItems().addAll(list);
+	        listTaker.setValue(list.get(0));
 	        gp.add(listTaker,0,1);
 	        Scene scene=new Scene(gp,width,100);
 	        stage.setScene(scene);

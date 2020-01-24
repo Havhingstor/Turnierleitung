@@ -25,4 +25,8 @@ public class Turnierelement implements Comparable<Turnierelement>,Pickable {
 		return name;
 	}
 	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

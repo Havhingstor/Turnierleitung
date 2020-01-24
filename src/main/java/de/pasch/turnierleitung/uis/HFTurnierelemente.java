@@ -3,6 +3,8 @@ package de.pasch.turnierleitung.uis;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.JOptionPane;
+
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import de.pasch.turnierleitung.turnierelemente.KORunde;
@@ -79,7 +81,28 @@ public class HFTurnierelemente {
         Button loe=new Button("Turnierelement löschen");
         schaltungen.getChildren().add(loe);
         loe.setOnAction((e)->{
-        	
+        	new ListDialog<Turnierelement>(tes, stage,300,"Welches Turnierelement soll gelöscht werden?",
+        			"Turnierelement löschen", (f)->{
+				int best=JOptionPane.showConfirmDialog(null, "Soll das Turnierelement wirklich gelöscht werden?",
+    					"Bestätigung",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+    			if(best==JOptionPane.OK_OPTION) {
+    				if(f.getClass().getName().equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
+    					try {
+    						steuerung.removeLiga(f.getID());
+    						akt.aktualisieren();
+    					}catch(IllegalArgumentException iae) {
+    						JOptionPane.showMessageDialog(null,iae.getMessage(), "FEHLER!",JOptionPane.ERROR_MESSAGE);
+    					}
+            		}else {
+            			try {
+    						steuerung.removeKORunde(f.getID());
+    						akt.aktualisieren();
+    					}catch(IllegalArgumentException iae) {
+    						JOptionPane.showMessageDialog(null,iae.getMessage(), "FEHLER!",JOptionPane.ERROR_MESSAGE);
+    					}
+            		}
+    			}
+        	});
         });
         
         gp.add(listeSP, 0, 0);
@@ -127,7 +150,28 @@ public class HFTurnierelemente {
 			uebersichtTab.setClosable(false);
 			inhalt.getTabs().add(uebersichtTab);
 			
+			//createZusaetzlichenInhalt(inhalt);
 			
+			Label ppsName=new Label("Punkte pro Sieg");
+			ppsName.setFont(Font.font(20));
+			detGP.add(ppsName, 0, 2);
+			Label ppsText=new Label(beschriftungen[2]);
+			ppsText.setFont(Font.font(20));
+			detGP.add(ppsText, 1,2);
+			
+			Label ppuName=new Label("Punkte pro Unentschieden");
+			ppuName.setFont(Font.font(20));
+			detGP.add(ppuName, 0, 3);
+			Label ppuText=new Label(beschriftungen[3]);
+			ppuText.setFont(Font.font(20));
+			detGP.add(ppuText, 1,3);
+			
+			Label ppnName=new Label("Punkte pro Niederlage");
+			ppnName.setFont(Font.font(20));
+			detGP.add(ppnName, 0, 4);
+			Label ppnText=new Label(beschriftungen[4]);
+			ppnText.setFont(Font.font(20));
+			detGP.add(ppnText, 1,4);
 			
 			gp.add(inhalt, 1, 0);
 		}else {

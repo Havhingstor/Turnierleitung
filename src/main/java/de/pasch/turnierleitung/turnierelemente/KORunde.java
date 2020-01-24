@@ -12,62 +12,67 @@ public class KORunde extends Turnierelement implements Pickable{
 	private long ID=0;
 	private String name="";
 	private final ArraySpeicher as;
-	
+
 	public KORunde(long ID,ArraySpeicher as,String name) {
 		this.ID=ID;
 		this.as=as;
 		this.name=name;
 	}
-	
+
 	public ArrayList<Long>getRundensammlungenIDs(){
 		return rundensammlungen;
 	}
-	
+
 	public ArrayList<Rundensammlung>getRundensammlungen(){
 		ArrayList<Rundensammlung>rückgabeRunden=new ArrayList<>();
-                rundensammlungen.forEach((l) -> {
-                    rückgabeRunden.add(IDPicker.pick(as.rs, l));
-            });
+		rundensammlungen.forEach((l) -> {
+			rückgabeRunden.add(IDPicker.pick(as.rs, l));
+		});
 		return rückgabeRunden;
 	}
-	
-        @Override
+
+	@Override
 	public long getID() {
 		return ID;
 	}
-	
+
+	@Override
+	public String toString() {
+		return name;
+	}    
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void removeRundensammlung(long ID) {
 		if(rundensammlungen.contains(ID)) {
 			rundensammlungen.remove(ID);
 		}
 	}
-	
+
 	public void setzePlatzierungen() {
-            platzierungen.forEach((piko) -> {
-                long team;
-                if(piko.getGewinner()) {
-                    team=IDPicker.pick(as.runden,piko.getSpielID()).getSetGewinner();
-                }else {
-                    team=IDPicker.pick(as.runden,piko.getSpielID()).getSetVerlierer();
-                }
-                piko.setTeam(team);
-            });
+		platzierungen.forEach((piko) -> {
+			long team;
+			if(piko.getGewinner()) {
+				team=IDPicker.pick(as.runden,piko.getSpielID()).getSetGewinner();
+			}else {
+				team=IDPicker.pick(as.runden,piko.getSpielID()).getSetVerlierer();
+			}
+			piko.setTeam(team);
+		});
 	}
-	
+
 	public ArrayList<PlatzierungInKORunde>getPlatzierungen(){
 		return platzierungen;
 	}
-	
+
 	public void addPlatzierung(PlatzierungInKORunde p) {
 		if(p.getPlatz()==platzierungen.size()+1) {
 			platzierungen.add(p);
 		}
 	}
-	
+
 	public void removeLetztePlatzierung() {
 		int hoechstPlatz=0;
 		PlatzierungInKORunde piko=null;
