@@ -5,12 +5,14 @@ import java.util.Collections;
 
 import javax.swing.JOptionPane;
 
+import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
-import de.pasch.turnierleitung.turnierelemente.KORunde;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
+import de.pasch.turnierleitung.turnierelemente.VereinInTabelle;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -32,6 +34,7 @@ public class HFTurnierelemente {
 	long letztesTE;
 	GridPane detGP;
 	TabPane inhalt;
+	HFProtagonisten hfp;
 	
 	public HFTurnierelemente(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -81,28 +84,32 @@ public class HFTurnierelemente {
         Button loe=new Button("Turnierelement löschen");
         schaltungen.getChildren().add(loe);
         loe.setOnAction((e)->{
-        	new ListDialog<Turnierelement>(tes, stage,300,"Welches Turnierelement soll gelöscht werden?",
-        			"Turnierelement löschen", (f)->{
-				int best=JOptionPane.showConfirmDialog(null, "Soll das Turnierelement wirklich gelöscht werden?",
-    					"Bestätigung",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
-    			if(best==JOptionPane.OK_OPTION) {
-    				if(f.getClass().getName().equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
-    					try {
-    						steuerung.removeLiga(f.getID());
-    						akt.aktualisieren();
-    					}catch(IllegalArgumentException iae) {
-    						JOptionPane.showMessageDialog(null,iae.getMessage(), "FEHLER!",JOptionPane.ERROR_MESSAGE);
-    					}
-            		}else {
-            			try {
-    						steuerung.removeKORunde(f.getID());
-    						akt.aktualisieren();
-    					}catch(IllegalArgumentException iae) {
-    						JOptionPane.showMessageDialog(null,iae.getMessage(), "FEHLER!",JOptionPane.ERROR_MESSAGE);
-    					}
-            		}
-    			}
-        	});
+        	try {
+	        	new ListDialog<Turnierelement>(tes, stage,300,"Welches Turnierelement soll gelöscht werden?",
+	        			"Turnierelement löschen", (f)->{
+					int best=JOptionPane.showConfirmDialog(null, "Soll das Turnierelement wirklich gelöscht werden?",
+	    					"Bestätigung",JOptionPane.OK_CANCEL_OPTION,JOptionPane.QUESTION_MESSAGE);
+	    			if(best==JOptionPane.OK_OPTION) {
+	    				if(f.getClass().getName().equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
+	    					try {
+	    						steuerung.removeLiga(f.getID());
+	    						akt.aktualisieren();
+	    					}catch(IllegalArgumentException iae) {
+	    						JOptionPane.showMessageDialog(null,iae.getMessage(), "FEHLER!",JOptionPane.ERROR_MESSAGE);
+	    					}
+	            		}else {
+	            			try {
+	    						steuerung.removeKORunde(f.getID());
+	    						akt.aktualisieren();
+	    					}catch(IllegalArgumentException iae) {
+	    						JOptionPane.showMessageDialog(null,iae.getMessage(), "FEHLER!",JOptionPane.ERROR_MESSAGE);
+	    					}
+	            		}
+	    			}
+	        	});
+        	}catch(IllegalArgumentException iae) {
+        		JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
+        	}
         });
         
         gp.add(listeSP, 0, 0);
@@ -150,7 +157,8 @@ public class HFTurnierelemente {
 			uebersichtTab.setClosable(false);
 			inhalt.getTabs().add(uebersichtTab);
 			
-			//createZusaetzlichenInhalt(inhalt);
+			Liga liga=(Liga)t;
+			createZusaetzlichenInhalt(inhalt,liga);
 			
 			Label ppsName=new Label("Punkte pro Sieg");
 			ppsName.setFont(Font.font(20));
@@ -214,7 +222,6 @@ public class HFTurnierelemente {
 				}
 			}else {
 				beschr=new String[2];
-				KORunde kor=(KORunde)t;
 				beschr[0]="KO-Runde";
 				beschr[1]=t.getName();
 			}
@@ -226,5 +233,103 @@ public class HFTurnierelemente {
 		}
 		
 		return beschr;
+	}
+	
+	public void createZusaetzlichenInhalt(TabPane inhalt,Liga liga) {
+		GridPane gp=new GridPane();
+		gp.setPadding(new Insets(10));
+		gp.setHgap(10);
+		gp.setVgap(10);
+		gp.setAlignment(Pos.TOP_CENTER);
+		
+		Label tabLab=new Label("Tabelle");
+		tabLab.setFont(Font.font(20));
+		gp.add(tabLab, 0, 0);
+		
+		GridPane tabellePane=new GridPane();
+		tabellePane.setPadding(new Insets(10));
+		tabellePane.setHgap(10);
+		tabellePane.setVgap(10);
+		ScrollPane tabelleSP=new ScrollPane(tabellePane);
+		gp.add(tabelleSP, 0, 1);
+		
+		ArrayList<VereinInTabelle>tabelleVIT=liga.berechneGetAktuelleTabelle();
+		int zaehler=1;
+		
+		Label name=new Label("Team");
+		name.setFont(Font.font(15));
+		tabellePane.add(name, 0, 0);
+		Label punkte=new Label("Pkt");
+		punkte.setFont(Font.font(15));
+		tabellePane.add(punkte, 2, 0);
+		Label spiele=new Label("Sp");
+		spiele.setFont(Font.font(15));
+		tabellePane.add(spiele,1, 0);
+		Label siege=new Label("S");
+		siege.setFont(Font.font(15));
+		tabellePane.add(siege, 3, 0);
+		Label unentschieden=new Label("U");
+		unentschieden.setFont(Font.font(15));
+		tabellePane.add(unentschieden, 4, 0);
+		Label niederlagen=new Label("N");
+		niederlagen.setFont(Font.font(15));
+		tabellePane.add(niederlagen, 5, 0);
+		Label tore=new Label("+");
+		tore.setFont(Font.font(15));
+		tabellePane.add(tore, 6, 0);
+		Label gegentore=new Label("-");
+		gegentore.setFont(Font.font(15));
+		tabellePane.add(gegentore, 7, 0);
+		Label tordifferenz=new Label("TD");
+		tordifferenz.setFont(Font.font(15));
+		tabellePane.add(tordifferenz, 8, 0);
+		
+		
+		for(VereinInTabelle vit:tabelleVIT) {
+			Team team=IDPicker.pick(steuerung.getTeams(),vit.getTeamID());
+			
+			Button teamName=new Button(team.getKurzname());
+			teamName.setFont(Font.font(15));
+			teamName.setPrefWidth(75);
+			tabellePane.add(teamName, 0, zaehler);
+			
+			Label teamPunkte=new Label(""+vit.getPunkte());
+			teamPunkte.setFont(Font.font(15));
+			tabellePane.add(teamPunkte, 2, zaehler);
+			
+			Label teamSpiele=new Label(""+vit.getSpiele());
+			teamSpiele.setFont(Font.font(15));
+			tabellePane.add(teamSpiele, 1, zaehler);
+			
+			Label teamSiege=new Label(""+vit.getSiege());
+			teamSiege.setFont(Font.font(15));
+			tabellePane.add(teamSiege, 3, zaehler);
+			
+			Label teamUnentsch=new Label(""+vit.getUnentschieden());
+			teamUnentsch.setFont(Font.font(15));
+			tabellePane.add(teamUnentsch, 4, zaehler);
+			
+			Label teamNiederl=new Label(""+vit.getNiederlagen());
+			teamNiederl.setFont(Font.font(15));
+			tabellePane.add(teamNiederl, 5, zaehler);
+			
+			Label teamTore=new Label(""+vit.getTore());
+			teamTore.setFont(Font.font(15));
+			tabellePane.add(teamTore, 6, zaehler);
+			
+			Label teamGegegentore=new Label(""+vit.getGegentore());
+			teamGegegentore.setFont(Font.font(15));
+			tabellePane.add(teamGegegentore, 7, zaehler);
+			
+			Label teamTD=new Label(""+vit.getTD());
+			teamTD.setFont(Font.font(15));
+			tabellePane.add(teamTD, 8, zaehler);
+			
+			zaehler++;
+		}
+		
+		Tab tabelleTab=new Tab("Tabelle",gp);
+		tabelleTab.setClosable(false);
+		inhalt.getTabs().add(tabelleTab);
 	}
 }
