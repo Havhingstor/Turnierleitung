@@ -79,7 +79,7 @@ public class TERKSetzer {
 			akt.aktualisieren();
 		});
 		
-		Scene scene=new Scene(gp,500,500);
+		Scene scene=new Scene(gp,400,300);
 		stage.setScene(scene);
 		stage.show();
 	}

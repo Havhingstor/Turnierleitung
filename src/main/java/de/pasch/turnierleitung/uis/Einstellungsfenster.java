@@ -81,6 +81,13 @@ public class Einstellungsfenster {
         sLoe.setPrefSize(150,50);
         gp.add(sLoe,1,4);
         
+        Button name=new Button("Turniernamen ändern");
+        gp.add(name,0,5);
+        name.setOnAction((e)->{
+        	new NameAendern(steuerung, stage, akt);
+        });
+        
+        
         tNeu.setOnAction((e)->{
             String eingabe=JOptionPane.showInputDialog(null,"Wie soll die Torart heißen?");
             if(!eingabe.equals("")){

@@ -7,7 +7,6 @@ package de.pasch.turnierleitung.uis;
 
 import javax.swing.JOptionPane;
 
-import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;

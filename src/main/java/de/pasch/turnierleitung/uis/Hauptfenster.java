@@ -7,7 +7,6 @@ package de.pasch.turnierleitung.uis;
 
 import javax.swing.JOptionPane;
 
-import de.pasch.turnierleitung.probierUndTestklassen.Testklasse;
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
@@ -30,6 +29,7 @@ public class Hauptfenster {
     Steuerung steuerung;
     Stage stage;
     HFTurnierelemente hft;
+    Einstellungsfenster einst;
     
     public  Hauptfenster(Startfenster startfenster) {
         Startfenster sf=startfenster;
@@ -88,7 +88,7 @@ public class Hauptfenster {
         	new UeberFenster(steuerung);
         });
         zuEinstellungen.setOnAction((e)->{
-        	new Einstellungsfenster(stage, steuerung, akt);
+        	einst=new Einstellungsfenster(stage, steuerung, akt);
         });  
         zuTurnierelementeuebersichtMenu.setOnAction((e)->{
         	hft=new HFTurnierelemente(stage, bp, steuerung, akt);
@@ -166,6 +166,9 @@ public class Hauptfenster {
         }
         if(hft!=null){
             hft.aktualisiere();
+        }
+        if(einst!=null) {
+        	einst.aktualisiere();
         }
     }
 }

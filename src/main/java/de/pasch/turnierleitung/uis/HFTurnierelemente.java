@@ -154,7 +154,7 @@ public class HFTurnierelemente {
 		Label nameText=new Label(beschriftungen[1]);
 		nameText.setFont(Font.font(20));
 		detGP.add(nameText, 1, 1);
-		
+				
 		if(className.equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
 			inhalt=new TabPane();
 			inhalt.setPrefWidth(630);
@@ -185,6 +185,13 @@ public class HFTurnierelemente {
 			Label ppnText=new Label(beschriftungen[4]);
 			ppnText.setFont(Font.font(20));
 			detGP.add(ppnText, 1,4);
+
+			Button teams=new Button("Teams auswählen");
+			teams.setFont(Font.font(15));
+			teams.setOnAction((e)->{
+				new TETeams(steuerung, liga, stage, akt);
+			});
+			detGP.add(teams, 0, 5);
 			
 			gp.add(inhalt, 1, 0);
 		}else {
