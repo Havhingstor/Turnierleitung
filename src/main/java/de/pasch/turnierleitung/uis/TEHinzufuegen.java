@@ -47,7 +47,7 @@ public class TEHinzufuegen {
 		
 		createKORInh(gp);
 		
-		Scene scene =new Scene(gp,500,500);
+		Scene scene =new Scene(gp,320,200);
 		stage.setScene(scene);
 		stage.show();
 	}

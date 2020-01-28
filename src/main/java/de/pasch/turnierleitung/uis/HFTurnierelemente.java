@@ -116,6 +116,11 @@ public class HFTurnierelemente {
         gp.add(schaltungen, 0, 1);
         
         Turnierelement te=IDPicker.pick(tes,letztesTE);
+        if(te==null) {
+        	try {
+        		te=tes.get(0);
+        	}catch(IndexOutOfBoundsException ioobe) {}
+        }
         aktualisiereTEDetails(te,gp);
 		
 		stage.show();
@@ -327,6 +332,13 @@ public class HFTurnierelemente {
 			
 			zaehler++;
 		}
+		
+		Button rk=new Button("Sortierkriterien bearbeiten");
+		rk.setOnAction((e)->{
+			new TERKSetzer(liga, stage, akt);
+		});
+		rk.setFont(Font.font(15));
+		gp.add(rk, 0, 2);
 		
 		Tab tabelleTab=new Tab("Tabelle",gp);
 		tabelleTab.setClosable(false);
