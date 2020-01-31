@@ -29,6 +29,7 @@ public class Hauptfenster {
     Steuerung steuerung;
     Stage stage;
     HFTurnierelemente hft;
+    HFSpieltag hfs;
     Einstellungsfenster einst;
     
     public  Hauptfenster(Startfenster startfenster) {
@@ -58,11 +59,12 @@ public class Hauptfenster {
         menuBar.getMenus().addAll(datei,ansichten,hilfe);
         MenuItem zuProtuebersichtMenu=new MenuItem("Protagonisten");
         MenuItem zuTurnierelementeuebersichtMenu=new MenuItem("Turnierelemente");
+        MenuItem zuSpieltagsuebersichtMenu=new MenuItem("Spieltage");
         MenuItem zuEinstellungen=new MenuItem("Einstellungen");
         MenuItem ueber=new MenuItem("Über");
         hilfe.getItems().add(ueber);
         ansichten.getItems().addAll(zuProtuebersichtMenu,
-        		zuTurnierelementeuebersichtMenu);
+        		zuTurnierelementeuebersichtMenu,zuSpieltagsuebersichtMenu);
         datei.getItems().add(zuEinstellungen);
         Aktualisierer akt=new Aktualisierer(this);
        
@@ -71,8 +73,9 @@ public class Hauptfenster {
         ToolBar schnellwechsel=new ToolBar();
         Button zuProtuebersichtbSchn=new Button("Protagonisten");
         Button zuTurnuebersichtbSchn=new Button("Turnierelemente");
+        Button zuSpieltaguebersichtSchn=new Button("Spieltage");
        
-        schnellwechsel.getItems().addAll(zuProtuebersichtbSchn,zuTurnuebersichtbSchn);
+        schnellwechsel.getItems().addAll(zuProtuebersichtbSchn,zuTurnuebersichtbSchn,zuSpieltaguebersichtSchn);
         BorderPane bp=new BorderPane();
         VBox menus=new VBox();
         menus.getChildren().addAll(menuBar,schnellwechsel);
@@ -96,6 +99,13 @@ public class Hauptfenster {
         zuTurnuebersichtbSchn.setOnAction((e)->{
         	hft=new HFTurnierelemente(stage, bp, steuerung, akt);
         });
+        zuSpieltagsuebersichtMenu.setOnAction((e)->{
+        	hfs=new HFSpieltag(stage, bp, steuerung, akt);
+        });
+        zuSpieltaguebersichtSchn.setOnAction((e)->{
+        	hfs=new HFSpieltag(stage, bp, steuerung, akt);
+        });
+        
         
         
         steuerung.addTeam("FC Bayern München","FCB","Allianz-Arena");
@@ -169,6 +179,9 @@ public class Hauptfenster {
         }
         if(einst!=null) {
         	einst.aktualisiere();
+        }
+        if(hfs!=null) {
+        	hfs.aktualisiere();
         }
     }
 }

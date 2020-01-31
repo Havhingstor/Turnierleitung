@@ -103,4 +103,9 @@ public class Spieltag implements Pickable {
 		}
 		return null;
 	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
 }

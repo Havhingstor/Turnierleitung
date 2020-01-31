@@ -46,14 +46,18 @@ public class TETeams {
 		CheckBox[] teamsChecks=new CheckBox[teamsListe.size()];
 		for(int i=0;i<teamsListe.size();i++) {
 			teamsChecks[i]=new CheckBox();
+			final CheckBox cb=teamsChecks[i];
 			if(liga.getTeams().contains(teamsListe.get(i))) {
-				teamsChecks[i].setSelected(true);
+				cb.setSelected(true);
 			}else {
-				teamsChecks[i].setSelected(false);
+				cb.setSelected(false);
 			}
 			HBox box=new HBox();
 			Label name=new Label(teamsListe.get(i).getName());
 			name.setFont(Font.font(15));
+			name.setOnMouseClicked((e)->{
+				cb.setSelected(!cb.isSelected());
+			});
 			box.getChildren().addAll(teamsChecks[i],name);
 			teamsBox.getChildren().add(box);
 		}

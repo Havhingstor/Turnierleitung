@@ -72,4 +72,12 @@ public class Team extends Protagonist {
 		this.kapitaenID=ID;
 		
 	}
+	
+	public String getMoeglichKN() {
+		if(!kurzname.equals("")) {
+			return kurzname;
+		}else {
+			return name;
+		}
+	}
 }

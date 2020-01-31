@@ -123,6 +123,10 @@ public class HFTurnierelemente {
         }
         aktualisiereTEDetails(te,gp);
 		
+        if(hfp!=null) {
+        	hfp.aktualisiere();
+        }
+        
 		stage.show();
 	}
 	
@@ -300,41 +304,68 @@ public class HFTurnierelemente {
 		for(VereinInTabelle vit:tabelleVIT) {
 			Team team=IDPicker.pick(steuerung.getTeams(),vit.getTeamID());
 			
-			Button teamName=new Button(team.getKurzname());
+			Label teamName=new Label(team.getMoeglichKN());
 			teamName.setFont(Font.font(15));
 			teamName.setPrefWidth(75);
+			teamName.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamName, 0, zaehler);
 			
 			Label teamPunkte=new Label(""+vit.getPunkte());
 			teamPunkte.setFont(Font.font(15));
+			teamPunkte.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamPunkte, 2, zaehler);
 			
 			Label teamSpiele=new Label(""+vit.getSpiele());
 			teamSpiele.setFont(Font.font(15));
+			teamSpiele.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamSpiele, 1, zaehler);
 			
 			Label teamSiege=new Label(""+vit.getSiege());
 			teamSiege.setFont(Font.font(15));
+			teamSiege.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamSiege, 3, zaehler);
 			
 			Label teamUnentsch=new Label(""+vit.getUnentschieden());
 			teamUnentsch.setFont(Font.font(15));
+			teamUnentsch.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamUnentsch, 4, zaehler);
 			
 			Label teamNiederl=new Label(""+vit.getNiederlagen());
 			teamNiederl.setFont(Font.font(15));
+			teamNiederl.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamNiederl, 5, zaehler);
 			
 			Label teamTore=new Label(""+vit.getTore());
 			teamTore.setFont(Font.font(15));
+			teamTore.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamTore, 6, zaehler);
 			
-			Label teamGegegentore=new Label(""+vit.getGegentore());
-			teamGegegentore.setFont(Font.font(15));
-			tabellePane.add(teamGegegentore, 7, zaehler);
+			Label teamGegentore=new Label(""+vit.getGegentore());
+			teamGegentore.setFont(Font.font(15));
+			teamGegentore.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
+			tabellePane.add(teamGegentore, 7, zaehler);
 			
 			Label teamTD=new Label(""+vit.getTD());
 			teamTD.setFont(Font.font(15));
+			teamTD.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
 			tabellePane.add(teamTD, 8, zaehler);
 			
 			zaehler++;

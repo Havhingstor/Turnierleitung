@@ -546,4 +546,19 @@ public class HFProtagonisten {
 		
 		spielerGP.add(std,0, 1);
 	}
+	
+	public HFProtagonisten(Team team,Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
+		this.stage=stage;
+		this.bp=bp;
+		this.steuerung=steuerung;
+		this.akt=akt;
+		inhalt=new TabPane();
+		inhalt.setPadding(new Insets(5,5,5,5));
+		try {
+			bp.getChildren().remove(1);
+		}catch(IndexOutOfBoundsException ioobe) {}
+		bp.setCenter(inhalt);
+		letztesTeam=team.getID();
+		aktualisiere();
+	}
 }

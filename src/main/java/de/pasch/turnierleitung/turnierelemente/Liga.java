@@ -131,10 +131,11 @@ public class Liga extends Turnierelement implements Pickable {
 	}
 	
 	public void removeSpieltag(long ID) {
-		if(spt.contains(ID)&&IDPicker.pick(as.spt, ID).getSpiele().size()>0) {
+		Spieltag spieltag=IDPicker.pick(as.spt,ID);
+		if(spt.contains(ID)&&spieltag.getSpiele().size()==0) {
 			spt.remove(ID);
 		}else {
-			throw new IllegalArgumentException("Dieser Spieltag enth�lt bereits Spiele");
+			throw new IllegalArgumentException("Dieser Spieltag enthält bereits Spiele");
 		}
 	}
 	

@@ -500,11 +500,22 @@ public class Steuerung {
 	}
 	
 	public void addSpieltag(long ligaID,String name) {
-		Spieltag spt=new Spieltag(idc.createID(),name,as);
-                as.ligen.stream().filter((l) -> (l.getID()==ligaID)).forEachOrdered((l) -> {
-                    l.addSpieltag(spt);
-            });
-		as.spt.add(spt);
+		boolean erlaubt=true;
+		for(Spieltag spt:IDPicker.pick(as.ligen,ligaID).getSpieltage()) {
+			if(spt.getName().equals(name)) {
+				erlaubt=false;
+			}
+		}
+		if(erlaubt) {
+			Spieltag spt=new Spieltag(idc.createID(),name,as);
+	                as.ligen.stream().filter((l) -> (l.getID()==ligaID)).forEachOrdered((l) -> {
+	                    l.addSpieltag(spt);
+	            });
+			as.spt.add(spt);
+		}else {
+			throw new IllegalArgumentException("In diesem Turnierelement gibt es schon "
+					+ "einen Spieltag mit diesem Namen!");
+		}
 	}
 	
 	public ArrayList<Spieltag>getSpieltage(){
