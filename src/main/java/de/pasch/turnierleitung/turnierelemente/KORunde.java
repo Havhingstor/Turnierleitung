@@ -126,7 +126,7 @@ public class KORunde extends Turnierelement implements Pickable{
 		this.spielanzahl=anzahl;
 	}
 	
-	public int getspielanzahl() {
+	public int getSpielanzahl() {
 		return spielanzahl;
 	}
 }

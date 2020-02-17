@@ -17,6 +17,13 @@ public class Team extends Protagonist {
 		this.as=as;
 	}
 	
+	public String getDateiString() {
+		String string="<Team>\n"+super.getDateiString()+"<Kurzname>\n"
+		+kurzname+"\n</Kurzname>\n<Heimstadion>\n"+heimstadion+"\n</Heimstadion>\n<Kapitaen>\n"
+		+kapitaenID+"\n</Kapitaen>\n<Vizekapitaen>\n"+vizekapitaenID+"\n</Vizekapitaen\n</Team>\n";
+		return string;
+	}
+	
 	public String getKurzname() {
 		return kurzname;
 	}

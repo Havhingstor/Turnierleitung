@@ -1,5 +1,10 @@
 package de.pasch.turnierleitung.steuerung;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import de.pasch.turnierleitung.protagonisten.Spieler;
@@ -14,6 +19,9 @@ import de.pasch.turnierleitung.turnierelemente.Runde;
 import de.pasch.turnierleitung.turnierelemente.Rundensammlung;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
+import xmlReader.XMLException;
+import xmlReader.XMLTagSystem;
+import xmlTags.XMLTag;
 
 public class Steuerung {
 	private final ArraySpeicher as=new ArraySpeicher();
@@ -21,7 +29,7 @@ public class Steuerung {
 	private String name="";
 	private final ArrayList<String>torarten=new ArrayList<>();
 	private final ArrayList<String>strafenarten=new ArrayList<>();
-	public final String version="0.1";
+	public final String version="0.2";
 	
 	public Steuerung() {
 		torarten.add("Rechtsschuss");
@@ -665,5 +673,38 @@ public class Steuerung {
     	liga.setPunkteProUnentschieden(ppu);
     	liga.setPunkteProNiederlage(ppn);
     	liga.setReihenfolgeKriterien(rk);
+    }
+    
+    public void regeneriereAusDatei(File datei) throws XMLException, IOException {
+    	FileInputStream fis=new FileInputStream(datei);
+    	InputStreamReader isr=new InputStreamReader(fis);
+    	BufferedReader br=new BufferedReader(isr);
+    	
+    	XMLTagSystem xml=new XMLTagSystem(br);
+    	XMLTag tag=xml.getTagSystem();
+    	try {
+    		String newName=tag.getChildTags().get(0).getName();
+    		this.name=newName;
+    	}catch(IndexOutOfBoundsException ioobe) {
+    		throw new XMLException("Diese Datei kann nicht entschlüsselt werden!");
+    	}
+    }
+    
+    public String getDateiString() {
+    	String string="<"+name+">\n<IDCreator>"+idc.getLetzteID()+"</IDCreator>\n"
+    			+ "<Torarten>\n";
+    	for(String str:torarten) {
+    		string+=str+"\n";
+    	}
+    	string+="</Torarten>\n<Strafenarten>\n";
+    	for(String str:strafenarten) {
+    		string+=str+"\n";
+    	}
+    	string+="</Strafenarten>\n";
+    	
+    	string+=as.getDateiString();
+    	string+="</"+name+">";
+    	
+    	return string;
     }
 }

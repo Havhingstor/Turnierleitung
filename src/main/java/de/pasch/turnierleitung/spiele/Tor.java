@@ -21,6 +21,10 @@ public class Tor extends Spielaktivitaet {
 		teamID=team.getID();
 	}
 	
+	public String getDateiString() {
+		return "<Tor>\n"+super.getDateiString()+"<Team>\n"+teamID+"\n</Team>\n<Vorbereiter>\n"+vorbereiterID+"\n</Vorbereiter>\n</Tor>\n";
+	}
+	
 	public void setTyp(int index) {
 		typ=typen.get(index);
 	}

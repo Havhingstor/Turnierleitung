@@ -53,10 +53,11 @@ public class HFProtagonisten {
 			bp.getChildren().remove(1);
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(inhalt);
-		aktualisiere();
+		aktualisiere(steuerung);
 	}
 	
-	public void aktualisiere() {
+	public void aktualisiere(Steuerung steuerung) {
+		this.steuerung=steuerung;
 		Tab letzterTabTab=inhalt.getSelectionModel().getSelectedItem();
 		if(letzterTabTab==teamTab) {
 			letzterTab=0;
@@ -559,6 +560,6 @@ public class HFProtagonisten {
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(inhalt);
 		letztesTeam=team.getID();
-		aktualisiere();
+		aktualisiere(steuerung);
 	}
 }

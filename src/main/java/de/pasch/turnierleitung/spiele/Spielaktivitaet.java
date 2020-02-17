@@ -28,6 +28,16 @@ public class Spielaktivitaet implements Pickable {
 		this.as=as;
 	}
 	
+	public String getDateiString() {
+		String string="<ID>\n"+ID+"\n</ID>\n<Zeit>\n"+zeit+"\n+</Zeit>\n<Nachspielzeit>\n"+nachspielzeit+"\n</Nachspielzeit>\n"
+				+ "<Ausfuehrer>\n"+ausfuehrerID+"\n</Ausfuehrer>\n<Typen>\n";
+		for(String str:typen) {
+			string+=str+"\n";
+		}
+		string+="\n</Typen";
+		return string;
+	}
+	
 	public long getAusfuehrerID() {
 		return ausfuehrerID;
 	}

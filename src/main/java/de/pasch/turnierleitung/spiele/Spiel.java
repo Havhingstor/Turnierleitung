@@ -34,7 +34,15 @@ public class Spiel implements Pickable {
 		this.stadion = heimteam.getHeimstadion();
 		this.as=as;
 	}
-
+	
+	/*
+	public String getDateiString() {
+		String string="<Spiel>\n<ID";
+		
+		return string;
+	}
+	*/
+	
 	public boolean isEnthaeltLink() {
 		return enthaeltLink;
 	}
@@ -371,4 +379,5 @@ public class Spiel implements Pickable {
 		private ArrayList<Long>auswaertsSpieler=new ArrayList<>();
 
 	}
+
 }

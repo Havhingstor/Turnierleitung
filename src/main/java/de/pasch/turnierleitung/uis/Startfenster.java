@@ -18,6 +18,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 /**
@@ -57,14 +59,17 @@ public class Startfenster extends Application {
         laden.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent e){
-                //JFileChooser fc=new JFileChooser();
-                //int rueckgabewert=fc.showOpenDialog(null);
-                    //if(rueckgabewert==JFileChooser.APPROVE_OPTION){
-                        //dateiLadenBool=true;
-                        //dateiLadenFile=fc.getSelectedFile();
-                        //primaryStage.hide();
-                        //newHauptfenster();
-                    //}
+                FileChooser fc=new FileChooser();
+                fc.getExtensionFilters().addAll(
+            		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
+            		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
+                );
+                dateiLadenFile=fc.showOpenDialog(primaryStage);
+                if(dateiLadenFile!=null) {
+                	dateiLadenBool=true;
+                    primaryStage.hide();
+                    newHauptfenster();
+                }
             }
         });
     }

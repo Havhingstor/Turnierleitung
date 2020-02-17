@@ -31,4 +31,42 @@ public class ArraySpeicher {
 	public ArrayList<Liga>ligen=new ArrayList<Liga>();
 	public ArrayList<Link>link=new ArrayList<Link>();
 	public ArrayList<KORunde>koRunden=new ArrayList<KORunde>();
+	
+	public String getDateiString() {
+		String string="<Teams>\n";
+		for(Team t:teams) {
+			string+=t.getDateiString();
+		}
+		string+="</Teams>\n<AlleSpieler>\n";
+		for(Spieler s:spieler) {
+			string+=s.getDateiString();
+		}
+		string+="</AlleSpieler>\n<Tore>\n";
+		for(Tor t:tore) {
+			string+=t.getDateiString();
+		}
+		string+="</Tore>\n<Spiele>\n";
+		for(Spiel sp:spiele) {
+			//string+=sp.getDateiString();
+		}
+		string+="</Spiele>\n<Strafen>\n";
+		for(Strafe s:strafen) {
+			string+=s.getDateiString();
+		}
+		string+="</Strafen>\n<Connectoren>\n";
+		for(Tor t:tore) {
+			string+=t.getDateiString();
+		}
+		string+="</Connectoren>\n<Aufstellungen>\n";
+		for(Tor t:tore) {
+			string+=t.getDateiString();
+		}
+		string+="</Aufstellungen>\n<Runden>\n";
+		for(Tor t:tore) {
+			string+=t.getDateiString();
+		}
+		string+="</Runden>\n<Rundensammlungen>\n";
+		
+		return string;
+	}
 }

@@ -21,6 +21,10 @@ public class Strafe extends Spielaktivitaet {
 		this.teamID=team.getID();
 	}
 	
+	public String getDateiString() {
+		return "<Strafe>\n"+super.getDateiString()+"<Team>\n"+teamID+"\n</Team>\n<Gefoulter>\n"+gefoulterID+"\n</Gefoulter>\n</Strafe>\n";
+	}
+	
 	public void setTyp(int index) {
 		typ=typen.get(index);
 	}

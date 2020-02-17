@@ -5,6 +5,11 @@
  */
 package de.pasch.turnierleitung.uis;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 
 import de.pasch.turnierleitung.protagonisten.Team;
@@ -18,7 +23,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import xmlReader.XMLException;
 
 /**
  *
@@ -31,32 +38,50 @@ public class Hauptfenster {
     HFTurnierelemente hft;
     HFSpieltag hfs;
     Einstellungsfenster einst;
+    File aktSpeicherung=null;
     
     public  Hauptfenster(Startfenster startfenster) {
         Startfenster sf=startfenster;
         steuerung=new Steuerung();
         if(sf.getDateiLadenBool()){
-            //steuerung.ladeDatei(sf.getDateiLadenFIle)
+            try {
+				steuerung.regeneriereAusDatei(sf.getDateiLadenFile());
+				aktSpeicherung=sf.getDateiLadenFile();
+			} catch (XMLException | IOException e1) {
+				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
+			}
         }else{
             boolean erlaubt=false;
             String eingabe="";
             while(!erlaubt){
                 eingabe=JOptionPane.showInputDialog("Welchen Namen soll es haben?");
-                if(!eingabe.equals("")){
-                    erlaubt=true;
-                }else{
+                if(eingabe!=null) {
+	                if(!eingabe.equals("")){
+	                    erlaubt=true;
+	                }else{
+	                    JOptionPane.showMessageDialog(null,"Es wurde kein Name eingegeben!");
+	                }
+                }else {
                     JOptionPane.showMessageDialog(null,"Es wurde kein Name eingegeben!");
                 }
             }
             steuerung.setName(eingabe);
+            aktSpeicherung=null;
         }
         stage=new Stage();
-        stage.setTitle(steuerung.getName());
+        if(aktSpeicherung==null) {
+        	stage.setTitle(steuerung.getName());
+        }else {
+        	stage.setTitle(steuerung.getName()+" - "+aktSpeicherung.getName());
+        }
         MenuBar menuBar=new MenuBar();
         Menu datei=new Menu("Datei");
         Menu ansichten=new Menu("Ansichten");
         Menu hilfe=new Menu("Hilfe");
         menuBar.getMenus().addAll(datei,ansichten,hilfe);
+        MenuItem dateiLaden=new MenuItem("Laden");
+        MenuItem neu=new MenuItem("Neu");
+        MenuItem spUnter=new MenuItem("Speichern unter");
         MenuItem zuProtuebersichtMenu=new MenuItem("Protagonisten");
         MenuItem zuTurnierelementeuebersichtMenu=new MenuItem("Turnierelemente");
         MenuItem zuSpieltagsuebersichtMenu=new MenuItem("Spieltage");
@@ -65,7 +90,7 @@ public class Hauptfenster {
         hilfe.getItems().add(ueber);
         ansichten.getItems().addAll(zuProtuebersichtMenu,
         		zuTurnierelementeuebersichtMenu,zuSpieltagsuebersichtMenu);
-        datei.getItems().add(zuEinstellungen);
+        datei.getItems().addAll(dateiLaden,neu,spUnter,zuEinstellungen);
         Aktualisierer akt=new Aktualisierer(this);
        
         
@@ -81,6 +106,60 @@ public class Hauptfenster {
         menus.getChildren().addAll(menuBar,schnellwechsel);
         bp.setTop(menus);
         
+        dateiLaden.setOnAction((e)->{
+        	FileChooser fc=new FileChooser();
+            fc.getExtensionFilters().addAll(
+        		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
+        		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
+            );
+            File file=fc.showOpenDialog(stage);
+            try {
+				steuerung.regeneriereAusDatei(file);
+				aktSpeicherung=file;
+				akt.aktualisieren();
+			} catch (XMLException | IOException e1) {
+				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
+			}
+        });
+        neu.setOnAction((e)->{
+        	boolean erlaubt=false;
+            while(!erlaubt) {
+            	String eingabe=JOptionPane.showInputDialog("Welchen Namen soll es haben?");
+	        	if(eingabe!=null) {
+	                if(!eingabe.equals("")){
+	                	steuerung=new Steuerung();
+	                	steuerung.setName(eingabe);
+	                	aktSpeicherung=null;
+	                	akt.aktualisieren();
+	                    erlaubt=true;
+	                }else{
+	                    JOptionPane.showMessageDialog(null,"Es wurde kein Name eingegeben!");
+	                }
+	            }else {
+	            	erlaubt=true;
+	            }
+            }
+        });
+        spUnter.setOnAction((e)->{
+        	FileChooser fc=new FileChooser();
+        	fc.getExtensionFilters().addAll(
+            		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
+            		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
+                );
+        	File neuDatei=null;
+        	while(neuDatei==null){
+        		neuDatei=fc.showSaveDialog(stage);
+        	}
+        	try {
+        		BufferedWriter bw=new BufferedWriter(new FileWriter(neuDatei,false));
+        		bw.write(steuerung.getDateiString());
+        		bw.close();
+        		aktSpeicherung=neuDatei;
+        		akt.aktualisieren();
+        	}catch(IOException ioe) {
+        		JOptionPane.showMessageDialog(null,"Fehler beim Schreien in die Datei!","FEHLER!",0);
+        	}
+        });
         zuProtuebersichtMenu.setOnAction((e)->{
             hfp= new HFProtagonisten(stage,bp,steuerung,akt);
          });
@@ -107,7 +186,7 @@ public class Hauptfenster {
         });
         
         
-        
+        ///*
         steuerung.addTeam("FC Bayern München","FCB","Allianz-Arena");
 		steuerung.addTeam("SV Werder Bremen","SVW","wohninvest Weserstadion");
                 steuerung.getTeams().stream().map((Team team) -> {
@@ -158,7 +237,7 @@ public class Hauptfenster {
             }).forEachOrdered((team) -> {
                 System.out.println(team.getHeimstadion());
             });
-	
+	//*/
         
         
         stage.setMaximized(true);
@@ -169,19 +248,23 @@ public class Hauptfenster {
     
     public void aktualisieren(){
         if((stage!=null)&&(steuerung!=null)){
-            stage.setTitle(steuerung.getName());
+            if(aktSpeicherung==null) {
+            	stage.setTitle(steuerung.getName());
+            }else {
+            	stage.setTitle(steuerung.getName()+" - "+aktSpeicherung.getName());
+            }
         }
         if(hfp!=null){
-            hfp.aktualisiere();
+            hfp.aktualisiere(steuerung);
         }
         if(hft!=null){
-            hft.aktualisiere();
+            hft.aktualisiere(steuerung);
         }
         if(einst!=null) {
-        	einst.aktualisiere();
+        	einst.aktualisiere(steuerung);
         }
         if(hfs!=null) {
-        	hfs.aktualisiere();
+        	hfs.aktualisiere(steuerung);
         }
     }
 }

@@ -54,10 +54,11 @@ public class HFTurnierelemente {
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(gp);
 		
-		aktualisiere();
+		aktualisiere(steuerung);
 	}
 	
-	public void aktualisiere() {
+	public void aktualisiere(Steuerung steuerung) {
+		this.steuerung=steuerung;
 		
 		ArrayList<Turnierelement>tes=new ArrayList<Turnierelement>();
 		tes.addAll(steuerung.getKORunden());
@@ -126,7 +127,7 @@ public class HFTurnierelemente {
         aktualisiereTEDetails(te,gp);
 		
         if(hfp!=null) {
-        	hfp.aktualisiere();
+        	hfp.aktualisiere(steuerung);
         }
         
 		stage.show();
@@ -135,118 +136,123 @@ public class HFTurnierelemente {
 	private void aktualisiereTEDetails(Turnierelement t,GridPane gp) {
 		String[]beschriftungen=TEDetailsBeschriftungen(t);
 		
-		String className="";
-		try {
-			className=t.getClass().getName();
-		}catch(NullPointerException npe) {}
-		
 		gp.getChildren().removeAll(inhalt,detGP);
 		
-		detGP=new GridPane();
-		detGP.setPadding(new Insets(5));
-		detGP.setVgap(5);
-		detGP.setHgap(5);
-		
-		Label typName=new Label("Typ");
-		typName.setFont(Font.font(20));
-		detGP.add(typName, 0, 0);
-		Label typText=new Label(beschriftungen[0]);
-		typText.setFont(Font.font(20));
-		detGP.add(typText, 1, 0);
-		
-		Label nameName=new Label("Name");
-		nameName.setFont(Font.font(20));
-		detGP.add(nameName, 0, 1);
-		Label nameText=new Label(beschriftungen[1]);
-		nameText.setFont(Font.font(20));
-		detGP.add(nameText, 1, 1);
-		
-		int bearbeitenY;
+		if(t!=null) {
+			detGP=new GridPane();
+			detGP.setPadding(new Insets(5));
+			detGP.setVgap(5);
+			detGP.setHgap(5);
+			
+			Label typName=new Label("Typ");
+			typName.setFont(Font.font(20));
+			detGP.add(typName, 0, 0);
+			Label typText=new Label(beschriftungen[0]);
+			typText.setFont(Font.font(20));
+			detGP.add(typText, 1, 0);
+			
+			Label nameName=new Label("Name");
+			nameName.setFont(Font.font(20));
+			detGP.add(nameName, 0, 1);
+			Label nameText=new Label(beschriftungen[1]);
+			nameText.setFont(Font.font(20));
+			detGP.add(nameText, 1, 1);
+			
+			int bearbeitenY=0;
+					
+			if(t.isLiga()) {
+				bearbeitenY=5;
+				inhalt=new TabPane();
+				inhalt.setPrefWidth(630);
+				Tab uebersichtTab=new Tab("Übersicht",detGP);
+				uebersichtTab.setClosable(false);
+				inhalt.getTabs().add(uebersichtTab);
 				
-		if(className.equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
-			bearbeitenY=5;
-			inhalt=new TabPane();
-			inhalt.setPrefWidth(630);
-			Tab uebersichtTab=new Tab("Übersicht",detGP);
-			uebersichtTab.setClosable(false);
-			inhalt.getTabs().add(uebersichtTab);
-			
-			Liga liga=(Liga)t;
-			createZusaetzlichenInhalt(inhalt,liga);
-			
-			Label ppsName=new Label("Punkte pro Sieg");
-			ppsName.setFont(Font.font(20));
-			detGP.add(ppsName, 0, 2);
-			Label ppsText=new Label(beschriftungen[2]);
-			ppsText.setFont(Font.font(20));
-			detGP.add(ppsText, 1,2);
-			
-			Label ppuName=new Label("Punkte pro Unentschieden");
-			ppuName.setFont(Font.font(20));
-			detGP.add(ppuName, 0, 3);
-			Label ppuText=new Label(beschriftungen[3]);
-			ppuText.setFont(Font.font(20));
-			detGP.add(ppuText, 1,3);
-			
-			Label ppnName=new Label("Punkte pro Niederlage");
-			ppnName.setFont(Font.font(20));
-			detGP.add(ppnName, 0, 4);
-			Label ppnText=new Label(beschriftungen[4]);
-			ppnText.setFont(Font.font(20));
-			detGP.add(ppnText, 1,4);
-
-			Button teams=new Button("Teams auswählen");
-			teams.setFont(Font.font(15));
-			teams.setOnAction((e)->{
-				if(liga.getSpieltage().size()==0) {
-					new TETeams(steuerung, liga, stage, akt);
-				}else {
-					JOptionPane.showMessageDialog(null,"Die Teams können nicht bearbeitet werden, "
-							+ "da schon Spieltage vorhanden sind!","FEHLER!",0);
+				Liga liga=(Liga)t;
+				createZusaetzlichenInhalt(inhalt,liga);
+				
+				Label ppsName=new Label("Punkte pro Sieg");
+				ppsName.setFont(Font.font(20));
+				detGP.add(ppsName, 0, 2);
+				Label ppsText=new Label(beschriftungen[2]);
+				ppsText.setFont(Font.font(20));
+				detGP.add(ppsText, 1,2);
+				
+				Label ppuName=new Label("Punkte pro Unentschieden");
+				ppuName.setFont(Font.font(20));
+				detGP.add(ppuName, 0, 3);
+				Label ppuText=new Label(beschriftungen[3]);
+				ppuText.setFont(Font.font(20));
+				detGP.add(ppuText, 1,3);
+				
+				Label ppnName=new Label("Punkte pro Niederlage");
+				ppnName.setFont(Font.font(20));
+				detGP.add(ppnName, 0, 4);
+				Label ppnText=new Label(beschriftungen[4]);
+				ppnText.setFont(Font.font(20));
+				detGP.add(ppnText, 1,4);
+	
+				Button teams=new Button("Teams auswählen");
+				teams.setFont(Font.font(15));
+				teams.setOnAction((e)->{
+					if(liga.getSpieltage().size()==0) {
+						new TETeams(steuerung, liga, stage, akt);
+					}else {
+						JOptionPane.showMessageDialog(null,"Die Teams können nicht bearbeitet werden, "
+								+ "da schon Spieltage vorhanden sind!","FEHLER!",0);
+					}
+				});
+				detGP.add(teams, 1, 5);
+							
+				gp.add(inhalt, 1, 0);
+			}else if(!t.isLiga()) {
+				bearbeitenY=6;
+				
+				KORunde kor=(KORunde) t;
+				
+				Label ekLab=new Label("Erstes Kriterium");
+				ekLab.setFont(Font.font(20));
+				detGP.add(ekLab, 0,2);
+				String ekString="Tore";
+				if(kor.getKriterium1()==KORunde.kriteriumEinsSpiele) {
+					ekString="Spiele";
 				}
+				Text ekText=new Text(ekString);
+				ekText.setFont(Font.font(20));
+				detGP.add(ekText, 1,2);
+				
+				Label zkLab=new Label("Zweites Kriterium");
+				zkLab.setFont(Font.font(20));
+				detGP.add(zkLab, 0,3);
+				String zkString="Auswärtstore";
+				if(kor.getKriterium2()==KORunde.kriteriumZweiElfmeter) {
+					zkString="Elfmeterschießen";
+				}
+				Text zkText=new Text(zkString);
+				zkText.setFont(Font.font(20));
+				detGP.add(zkText, 1,3);
+				
+				Label spLab=new Label("Spielanzahl");
+				spLab.setFont(Font.font(20));
+				detGP.add(spLab, 0,4);
+				Text spText=new Text(""+kor.getSpielanzahl());
+				spText.setFont(Font.font(20));
+				detGP.add(spText, 1,4);
+				
+				gp.add(detGP, 1,0);
+			}
+			
+			Button bearbeiten=new Button("Bearbeiten");
+			bearbeiten.setFont(Font.font(15));
+			bearbeiten.setOnAction((e)->{
+				new TurnierelementBearbeiten(akt, steuerung, stage, t);
 			});
-			detGP.add(teams, 1, 5);
-						
-			gp.add(inhalt, 1, 0);
-		}else {
-			bearbeitenY=6;
-			
-			KORunde kor=(KORunde) t;
-			
-			Label ekLab=new Label("Erstes Kriterium");
-			ekLab.setFont(Font.font(20));
-			detGP.add(ekLab, 0,2);
-			String ekString="Tore";
-			if(kor.getKriterium1()==KORunde.kriteriumEinsSpiele) {
-				ekString="Spiele";
-			}
-			Text ekText=new Text(ekString);
-			ekText.setFont(Font.font(20));
-			detGP.add(ekText, 1,2);
-			
-			Label zkLab=new Label("Erstes Kriterium");
-			zkLab.setFont(Font.font(20));
-			detGP.add(zkLab, 0,2);
-			String zkString="Auswärts";
-			if(kor.getKriterium2()==KORunde.kriteriumZweiElfmeter) {
-				zkString="Elfmeterschießen";
-			}
-			Text zkText=new Text(zkString);
-			zkText.setFont(Font.font(20));
-			detGP.add(zkText, 1,2);
-			
-			gp.add(detGP, 1,0);
+			detGP.add(bearbeiten, 0,bearbeitenY);
 		}
 		
-		Button bearbeiten=new Button("Bearbeiten");
-		bearbeiten.setFont(Font.font(15));
-		bearbeiten.setOnAction((e)->{
-			new TurnierelementBearbeiten(akt, steuerung, stage, t);
-		});
-		detGP.add(bearbeiten, 0,bearbeitenY);
-		
 	}
-	
+
+
 	private String[] TEDetailsBeschriftungen(Turnierelement t) {
 		String[]beschr=null;
 		if(t!=null) {

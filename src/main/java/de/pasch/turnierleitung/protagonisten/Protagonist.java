@@ -31,4 +31,9 @@ public class Protagonist implements Pickable {
 	public void setName(String name) {
 		this.name=name;
 	}
+
+	public String getDateiString() {
+		String string="<ID>\n"+ID+"\n</ID>\n<Name>\n"+name+"\n</Name>\n";		
+		return string;
+	}
 }

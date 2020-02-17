@@ -49,10 +49,11 @@ public class HFSpieltag {
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(gp);
 		
-		aktualisiere();
+		aktualisiere(steuerung);
 	}
 	
-	public void aktualisiere() {
+	public void aktualisiere(Steuerung steuerung) {
+		this.steuerung=steuerung;
 		gp.getChildren().clear();
 		if(steuerung.getLigen().size()+steuerung.getKORunden().size()>0) {
 			GridPane sptAuswahl=new GridPane();

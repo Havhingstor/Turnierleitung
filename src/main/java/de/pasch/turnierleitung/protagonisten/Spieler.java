@@ -17,6 +17,12 @@ public class Spieler extends Protagonist implements Linkface {
 		this.nachname=nachname;
 	}
 	
+	public String getDateiString() {
+		String string="<Spieler>\n"+super.getDateiString()+"<Vorname>\n"+vorname
+		+"\n</Vorname\n<Nachname>\n"+nachname+"\n</Nachname>\n</Spieler>\n";
+		return string;
+	}
+	
 	public String getVorname() {
 		return vorname;
 	}

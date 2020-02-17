@@ -38,13 +38,14 @@ public class Einstellungsfenster {
         gp.setPadding(new Insets(5,5,5,5));
         gp.setHgap(5);
         gp.setVgap(5);
-        aktualisiere();
+        aktualisiere(steuerung);
         Scene scene=new Scene(gp,300,300);
         stage.setScene(scene);
         stage.show();
     }
     
-    public void aktualisiere(){
+    public void aktualisiere(Steuerung steuerung){
+    	this.steuerung=steuerung;
         VBox tB1=new VBox();
         VBox tB2=new VBox();
         ScrollPane tSp=new ScrollPane(tB2);
