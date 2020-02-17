@@ -209,4 +209,10 @@ public class Runde implements Pickable{
 		this.getSetGewinner();
 		return this.getVerlierer();
 	}
+	
+	public String toString() {
+		return IDPicker.pick(as.teams,heimteamID).getKurzname()+" : "
+	+IDPicker.pick(as.teams,auswaertsteamID).getKurzname();
+	}
 }
+

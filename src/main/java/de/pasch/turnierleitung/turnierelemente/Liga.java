@@ -141,9 +141,9 @@ public class Liga extends Turnierelement implements Pickable {
 	
 	public ArrayList<Spieltag>getSpieltage(){
 		ArrayList<Spieltag>spieltage=new ArrayList<>();
-                spt.forEach((l) -> {
-                    spieltage.add(IDPicker.pick(as.spt, l));
-            });
+        spt.forEach((l) -> {
+        	spieltage.add(IDPicker.pick(as.spt, l));
+        });
 		return spieltage;
 	}
 	
@@ -322,13 +322,13 @@ public class Liga extends Turnierelement implements Pickable {
 		Random zufall=new Random();
 		Spieltag alterS =IDPicker.pick(as.spt,spt.get(spt.size()-1));
 		ArrayList<Spiel>neuerS=new ArrayList<>();
-		for(int i=0;i<teams.size();i++) {
+		for(int i=0;i<alterS.getSpiele().size();i++) {
 			long heimteam=alterS.getSpiele().get(i).getHeimID();
 			long auswaertsteam=0;
-			if(i<teams.size()-1) {
+			if(i<alterS.getSpiele().size()-1) {
 				auswaertsteam=alterS.getSpiele().get(i+1).getAuswaertsID();
 			}else {
-				if(teams.size()%2==1) {
+				if(alterS.getSpiele().size()%2==1) {
 					auswaertsteam=alterS.getEinzelnesTeam().getID();
 				}else {
 					auswaertsteam=alterS.getSpiele().get(1).getAuswaertsID();
@@ -342,5 +342,10 @@ public class Liga extends Turnierelement implements Pickable {
 			neuerS.add(new Spiel(IDPicker.pick(as.teams,heimteam),IDPicker.pick(as.teams,auswaertsteam),idc.createID(),false,as));
 		}
 		return neuerS;
+	}
+
+	@Override
+	public boolean isLiga() {
+		return true;
 	}
 }

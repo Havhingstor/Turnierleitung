@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
+import de.pasch.turnierleitung.turnierelemente.KORunde;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
 import de.pasch.turnierleitung.turnierelemente.VereinInTabelle;
@@ -23,6 +24,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class HFTurnierelemente {
@@ -158,8 +160,11 @@ public class HFTurnierelemente {
 		Label nameText=new Label(beschriftungen[1]);
 		nameText.setFont(Font.font(20));
 		detGP.add(nameText, 1, 1);
+		
+		int bearbeitenY;
 				
 		if(className.equals("de.pasch.turnierleitung.turnierelemente.Liga")) {
+			bearbeitenY=5;
 			inhalt=new TabPane();
 			inhalt.setPrefWidth(630);
 			Tab uebersichtTab=new Tab("Übersicht",detGP);
@@ -193,14 +198,41 @@ public class HFTurnierelemente {
 			Button teams=new Button("Teams auswählen");
 			teams.setFont(Font.font(15));
 			teams.setOnAction((e)->{
-				new TETeams(steuerung, liga, stage, akt);
+				if(liga.getSpieltage().size()==0) {
+					new TETeams(steuerung, liga, stage, akt);
+				}else {
+					JOptionPane.showMessageDialog(null,"Die Teams können nicht bearbeitet werden, "
+							+ "da schon Spieltage vorhanden sind!","FEHLER!",0);
+				}
 			});
-			detGP.add(teams, 0, 5);
-			
+			detGP.add(teams, 1, 5);
+						
 			gp.add(inhalt, 1, 0);
 		}else {
+			bearbeitenY=6;
+			
+			KORunde kor=(KORunde) t;
+			
+			Label ekLab=new Label("Erstes Kriterium");
+			ekLab.setFont(Font.font(20));
+			detGP.add(ekLab, 0,2);
+			String ekString="Tore";
+			if(kor.getKriterium1()==KORunde.kriteriumEinsSpiele) {
+				ekString="Spiele";
+			}
+			Text ekText=new Text(ekString);
+			ekText.setFont(Font.font(20));
+			detGP.add(ekText, 1,2);
+			
 			gp.add(detGP, 1,0);
 		}
+		
+		Button bearbeiten=new Button("Bearbeiten");
+		bearbeiten.setFont(Font.font(15));
+		bearbeiten.setOnAction((e)->{
+			new TurnierelementBearbeiten(akt, steuerung, stage, t);
+		});
+		detGP.add(bearbeiten, 0,bearbeitenY);
 		
 	}
 	

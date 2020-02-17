@@ -17,6 +17,7 @@ public class TERKSetzer {
 	Stage stage;
 	Aktualisierer akt;
 	
+	
 	public TERKSetzer(Liga liga,Stage primStage,Aktualisierer akt) {
 		this.liga=liga;
 		this.akt=akt;

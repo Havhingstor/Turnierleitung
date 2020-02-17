@@ -13,6 +13,7 @@ import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Runde;
 import de.pasch.turnierleitung.turnierelemente.Rundensammlung;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
+import de.pasch.turnierleitung.turnierelemente.Turnierelement;
 
 public class Steuerung {
 	private final ArraySpeicher as=new ArraySpeicher();
@@ -252,9 +253,21 @@ public class Steuerung {
 		return IDPicker.pickAktivesTeamEinesSpielers(as.teams,as.connectoren,IDPicker.pick(as.spieler,ID));
 	}
 	
-	public void createRundensammlung(String name) {
-		Rundensammlung rs=new Rundensammlung(name,idc.createID(),as);
-		as.rs.add(rs);
+	public void addRundensammlung(String name, long korundenID) {
+		KORunde kor=IDPicker.pick(as.koRunden, korundenID);
+		boolean erlaubt=true;
+		for(Rundensammlung rs:kor.getRundensammlungen()) {
+			if(rs.getName().equals(name)) {
+				erlaubt=false;
+			}
+		}
+		if(erlaubt) {
+			Rundensammlung rs=new Rundensammlung(name,idc.createID(),as);
+			as.rs.add(rs);
+			kor.addRundensammlung(rs.getID());
+		}else {
+			throw new IllegalArgumentException("In dieser KO-Runde gibt es schon eine Runde mit diesem Namen!");
+		}
 	}
 	
 	public void editRundensammlung(long ID,String name) {
@@ -263,7 +276,7 @@ public class Steuerung {
             });
 	}
 	
-	public void createRunde(long RSID,boolean auslosung,long heimID,long auswaertsID) {
+	public void addRunde(long RSID,boolean auslosung,long heimID,long auswaertsID) {
 		if(auslosung) {
 			long zw=0;
 			int rd=(int)(Math.random()*100);
@@ -487,6 +500,13 @@ public class Steuerung {
 		return as.ligen;
 	}
 	
+	public ArrayList<Turnierelement>getTurnierelemente(){
+		ArrayList<Turnierelement>tes=new ArrayList<Turnierelement>();
+		tes.addAll(as.ligen);
+		tes.addAll(as.koRunden);
+		return tes;
+	}
+	
 	public void removeLiga(long ID) {
 		if(IDPicker.pick(as.ligen, ID).getSpieltage().size()>0) {
 			throw new IllegalArgumentException("Diese Liga enthält bereits Spieltage!");
@@ -528,7 +548,17 @@ public class Steuerung {
                     as.spiele.add(s);
                 return s;
             }).forEachOrdered((s) -> {
-                IDPicker.pick(as.ligen,ligaID).getSpieltage().get(IDPicker.pick(as.ligen,ligaID).getSpieltage().size()).addSpiel(s.getID());
+                IDPicker.pick(as.ligen,ligaID).getSpieltage().get(IDPicker.pick(as.ligen,ligaID).getSpieltage().size()-1).addSpiel(s.getID());
+            });
+	}
+	
+	public void addAusgelosterSpieltag(long ligaID,String name) {
+		addSpieltag(ligaID,name);
+                IDPicker.pick(as.ligen,ligaID).auslosen(idc).stream().map((s) -> {
+                    as.spiele.add(s);
+                return s;
+            }).forEachOrdered((s) -> {
+                IDPicker.pick(as.ligen,ligaID).getSpieltage().get(IDPicker.pick(as.ligen,ligaID).getSpieltage().size()-1).addSpiel(s.getID());
             });
 	}
 	
@@ -544,15 +574,14 @@ public class Steuerung {
 			throw new IllegalArgumentException("Die Liga muss genau einen Spieltag enthalten!");
 		}
 		for(int i=0;i<spieltaganzahl/2-1;i++) {
+			ArrayList<Spiel>spiele=liga.fortfuehrenNaechsterSpieltag(idc);
 			Spieltag spieltag=new Spieltag(idc.createID(),i+2+". Spieltag", as);
 			liga.addSpieltag(spieltag);
-			ArrayList<Spiel>spiele=liga.fortfuehrenNaechsterSpieltag(idc);
-                        spiele.stream().map((spiel) -> {
-                            as.spiele.add(spiel);
-                        return spiel;
-                    }).forEachOrdered((spiel) -> {
-                        spieltag.addSpiel(spiel.getID());
-                    });
+			as.spt.add(spieltag);
+			for(Spiel spiel:spiele) {
+				as.spiele.add(spiel);
+				spieltag.addSpiel(spiel.getID());
+			}
 		}
 		if(rückrunde) {
 			createRueckrunde(ligaID);
@@ -565,6 +594,7 @@ public class Steuerung {
                 spieltage.forEach((st) -> {
                     Spieltag spieltag=new Spieltag(idc.createID(),liga.getSpieltage().size()+1+". Spieltag", as);
                     liga.addSpieltag(spieltag);
+                    as.spt.add(spieltag);
                     st.getSpiele().stream().map((sp) -> {
                         long heimID=sp.getAuswaertsID();
                         long auswaertsID=sp.getHeimID();
@@ -579,7 +609,7 @@ public class Steuerung {
             });
 	}
 	
-	public void addKORunde(String name) {
+	public void addKORunde(String name,int k1,int k2,int spielanzahl) {
 		boolean erlaubt=true;
 		for(KORunde kor:as.koRunden) {
 			if(kor.getName().equals(name)) {
@@ -591,11 +621,15 @@ public class Steuerung {
 				erlaubt=false;
 			}
 		}
-		if(erlaubt) {
-			KORunde kor=new KORunde(idc.createID(),as,name);
+		if(erlaubt&&!name.equals("")) {
+			KORunde kor=new KORunde(idc.createID(),as,name,k1,k2,spielanzahl);
 			as.koRunden.add(kor);
 		}else {
-			throw new IllegalArgumentException("Dieser Name ist schon für eine Turnierelement vergeben");
+			if(erlaubt) {
+				throw new IllegalArgumentException("Es wurde kein Name eingetragen");
+			}else {
+				throw new IllegalArgumentException("Dieser Name ist schon für eine Turnierelement vergeben");
+			}
 		}
 	}
 	
@@ -617,5 +651,19 @@ public class Steuerung {
     
     public Liga getLiga(long ID){
         return IDPicker.pick(as.ligen,ID);
+    }
+    
+    public void editKORunde(long ID,String name) {
+    	KORunde kor=IDPicker.pick(as.koRunden,ID);
+    	kor.setName(name);
+    }
+    
+    public void editLiga(long ID,String name, int pps,int ppu,int ppn,int[]rk) {
+    	Liga liga=IDPicker.pick(as.ligen,ID);
+    	liga.setName(name);
+    	liga.setPunkteProSieg(pps);
+    	liga.setPunkteProUnentschieden(ppu);
+    	liga.setPunkteProNiederlage(ppn);
+    	liga.setReihenfolgeKriterien(rk);
     }
 }

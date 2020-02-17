@@ -12,17 +12,33 @@ public class KORunde extends Turnierelement implements Pickable{
 	private long ID=0;
 	private String name="";
 	private final ArraySpeicher as;
+	private int kriteriumEins=0;
+	private int kriteriumZwei=0;
+	private int spielanzahl=1;
 
-	public KORunde(long ID,ArraySpeicher as,String name) {
+	public static final int kriteriumEinsTore=0;
+	public static final int kriteriumEinsSpiele=1;
+	public static final int kriteriumZweiATore=0;
+	public static final int kriteriumZweiElfmeter=1;
+	
+	public KORunde(long ID,ArraySpeicher as,String name,int k1,int k2,int spielanzahl) {
 		this.ID=ID;
 		this.as=as;
 		this.name=name;
+		this.kriteriumEins=k1;
+		this.kriteriumZwei=k2;
+		this.spielanzahl=spielanzahl;
 	}
-
+	
+	
 	public ArrayList<Long>getRundensammlungenIDs(){
 		return rundensammlungen;
 	}
-
+	
+	public void addRundensammlung(long ID) {
+		rundensammlungen.add(ID);
+	}
+	
 	public ArrayList<Rundensammlung>getRundensammlungen(){
 		ArrayList<Rundensammlung>rückgabeRunden=new ArrayList<>();
 		rundensammlungen.forEach((l) -> {
@@ -83,5 +99,34 @@ public class KORunde extends Turnierelement implements Pickable{
 			}
 		}
 		platzierungen.remove(piko);
+	}
+
+	@Override
+	public boolean isLiga() {
+		return false;
+	}
+	
+	public void setKriterium1(int k1) {
+		this.kriteriumEins=k1;
+	}
+	
+	public void setKriterium2(int k2) {
+		this.kriteriumZwei=k2;
+	}
+	
+	public int getKriterium1() {
+		return kriteriumEins;
+	}
+	
+	public int getKriterium2() {
+		return kriteriumZwei;
+	}
+	
+	public void setSpielanzahl(int anzahl) {
+		this.spielanzahl=anzahl;
+	}
+	
+	public int getspielanzahl() {
+		return spielanzahl;
 	}
 }
