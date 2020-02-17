@@ -224,6 +224,17 @@ public class HFTurnierelemente {
 			ekText.setFont(Font.font(20));
 			detGP.add(ekText, 1,2);
 			
+			Label zkLab=new Label("Erstes Kriterium");
+			zkLab.setFont(Font.font(20));
+			detGP.add(zkLab, 0,2);
+			String zkString="Auswärts";
+			if(kor.getKriterium2()==KORunde.kriteriumZweiElfmeter) {
+				zkString="Elfmeterschießen";
+			}
+			Text zkText=new Text(zkString);
+			zkText.setFont(Font.font(20));
+			detGP.add(zkText, 1,2);
+			
 			gp.add(detGP, 1,0);
 		}
 		
