@@ -8,11 +8,16 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class UeberFenster {
-	public UeberFenster(Steuerung st) {
+	public UeberFenster(Steuerung st, Stage par) {
 		Stage stage=new Stage();
+		stage.setTitle("Über");
+		stage.initModality(Modality.WINDOW_MODAL);
+		stage.initOwner(par);
+		
 		GridPane pane=new GridPane();
 		pane.setPadding(new Insets(15));
 		pane.setHgap(15);

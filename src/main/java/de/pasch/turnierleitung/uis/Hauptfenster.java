@@ -214,7 +214,7 @@ public class Hauptfenster {
         	 hfp= new HFProtagonisten(stage,bp,steuerung,akt);
         });
         ueber.setOnAction((e)->{
-        	new UeberFenster(steuerung);
+        	new UeberFenster(steuerung, stage);
         });
         zuEinstellungen.setOnAction((e)->{
         	einst=new Einstellungsfenster(stage, steuerung, akt);

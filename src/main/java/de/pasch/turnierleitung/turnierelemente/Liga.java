@@ -118,6 +118,10 @@ public class Liga extends Turnierelement implements Pickable {
 		return t;
 	}
 	
+	public ArrayList<Long>getTeamIDs(){
+		return teams;
+	}
+	
 	public void removeTeam(long ID) {
 		if(teams.contains(ID)) {
 			teams.remove(ID);
@@ -179,7 +183,7 @@ public class Liga extends Turnierelement implements Pickable {
 		int punkte=0;
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID||s.getAuswaertsID()==ID) {
+				if((s.getHeimID()==ID||s.getAuswaertsID()==ID)&&s.isErgebnis()) {
 					if(s.abschließenUndGewinner()) {
 						if(s.getGewinnerID()==ID) {
 							punkte+=punkteProSieg;
@@ -200,10 +204,12 @@ public class Liga extends Turnierelement implements Pickable {
 		int tore=0;
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID) {
-					tore+=s.getMengeHeimtore();
-				}else if(s.getAuswaertsID()==ID) {
-					tore+=s.getMengeAuswaertstore();
+				if(s.isErgebnis()) {
+					if(s.getHeimID()==ID) {
+						tore+=s.getMengeHeimtore();
+					}else if(s.getAuswaertsID()==ID) {
+						tore+=s.getMengeAuswaertstore();
+					}
 				}
 			}
 		}
@@ -213,11 +219,12 @@ public class Liga extends Turnierelement implements Pickable {
 	public int getGegentoreEinesTeams(long ID) {
 		int tore=0;
 		for(Spieltag st:getSpieltage()) {
-			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID) {
-					tore+=s.getMengeAuswaertstore();
-				}else if(s.getAuswaertsID()==ID) {
-					tore+=s.getMengeHeimtore();
+			for(Spiel s:st.getSpiele()) {if(s.isErgebnis()) {
+					if(s.getHeimID()==ID) {
+						tore+=s.getMengeAuswaertstore();
+					}else if(s.getAuswaertsID()==ID) {
+						tore+=s.getMengeHeimtore();
+					}
 				}
 			}
 		}
@@ -228,7 +235,7 @@ public class Liga extends Turnierelement implements Pickable {
 		int spiele=0;
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID||s.getAuswaertsID()==ID) {
+				if((s.getHeimID()==ID||s.getAuswaertsID()==ID)&&s.isErgebnis()) {
 					spiele++;
 				}
 			}
@@ -240,7 +247,7 @@ public class Liga extends Turnierelement implements Pickable {
 		int siege=0;
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID||s.getAuswaertsID()==ID) {
+				if((s.getHeimID()==ID||s.getAuswaertsID()==ID)&&s.isErgebnis()) {
 					if(s.abschließenUndGewinner()) {
 						if(s.getGewinnerID()==ID) {
 							siege++;
@@ -256,7 +263,7 @@ public class Liga extends Turnierelement implements Pickable {
 		int unentschieden=0;
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID||s.getAuswaertsID()==ID) {
+				if((s.getHeimID()==ID||s.getAuswaertsID()==ID)&&s.isErgebnis()) {
 					if(!s.abschließenUndGewinner()) {
 						unentschieden++;
 					}
@@ -270,7 +277,7 @@ public class Liga extends Turnierelement implements Pickable {
 		int niederlagen=0;
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {
-				if(s.getHeimID()==ID||s.getAuswaertsID()==ID) {
+				if((s.getHeimID()==ID||s.getAuswaertsID()==ID)&&s.isErgebnis()) {
 					if(s.abschließenUndGewinner()) {
 						if(s.getGewinnerID()!=ID) {
 							niederlagen++;

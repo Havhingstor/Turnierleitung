@@ -262,8 +262,10 @@ public class Spiel implements Pickable {
 	public void addTor(Tor tor) {
 		if (tor.getTeamID() == heimID) {
 			heimtore.add(tor.getID());
+			ergebnis=true;
 		} else if (tor.getTeamID() == auswaertsID) {
 			auswaertstore.add(tor.getID());
+			ergebnis=true;
 		} else {
 			throw new IllegalArgumentException("Tor kann keinem Team zugeordnet werden!");
 		}
@@ -316,8 +318,10 @@ public class Spiel implements Pickable {
 	public void addStrafe(Strafe strafe) {
 		if (strafe.getTeamID() == heimID) {
 			heimstrafen.add(strafe.getID());
+			ergebnis=true;
 		} else if (strafe.getTeamID() == auswaertsID) {
 			auswaertsstrafen.add(strafe.getID());
+			ergebnis=true;
 		} else {
 			throw new IllegalArgumentException("Strafe kann keinem Team zugeordnet werden!");
 		}
@@ -425,6 +429,7 @@ public class Spiel implements Pickable {
 	}
 
 	public void addElfmeterschießen() {
+		ergebnis=true;
 		if (!elfWahr) {
 			elfmeterschießen = new Elfmeterschießen();
 			elfWahr = true;
