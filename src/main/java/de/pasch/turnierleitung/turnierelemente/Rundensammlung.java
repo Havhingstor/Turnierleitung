@@ -18,6 +18,15 @@ public class Rundensammlung implements Pickable{
 		this.as=as;
 	}
 	
+	public String getDateiString() {
+		String string="<Rundensammlung>\n<Name>"+name+"</Name>\n<ID>"+ID+"</ID>\n<Runden>\n";
+		for(long runde:runden) {
+			string+=runde+"\n";
+		}
+		string+="</Runden>\n</Rundensammlung>";
+		return string;
+	}
+	
 	public void addRunde(long ID) {
 		if(!runden.contains(ID)) {
 			runden.add(ID);

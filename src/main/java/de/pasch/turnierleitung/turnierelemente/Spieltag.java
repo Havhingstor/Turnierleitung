@@ -21,6 +21,19 @@ public class Spieltag implements Pickable {
 		this.as=as;
 	}
 	
+	public String getDateiString() {
+		String string="<Spieltag>\n<ID>"+ID+"</ID>\n<Name>"+name+"</Name>\n<Teams>\n";
+		for(long team:teamIDs) {
+			string+=team+"\n";
+		}
+		string+="</Teams>\n<Spiele>\n";
+		for(long spiel:spielIDs) {
+			string+=spiel+"\n";
+		}
+		string+="</Spiele>\n</Spieltag>\n";
+		return string;
+	}
+	
 	public void addSpiel(long ID) {
 		if(!spielIDs.contains(ID)) {
 			if(teamIDs.contains(IDPicker.pick(as.spiele, ID).getHeimID())&&teamIDs.contains(IDPicker.pick(as.spiele, ID).getAuswaertsID())) {

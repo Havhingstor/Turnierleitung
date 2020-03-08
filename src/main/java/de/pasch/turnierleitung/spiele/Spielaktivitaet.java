@@ -2,6 +2,8 @@ package de.pasch.turnierleitung.spiele;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
@@ -21,6 +23,7 @@ public class Spielaktivitaet implements Pickable {
 			long ID,ArrayList<String>typen,ArraySpeicher as) {
 		this.zeit=zeit;
 		this.nachspielzeit=nachspielzeit;
+		this.ID=ID;
 		if(ausfuehrer!=null) {
 			this.ausfuehrerID=ausfuehrer.getID();
 		}
@@ -29,13 +32,39 @@ public class Spielaktivitaet implements Pickable {
 	}
 	
 	public String getDateiString() {
-		String string="<ID>\n"+ID+"\n</ID>\n<Zeit>\n"+zeit+"\n+</Zeit>\n<Nachspielzeit>\n"+nachspielzeit+"\n</Nachspielzeit>\n"
-				+ "<Ausfuehrer>\n"+ausfuehrerID+"\n</Ausfuehrer>\n<Typen>\n";
+		String string="<ID>"+ID+"</ID>\n<Zeit>"+zeit+"</Zeit>\n<Nachspielzeit>"+nachspielzeit+"</Nachspielzeit>\n"
+				+ "<Ausfuehrer>"+ausfuehrerID+"</Ausfuehrer>\n<Typen>\n";
 		for(String str:typen) {
 			string+=str+"\n";
 		}
-		string+="\n</Typen";
+		string+="</Typen>\n";
 		return string;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element idEl=new Element("ID");
+		idEl.addContent(""+ID);
+		parEl.addContent(idEl);
+		
+		Element zeitEl=new Element("Zeit");
+		zeitEl.addContent(""+zeit);
+		parEl.addContent(zeitEl);
+		
+		Element nzeitEl=new Element("Nachspielzeit");
+		nzeitEl.addContent(""+nachspielzeit);
+		parEl.addContent(nzeitEl);
+		
+		Element ausfEl=new Element("Ausfuehrer");
+		ausfEl.addContent(""+zeit);
+		parEl.addContent(ausfEl);
+		
+		Element typenEl=new Element("Typen");
+		parEl.addContent(typenEl);
+		for(String typ:typen) {
+			Element el=new Element("Typ");
+			el.addContent(typ);
+			typenEl.addContent(el);
+		}
 	}
 	
 	public long getAusfuehrerID() {

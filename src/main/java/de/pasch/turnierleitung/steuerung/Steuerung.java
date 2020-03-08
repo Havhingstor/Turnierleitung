@@ -1,11 +1,13 @@
 package de.pasch.turnierleitung.steuerung;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
 
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
@@ -19,9 +21,6 @@ import de.pasch.turnierleitung.turnierelemente.Runde;
 import de.pasch.turnierleitung.turnierelemente.Rundensammlung;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
-import xmlReader.XMLException;
-import xmlReader.XMLTagSystem;
-import xmlTags.XMLTag;
 
 public class Steuerung {
 	private final ArraySpeicher as=new ArraySpeicher();
@@ -675,36 +674,79 @@ public class Steuerung {
     	liga.setReihenfolgeKriterien(rk);
     }
     
-    public void regeneriereAusDatei(File datei) throws XMLException, IOException {
-    	FileInputStream fis=new FileInputStream(datei);
+    public void regeneriereAusDatei(File datei) throws  IOException, JDOMException {
+    	Document doc=new SAXBuilder().build(datei);
+    	Element re=doc.getRootElement();
+    	name=re.getName();
+    	for(Element e:re.getChildren()) {
+    		if(e.getName().equals("Torarten")) {
+    			torarten.clear();
+    			for(Element child:e.getChildren()) {
+    				torarten.add(child.getValue());
+    			}
+    		}else if(e.getName().equals("Strafenarten")) {
+    			strafenarten.clear();
+    			for(Element child:e.getChildren()) {
+    				strafenarten.add(child.getValue());
+    			}
+    		}
+    	}
+    }
+    
+    /*
+     * FileInputStream fis=new FileInputStream(datei);
     	InputStreamReader isr=new InputStreamReader(fis);
     	BufferedReader br=new BufferedReader(isr);
     	
     	XMLTagSystem xml=new XMLTagSystem(br);
     	XMLTag tag=xml.getTagSystem();
+    	XMLChildTag aktTag;
+    	boolean erlaubt=true;
     	try {
-    		String newName=tag.getChildTags().get(0).getName();
-    		this.name=newName;
+    		aktTag=tag.getChildTags().get(0);
     	}catch(IndexOutOfBoundsException ioobe) {
+    		erlaubt=false;
     		throw new XMLException("Diese Datei kann nicht entschlüsselt werden!");
     	}
+    	if(erlaubt) {
+    		name=aktTag.getName();
+    		for(XMLChildTag chTag:aktTag.getChildTags()) {
+    			System.out.println(chTag.getName());
+    			if(chTag.getName().equals("IDCreator")) {
+    				idc.setLetzteID(Long.parseLong(chTag.getAttributes().get(0)));
+    			}else if(chTag.getName().equals("Torarten")) {
+    				torarten.clear();
+    				torarten.addAll(chTag.getAttributes());
+    			}
+    		}
+    	}
+     */
+    
+    public Element getRootElement() {
+    	Element el=new Element(name);
+    	Element torartenElement=new Element("Torarten");
+    	el.addContent(torartenElement);
+    	for(String torart:torarten) {
+    		Element torartEl=new Element("Torart");
+    		torartEl.addContent(torart);
+    		torartenElement.addContent(torartEl);
+    	}
+    	Element strafenartenElement=new Element("Strafenarten");
+    	el.addContent(strafenartenElement);
+    	for(String strafenart:strafenarten) {
+    		Element strafenartEl=new Element("Strafenart");
+    		strafenartEl.addContent(strafenart);
+    		strafenartenElement.addContent(strafenartEl);
+    	}
+    	as.createXMLElements(el);
+    	return el;
     }
     
-    public String getDateiString() {
-    	String string="<"+name+">\n<IDCreator>"+idc.getLetzteID()+"</IDCreator>\n"
-    			+ "<Torarten>\n";
-    	for(String str:torarten) {
-    		string+=str+"\n";
+    public static void createALElements(Element parEl, ArrayList<? extends Object> al, String bez) {
+    	for(Object o: al) {
+    		Element el=new Element(bez);
+    		parEl.addContent(el);
+    		el.addContent(o.toString());
     	}
-    	string+="</Torarten>\n<Strafenarten>\n";
-    	for(String str:strafenarten) {
-    		string+=str+"\n";
-    	}
-    	string+="</Strafenarten>\n";
-    	
-    	string+=as.getDateiString();
-    	string+="</"+name+">";
-    	
-    	return string;
     }
 }

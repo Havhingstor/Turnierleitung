@@ -2,6 +2,8 @@ package de.pasch.turnierleitung.spiele;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 
@@ -14,6 +16,31 @@ public class SpielerInAufstellung {
 	
 	protected SpielerInAufstellung(long spielerID) {
 		this.spielerID=spielerID;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element sia=new Element("SIA");
+		parEl.addContent(sia);
+		
+		Element spielerEl=new Element("Spieler");
+		sia.addContent(spielerEl);
+		spielerEl.addContent(""+spielerID);
+		
+		Element eingewEl=new Element("Eingewechselt");
+		sia.addContent(eingewEl);
+		eingewEl.addContent(""+eingewechselt);
+		
+		Element ausgewEl=new Element("Ausgewechselt");
+		sia.addContent(ausgewEl);
+		ausgewEl.addContent(""+ausgewechselt);
+		
+		Element eingewZeitEl=new Element("EingewechseltZeit");
+		sia.addContent(eingewZeitEl);
+		eingewZeitEl.addContent(""+eingewechseltZeit);
+		
+		Element ausgewZeitEl=new Element("AusgewechseltZeit");
+		sia.addContent(ausgewZeitEl);
+		ausgewZeitEl.addContent(""+ausgewechseltZeit);
 	}
 	
 	public long getSpielerID() {

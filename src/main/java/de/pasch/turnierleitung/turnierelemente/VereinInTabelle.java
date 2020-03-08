@@ -12,6 +12,19 @@ public class VereinInTabelle implements Comparable<VereinInTabelle> {
 	private int siege=0;
 	private int unentschieden=0;
 	private int niederlagen=0;
+	
+	public String getDateiString() {
+		String string="<VereinInTablle>\n<Team>"+teamID+"</Team>\n<Spiele>"+spiele+"</Spiele>\n"
+				+ "<Tore>"+tore+"</Tore>\n<Gegentore>"+gegentore+"</Gegentore>\n<Punkte>"+punkte+"</Punkte>\n"
+						+ "<Siege>"+siege+"</Siege>\n<Unentschieden>"+unentschieden+"</Unentschieden>\n"
+								+ "<Niederlagen>"+niederlagen+"</Niederlagen>\n<Reihenfolge>\n";
+		for(int i:reihenfolgeKriterien) {
+			string+=i+"\n";
+		}
+		string+="</Reihenfolge>\n</VereinInTabelle>\n";
+		return string;
+	}
+	
 	public int getSiege() {
 		return siege;
 	}

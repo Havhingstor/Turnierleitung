@@ -2,6 +2,8 @@ package de.pasch.turnierleitung.spiele;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
@@ -22,7 +24,19 @@ public class Strafe extends Spielaktivitaet {
 	}
 	
 	public String getDateiString() {
-		return "<Strafe>\n"+super.getDateiString()+"<Team>\n"+teamID+"\n</Team>\n<Gefoulter>\n"+gefoulterID+"\n</Gefoulter>\n</Strafe>\n";
+		return "<Strafe>\n"+super.getDateiString()+"<Team>"+teamID+"</Team>\n<Gefoulter>"+gefoulterID+"</Gefoulter>\n</Strafe>\n";
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element strafe=new Element("Strafe");
+		parEl.addContent(strafe);
+		super.createXMLElements(strafe);
+		Element teamEl=new Element("Team");
+		strafe.addContent(teamEl);
+		teamEl.addContent(""+teamID);
+		Element gefoulterEl=new Element("Gefoulter");
+		strafe.addContent(gefoulterEl);
+		teamEl.addContent(""+gefoulterID);
 	}
 	
 	public void setTyp(int index) {

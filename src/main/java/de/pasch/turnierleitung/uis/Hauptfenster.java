@@ -5,12 +5,16 @@
  */
 package de.pasch.turnierleitung.uis;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import javax.swing.JOptionPane;
+
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.IDPicker;
@@ -25,7 +29,6 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import xmlReader.XMLException;
 
 /**
  *
@@ -47,7 +50,7 @@ public class Hauptfenster {
             try {
 				steuerung.regeneriereAusDatei(sf.getDateiLadenFile());
 				aktSpeicherung=sf.getDateiLadenFile();
-			} catch (XMLException | IOException e1) {
+			} catch (IOException | JDOMException e1) {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
         }else{
@@ -82,6 +85,7 @@ public class Hauptfenster {
         MenuItem dateiLaden=new MenuItem("Laden");
         MenuItem neu=new MenuItem("Neu");
         MenuItem spUnter=new MenuItem("Speichern unter");
+        MenuItem speichern=new MenuItem("Speichern");
         MenuItem zuProtuebersichtMenu=new MenuItem("Protagonisten");
         MenuItem zuTurnierelementeuebersichtMenu=new MenuItem("Turnierelemente");
         MenuItem zuSpieltagsuebersichtMenu=new MenuItem("Spieltage");
@@ -90,7 +94,7 @@ public class Hauptfenster {
         hilfe.getItems().add(ueber);
         ansichten.getItems().addAll(zuProtuebersichtMenu,
         		zuTurnierelementeuebersichtMenu,zuSpieltagsuebersichtMenu);
-        datei.getItems().addAll(dateiLaden,neu,spUnter,zuEinstellungen);
+        datei.getItems().addAll(dateiLaden,neu,speichern,spUnter,zuEinstellungen);
         Aktualisierer akt=new Aktualisierer(this);
        
         
@@ -117,7 +121,7 @@ public class Hauptfenster {
 				steuerung.regeneriereAusDatei(file);
 				aktSpeicherung=file;
 				akt.aktualisieren();
-			} catch (XMLException | IOException e1) {
+			} catch (IOException | JDOMException e1) {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
         });
@@ -140,6 +144,46 @@ public class Hauptfenster {
 	            }
             }
         });
+        speichern.setOnAction((e)->{
+        	boolean getan=false;
+        	if(aktSpeicherung!=null) {
+    				Document doc=new Document();
+            		doc.setRootElement(steuerung.getRootElement());
+                    Format format = Format.getPrettyFormat();
+                    format.setIndent("    ");
+                    try (FileOutputStream fos = new FileOutputStream(aktSpeicherung)) {
+                        XMLOutputter op = new XMLOutputter(format);
+                        op.output(doc, fos);
+                    } catch (IOException ioe) {
+                		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
+                    } 
+            		akt.aktualisieren();
+            		getan=true;
+        		}
+        	if(!getan) {
+        		FileChooser fc=new FileChooser();
+            	fc.getExtensionFilters().addAll(
+                		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
+                		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
+                    );
+            	File neuDatei=null;
+            	while(neuDatei==null){
+            		neuDatei=fc.showSaveDialog(stage);
+            	}
+            	Document doc=new Document();
+        		doc.setRootElement(steuerung.getRootElement());
+                Format format = Format.getPrettyFormat();
+                format.setIndent("    ");
+                try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
+                    XMLOutputter op = new XMLOutputter(format);
+                    op.output(doc, fos);
+                } catch (IOException ioe) {
+            		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
+                }
+        		aktSpeicherung=neuDatei;
+        		akt.aktualisieren();
+        	}
+        });
         spUnter.setOnAction((e)->{
         	FileChooser fc=new FileChooser();
         	fc.getExtensionFilters().addAll(
@@ -150,15 +194,18 @@ public class Hauptfenster {
         	while(neuDatei==null){
         		neuDatei=fc.showSaveDialog(stage);
         	}
-        	try {
-        		BufferedWriter bw=new BufferedWriter(new FileWriter(neuDatei,false));
-        		bw.write(steuerung.getDateiString());
-        		bw.close();
-        		aktSpeicherung=neuDatei;
-        		akt.aktualisieren();
-        	}catch(IOException ioe) {
+        	Document doc=new Document();
+    		doc.setRootElement(steuerung.getRootElement());
+            Format format = Format.getPrettyFormat();
+            format.setIndent("    ");
+            try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
+                XMLOutputter op = new XMLOutputter(format);
+                op.output(doc, fos);
+            } catch (IOException ioe) {
         		JOptionPane.showMessageDialog(null,"Fehler beim Schreien in die Datei!","FEHLER!",0);
-        	}
+            }
+    		aktSpeicherung=neuDatei;
+    		akt.aktualisieren();
         });
         zuProtuebersichtMenu.setOnAction((e)->{
             hfp= new HFProtagonisten(stage,bp,steuerung,akt);
@@ -186,7 +233,7 @@ public class Hauptfenster {
         });
         
         
-        ///*
+        
         steuerung.addTeam("FC Bayern München","FCB","Allianz-Arena");
 		steuerung.addTeam("SV Werder Bremen","SVW","wohninvest Weserstadion");
                 steuerung.getTeams().stream().map((Team team) -> {
@@ -237,7 +284,7 @@ public class Hauptfenster {
             }).forEachOrdered((team) -> {
                 System.out.println(team.getHeimstadion());
             });
-	//*/
+	
         
         
         stage.setMaximized(true);

@@ -2,6 +2,8 @@ package de.pasch.turnierleitung.steuerung;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Link;
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
@@ -32,41 +34,47 @@ public class ArraySpeicher {
 	public ArrayList<Link>link=new ArrayList<Link>();
 	public ArrayList<KORunde>koRunden=new ArrayList<KORunde>();
 	
-	public String getDateiString() {
-		String string="<Teams>\n";
-		for(Team t:teams) {
-			string+=t.getDateiString();
+	public void createXMLElements(Element parElement) {
+		Element teamEl=new Element("Teams");
+		for(Team team:teams) {
+			team.createXMLElements(teamEl);
 		}
-		string+="</Teams>\n<AlleSpieler>\n";
-		for(Spieler s:spieler) {
-			string+=s.getDateiString();
-		}
-		string+="</AlleSpieler>\n<Tore>\n";
-		for(Tor t:tore) {
-			string+=t.getDateiString();
-		}
-		string+="</Tore>\n<Spiele>\n";
-		for(Spiel sp:spiele) {
-			//string+=sp.getDateiString();
-		}
-		string+="</Spiele>\n<Strafen>\n";
-		for(Strafe s:strafen) {
-			string+=s.getDateiString();
-		}
-		string+="</Strafen>\n<Connectoren>\n";
-		for(Tor t:tore) {
-			string+=t.getDateiString();
-		}
-		string+="</Connectoren>\n<Aufstellungen>\n";
-		for(Tor t:tore) {
-			string+=t.getDateiString();
-		}
-		string+="</Aufstellungen>\n<Runden>\n";
-		for(Tor t:tore) {
-			string+=t.getDateiString();
-		}
-		string+="</Runden>\n<Rundensammlungen>\n";
+		parElement.addContent(teamEl);
 		
-		return string;
+		Element spielerEl=new Element("Spieler");
+		for(Spieler eSpieler:spieler) {
+			eSpieler.createXMLElements(spielerEl);
+		}
+		parElement.addContent(spielerEl);
+		
+		Element torEl=new Element("Tore");
+		for(Tor tor:tore) {
+			tor.createXMLElements(torEl);
+		}
+		parElement.addContent(torEl);
+		
+		Element spieleEl=new Element("Spiele");
+		for(Spiel spiel:spiele) {
+			spiel.createXMLElements(spieleEl);
+		}
+		parElement.addContent(spieleEl);
+		
+		Element strafenEl=new Element("Strafen");
+		for(Strafe strafe:strafen) {
+			strafe.createXMLElements(strafenEl);
+		}
+		parElement.addContent(strafenEl);
+		
+		Element connectorenEl=new Element("Connectoren");
+		for(SpielerTeamConnector stc:connectoren) {
+			stc.createXMLElements(strafenEl);
+		}
+		parElement.addContent(connectorenEl);
+		
+		Element aufstellungenEl=new Element("Aufstellungen");
+		for(Aufstellung auf:aufstellungen) {
+			auf.createXMLElements(strafenEl);
+		}
+		parElement.addContent(aufstellungenEl);
 	}
 }

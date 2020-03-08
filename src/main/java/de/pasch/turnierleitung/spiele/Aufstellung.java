@@ -2,9 +2,12 @@ package de.pasch.turnierleitung.spiele;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
+import de.pasch.turnierleitung.steuerung.Steuerung;
 
 public class Aufstellung implements Pickable{
 	private long ID;
@@ -29,6 +32,66 @@ public class Aufstellung implements Pickable{
 		this.hoechstAuswechslungNachspielzeit=hoechstAuswechslungNachspielzeit;
 		this.spielID=spielID;
 	}
+	
+	public void createXMLElements(Element parEl) {
+		Element aufstellung=new Element("Aufstellung");
+		parEl.addContent(aufstellung);
+		
+		Element idEl=new Element("ID");
+		idEl.addContent(""+ID);
+		aufstellung.addContent(idEl);
+		
+		Element vereinsEl=new Element("Verein");
+		vereinsEl.addContent(""+vereinsID);
+		aufstellung.addContent(vereinsEl);
+		
+		Element spielEl=new Element("Spiel");
+		spielEl.addContent(""+spielID);
+		aufstellung.addContent(spielEl);
+		
+		Element auswEl=new Element("Auswechslungen");
+		auswEl.addContent(""+auswechslungen);
+		aufstellung.addContent(auswEl);
+		
+		Element beendetEl=new Element("Beendet");
+		beendetEl.addContent(""+beendet);
+		aufstellung.addContent(beendetEl);
+		
+		Element hoechstStartelfEl=new Element("hoechstStartelf");
+		hoechstStartelfEl.addContent(""+hoechstStartelf);
+		aufstellung.addContent(hoechstStartelfEl);
+		
+		Element hoechstAuswechselspielerEl=new Element("hoechstAuswechselspieler");
+		hoechstAuswechselspielerEl.addContent(""+hoechstAuswechselspieler);
+		aufstellung.addContent(hoechstAuswechselspielerEl);
+		
+		Element hoechstAuswechslungenEl=new Element("hoechstAuswechselungen");
+		hoechstAuswechslungenEl.addContent(""+hoechstAuswechslung);
+		aufstellung.addContent(hoechstAuswechslungenEl);
+		
+		Element nachspielzeitEl=new Element("Nachspielzeit");
+		nachspielzeitEl.addContent(""+nachspielzeit);
+		aufstellung.addContent(nachspielzeitEl);
+		
+		Element auswechselNachspielzeitEl=new Element("AuswechslungenNachspielzeit");
+		auswechselNachspielzeitEl.addContent(""+hoechstAuswechslungNachspielzeit);
+		aufstellung.addContent(auswechselNachspielzeitEl);
+		
+		Element startelfEl=new Element("Startelf");
+		Steuerung.createALElements(startelfEl,startelf,"Startspieler");
+		aufstellung.addContent(startelfEl);
+		
+		Element auswechselspielerEl=new Element("Auswechselspieler");
+		Steuerung.createALElements(auswechselspielerEl,auswechselspieler,"EinAuswechselspieler");
+		aufstellung.addContent(auswechselspielerEl);
+		
+		Element siaEl=new Element("SIAs");
+		aufstellung.addContent(siaEl);
+		for(SpielerInAufstellung sia:SIAs) {
+			sia.createXMLElements(siaEl);
+		}
+	}
+	
 	public void addSpielerStartelf(Spieler spieler) {
 		if(!beendet) {
 			if(startelf.size()<hoechstStartelf) {

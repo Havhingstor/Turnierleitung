@@ -21,6 +21,20 @@ public class KORunde extends Turnierelement implements Pickable{
 	public static final int kriteriumZweiATore=0;
 	public static final int kriteriumZweiElfmeter=1;
 	
+	public String getDateiString() {
+		String string="<KORunde>\n<ID>"+ID+"</ID>\n<Name>"+name+"</Name>\n<KriteriumEins>"+kriteriumEins+"</KriteriumEins>\n"
+				+ "<KriteriumZwei>"+kriteriumZwei+"</KriteriumZwei>\n<Spielanzahl>"+spielanzahl+"</Spielanzahl>\n<Rundensammlungen>\n";
+		for(long rs:rundensammlungen) {
+			string+=rs+"\n";
+		}
+		string+="</Rundensammlungen>\n<Platzierungen>\n";
+		for(PlatzierungInKORunde piko: platzierungen) {
+			string+=piko.getDateiString();
+		}
+		string+="</Platzierungen>\n</KORunde>\n";
+		return string;
+	}
+	
 	public KORunde(long ID,ArraySpeicher as,String name,int k1,int k2,int spielanzahl) {
 		this.ID=ID;
 		this.as=as;

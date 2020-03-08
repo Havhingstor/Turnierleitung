@@ -30,6 +30,16 @@ public class Runde implements Pickable{
 		this.as=as;
 	}
 	
+	public String getDateiString() {
+		String string="<Runde>\n<Heimteam>"+heimteamID+"</Heimteam>\n<Auswaertsteam>"+auswaertsteamID+"</Auswaertsteam>\n<Gewinner>"+gewinnerID+"</Gewinner>\n<ID>"+ID+"</ID>\n<Spiele>";
+		for(long spiel:spieleIDs) {
+			string+=spiel+"\n";
+		}
+		string+="</Spiele>\n</Runde>\n";
+		
+		return string;
+	}
+	
 	public void addSpiel(Spiel spiel) {
 		if(((spiel.getHeimID()==heimteamID)&&(spiel.getAuswaertsID()==auswaertsteamID))
 				||((spiel.getHeimID()==heimteamID)&&(spiel.getAuswaertsID()==auswaertsteamID))) {

@@ -1,5 +1,7 @@
 package de.pasch.turnierleitung.protagonisten;
 
+import org.jdom2.Element;
+
 public class Spieler extends Protagonist implements Linkface {
 	
 	private String vorname="";
@@ -18,9 +20,25 @@ public class Spieler extends Protagonist implements Linkface {
 	}
 	
 	public String getDateiString() {
-		String string="<Spieler>\n"+super.getDateiString()+"<Vorname>\n"+vorname
-		+"\n</Vorname\n<Nachname>\n"+nachname+"\n</Nachname>\n</Spieler>\n";
+		String string="<Spieler>\n"+super.getDateiString()+"<Vorname>"+vorname
+		+"</Vorname\n<Nachname>"+nachname+"</Nachname>\n</Spieler>\n";
 		return string;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element element=new Element("EinSpieler");
+		parEl.addContent(element);
+		
+		super.createXMLElements(element);
+		
+
+		Element vornameEl=new Element("Vorname");
+		vornameEl.addContent(vorname);
+		element.addContent(vornameEl);
+		
+		Element nachnameEl=new Element("Nachname");
+		nachnameEl.addContent(nachname);
+		element.addContent(nachnameEl);
 	}
 	
 	public String getVorname() {

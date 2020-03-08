@@ -1,5 +1,7 @@
 package de.pasch.turnierleitung.protagonisten;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.steuerung.Pickable;
 
 public class Protagonist implements Pickable {
@@ -33,7 +35,16 @@ public class Protagonist implements Pickable {
 	}
 
 	public String getDateiString() {
-		String string="<ID>\n"+ID+"\n</ID>\n<Name>\n"+name+"\n</Name>\n";		
+		String string="<ID>"+ID+"</ID>\n<Name>"+name+"</Name>\n";		
 		return string;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element id=new Element("ID");
+		id.addContent(""+ID);
+		parEl.addContent(id);
+		Element nameEl=new Element("Name");
+		nameEl.addContent(name);
+		parEl.addContent(nameEl);
 	}
 }

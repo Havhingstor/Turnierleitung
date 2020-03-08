@@ -40,6 +40,23 @@ public class Liga extends Turnierelement implements Pickable {
 		this.reihenfolgeKriterien=rk;
 	}
 	
+	public String getDateiString() {
+		String string="<Liga>\n<ID>"+ID+"</ID>\n<Name>"+name+"</Name>\n<PPS>"+punkteProSieg+"</PPS>\n<PPU>"+punkteProUnentschieden+"</PPU>\n<PPN>"+punkteProNiederlage+"</PPN>\n<Teams>\n";
+		for(long team:teams) {
+			string+=team+"\n";
+		}
+		string+="</Teams>\n<Spieltage>\n";
+		for(long spieltag:spt) {
+			string+=spieltag+"\n";
+		}
+		string+="</Spieltage>\n<Tabelle>\n";
+		for(VereinInTabelle v:vit) {
+			string+=v.getDateiString();
+		}
+		string+="</Tabelle>\n</Liga>\n";
+		return string;
+	}
+	
         @Override
 	public long getID() {
 		return ID;

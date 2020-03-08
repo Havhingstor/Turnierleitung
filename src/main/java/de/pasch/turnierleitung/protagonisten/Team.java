@@ -1,5 +1,7 @@
 package de.pasch.turnierleitung.protagonisten;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 
@@ -18,10 +20,33 @@ public class Team extends Protagonist {
 	}
 	
 	public String getDateiString() {
-		String string="<Team>\n"+super.getDateiString()+"<Kurzname>\n"
-		+kurzname+"\n</Kurzname>\n<Heimstadion>\n"+heimstadion+"\n</Heimstadion>\n<Kapitaen>\n"
-		+kapitaenID+"\n</Kapitaen>\n<Vizekapitaen>\n"+vizekapitaenID+"\n</Vizekapitaen\n</Team>\n";
+		String string="<Team>\n"+super.getDateiString()+"<Kurzname>"
+		+kurzname+"</Kurzname>\n<Heimstadion>"+heimstadion+"</Heimstadion>\n<Kapitaen>"
+		+kapitaenID+"</Kapitaen>\n<Vizekapitaen>"+vizekapitaenID+"</Vizekapitaen>\n</Team>\n";
 		return string;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element element=new Element("Team");
+		parEl.addContent(element);
+		
+		super.createXMLElements(element);
+		
+		Element kurznEl=new Element("Kurzname");
+		kurznEl.addContent(kurzname);
+		element.addContent(kurznEl);
+		
+		Element heimstEl=new Element("Heimstadion");
+		heimstEl.addContent(heimstadion);
+		element.addContent(heimstEl);
+		
+		Element kapitaenEl=new Element("Kapitaen");
+		kapitaenEl.addContent(""+kapitaenID);
+		element.addContent(kapitaenEl);
+		
+		Element vizekapEl=new Element("Vizekapitaen");
+		vizekapEl.addContent(""+vizekapitaenID);
+		element.addContent(vizekapEl);
 	}
 	
 	public String getKurzname() {

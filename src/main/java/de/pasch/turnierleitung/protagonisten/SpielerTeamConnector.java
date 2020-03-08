@@ -1,5 +1,7 @@
 package de.pasch.turnierleitung.protagonisten;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
@@ -14,10 +16,32 @@ public class SpielerTeamConnector implements Pickable{
 	private ArraySpeicher as=null;
 
 	public SpielerTeamConnector(long spielerID,long teamID,int trikotnummer,long ID,ArraySpeicher as) {
+		this.ID=ID;
 		this.spielerID=spielerID;
 		this.teamID=teamID;
 		this.trikotnummer=trikotnummer;
 		this.as=as;
+	}
+	
+	public String getDateiString() {
+		return "<Connector>\n<ID>"+ID+"</ID>\n<Team>"+teamID+"</Team>\n<Spieler>"+spielerID+"</Spieler>\n<Trikotnummer>"+trikotnummer+"</Trikotnummer>\n<Ausgetreten>"+ausgetreten+"</Ausgetreten>\n</Connector>\n";
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element stc=new Element("Connector");
+		parEl.addContent(stc);
+		
+		Element idEl=new Element("ID");
+		idEl.addContent(""+ID);
+		stc.addContent(idEl);
+		
+		Element teamEl=new Element("Team");
+		teamEl.addContent(""+teamID);
+		stc.addContent(teamEl);
+		
+		Element spielerEl=new Element("Spieler");
+		spielerEl.addContent(""+spielerID);
+		stc.addContent(spielerEl);
 	}
 	
 	public void setTrikotnummer(int trikotnummer) {

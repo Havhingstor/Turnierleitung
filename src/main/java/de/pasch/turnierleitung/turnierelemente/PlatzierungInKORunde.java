@@ -14,6 +14,11 @@ public class PlatzierungInKORunde {
 		this.gewinner=gewinner;
 	}
 	
+	public String getDateiString() {
+		return "<Platzierung>\n<Platz>"+platz+"</Platz>\n<Spiel>"+spielID+"</Spiel>\n<Gewinner>"+gewinner+"</Gewinner>"
+				+ "\n<Team>"+teamID+"</Team>\n<Platziert>"+platziert+"</Platziert>\n</Platzierung>\n";
+	}
+	
 	public void setTeam(long teamID) {
 		this.teamID=teamID;
 		platziert=true;
