@@ -104,11 +104,13 @@ public class Einstellungsfenster {
         });
         
         tLoe.setOnAction((e)->{
-            new ListDialog<String>(steuerung.getTorarten(),stage,"Welche Torart soll gelöscht werden?",
-            "Torart löschen",(f)->{
-                steuerung.getTorarten().remove(f);
-                akt.aktualisieren();
-            });
+        	if(steuerung.getTorarten().size()>0) {
+	            new ListDialog<String>(steuerung.getTorarten(),stage,"Welche Torart soll gelöscht werden?",
+	            "Torart löschen",(f)->{
+	                steuerung.getTorarten().remove(f);
+	                akt.aktualisieren();
+	            });
+        	}
         });
         
         sNeu.setOnAction((e)->{
@@ -126,11 +128,13 @@ public class Einstellungsfenster {
         });
         
         sLoe.setOnAction((e)->{
-            new ListDialog<String>(steuerung.getStrafenarten(),stage,300,"Welche Strafenart soll gelöscht werden?",
-            "Strafenart löschen",(f)->{
-                steuerung.getStrafenarten().remove(f);
-                akt.aktualisieren();
-            });
+        	if(steuerung.getStrafenarten().size()>0) {
+	            new ListDialog<String>(steuerung.getStrafenarten(),stage,300,"Welche Strafenart soll gelöscht werden?",
+	            "Strafenart löschen",(f)->{
+	                steuerung.getStrafenarten().remove(f);
+	                akt.aktualisieren();
+	            });
+        	}
         });
     }
 }

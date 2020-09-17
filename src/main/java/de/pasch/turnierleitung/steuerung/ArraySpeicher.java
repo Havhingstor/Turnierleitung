@@ -31,7 +31,7 @@ public class ArraySpeicher {
 	public ArrayList<Rundensammlung>rs=new ArrayList<Rundensammlung>();
 	public ArrayList<Spieltag>spt=new ArrayList<Spieltag>();
 	public ArrayList<Liga>ligen=new ArrayList<Liga>();
-	public ArrayList<Link>link=new ArrayList<Link>();
+	public ArrayList<Link>links=new ArrayList<Link>();
 	public ArrayList<KORunde>koRunden=new ArrayList<KORunde>();
 	
 	public void createXMLElements(Element parElement) {
@@ -82,5 +82,35 @@ public class ArraySpeicher {
 			runde.createXMLElements(rundenEl);
 		}
 		parElement.addContent(rundenEl);
+		
+		Element rsEl=new Element("Rundensammlungen");
+		for(Rundensammlung rus:rs) {
+			rus.createXMLElements(rsEl);
+		}
+		parElement.addContent(rsEl);
+		
+		Element spieltageEl=new Element("Spieltage");
+		for(Spieltag sp:spt) {
+			sp.createXMLElements(spieltageEl);
+		}
+		parElement.addContent(spieltageEl);
+		
+		Element ligenEl=new Element("Ligen");
+		for(Liga liga:ligen) {
+			liga.createXMLElements(ligenEl);
+		}
+		parElement.addContent(ligenEl);
+		
+		Element linksEl=new Element("Links");
+		for(Link link:links) {
+			link.createXMLElements(linksEl);
+		}
+		parElement.addContent(linksEl);
+		
+		Element korEl=new Element("KORunden");
+		for(KORunde kor:koRunden) {
+			kor.createXMLElements(korEl);
+		}
+		parElement.addContent(korEl);
 	}
 }

@@ -2,9 +2,12 @@ package de.pasch.turnierleitung.turnierelemente;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
+import de.pasch.turnierleitung.steuerung.Steuerung;
 
 public class Rundensammlung implements Pickable{
 	private ArrayList<Long>runden=new ArrayList<Long>();
@@ -27,6 +30,35 @@ public class Rundensammlung implements Pickable{
 		this.name=name;
 		this.ID=ID;
 		this.as=as;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element rundensammlungEl=new Element("Rundensammlung");
+		parEl.addContent(rundensammlungEl);
+		
+		Element rundenEl=new Element("Runden");
+		Steuerung.createALElements(rundenEl, runden, "Runde");
+		rundensammlungEl.addContent(rundenEl);
+		
+		Element nameEl=new Element("Name");
+		nameEl.addContent(name);
+		rundensammlungEl.addContent(nameEl);
+		
+		Element IDEl=new Element("ID");
+		IDEl.addContent(""+ID);
+		rundensammlungEl.addContent(IDEl);
+		
+		Element kritEinsEl=new Element("KriteriumEins");
+		kritEinsEl.addContent(""+kriteriumEins);
+		rundensammlungEl.addContent(kritEinsEl);
+		
+		Element kritZweiEl=new Element("KriteriumZwei");
+		kritZweiEl.addContent(""+kriteriumZwei);
+		rundensammlungEl.addContent(kritZweiEl);
+		
+		Element spieleEl=new Element("Spielanzahl");
+		spieleEl.addContent(""+spielanzahl);
+		rundensammlungEl.addContent(spieleEl);
 	}
 	
 	/**

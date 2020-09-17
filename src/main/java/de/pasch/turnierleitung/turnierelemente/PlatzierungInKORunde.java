@@ -1,5 +1,9 @@
 package de.pasch.turnierleitung.turnierelemente;
 
+import org.jdom2.Element;
+
+import de.pasch.turnierleitung.steuerung.Steuerung;
+
 public class PlatzierungInKORunde {
 	private int platz=0;
 	private long spielID=0;
@@ -12,6 +16,31 @@ public class PlatzierungInKORunde {
 		this.platz=platz;
 		this.spielID=spielID;
 		this.gewinner=gewinner;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element pikEl=new Element("PIK");
+		parEl.addContent(pikEl);
+		
+		Element platzEl=new Element("Platz");
+		platzEl.addContent(""+platz);
+		pikEl.addContent(platzEl);
+		
+		Element spielEl=new Element("Spiel");
+		spielEl.addContent(""+spielID);
+		pikEl.addContent(spielEl);
+		
+		Element gewinnerEl=new Element("Gewinner");
+		gewinnerEl.addContent(""+gewinner);
+		pikEl.addContent(gewinnerEl);
+		
+		Element teamEl=new Element("Team");
+		teamEl.addContent(""+teamID);
+		pikEl.addContent(teamEl);
+		
+		Element platziertEl=new Element("Platzier");
+		platziertEl.addContent(""+platziert);
+		pikEl.addContent(platziertEl);
 	}
 	
 	public String getDateiString() {

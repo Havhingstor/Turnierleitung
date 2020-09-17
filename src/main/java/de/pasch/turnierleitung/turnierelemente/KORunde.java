@@ -2,9 +2,12 @@ package de.pasch.turnierleitung.turnierelemente;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
+import de.pasch.turnierleitung.steuerung.Steuerung;
 
 public class KORunde extends Turnierelement implements Pickable{
 	private final ArrayList<Long>rundensammlungen=new ArrayList<>();
@@ -20,6 +23,41 @@ public class KORunde extends Turnierelement implements Pickable{
 	public static final int kriteriumEinsSpiele=1;
 	public static final int kriteriumZweiATore=0;
 	public static final int kriteriumZweiElfmeter=1;
+	
+	public void createXMLElements(Element parEl) {
+		Element korEl=new Element("KORunde");
+		parEl.addContent(korEl);
+		
+		Element rsEl=new Element("Rundensammlungen");
+		Steuerung.createALElements(rsEl, rundensammlungen, "Rundensammlung");
+		korEl.addContent(rsEl);
+		
+		Element pikEl=new Element("PIKs");
+		for(PlatzierungInKORunde pik:platzierungen) {
+			pik.createXMLElements(pikEl);
+		}
+		korEl.addContent(pikEl);
+		
+		Element IDEl=new Element("ID");
+		IDEl.addContent(""+ID);
+		korEl.addContent(IDEl);
+		
+		Element nameEl=new Element("Name");
+		nameEl.addContent(""+name);
+		korEl.addContent(nameEl);
+		
+		Element k1El=new Element("K1");
+		k1El.addContent(""+kriteriumEins);
+		korEl.addContent(k1El);
+		
+		Element k2El=new Element("K2");
+		k2El.addContent(""+kriteriumZwei);
+		korEl.addContent(k2El);
+		
+		Element spielEl=new Element("Spielanzahl");
+		spielEl.addContent(""+spielanzahl);
+		korEl.addContent(spielEl);
+	}
 	
 	public String getDateiString() {
 		String string="<KORunde>\n<ID>"+ID+"</ID>\n<Name>"+name+"</Name>\n<KriteriumEins>"+kriteriumEins+"</KriteriumEins>\n"

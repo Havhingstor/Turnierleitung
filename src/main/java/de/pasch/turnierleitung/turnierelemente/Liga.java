@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
@@ -39,6 +41,51 @@ public class Liga extends Turnierelement implements Pickable {
 		this.setPunkteProUnentschieden(ppu);
 		this.setPunkteProNiederlage(ppn);
 		this.reihenfolgeKriterien=rk;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element ligaEl=new Element("Liga");
+		parEl.addContent(ligaEl);
+		
+		Element IDEl=new Element("ID");
+		IDEl.addContent(""+ID);
+		ligaEl.addContent(IDEl);
+		
+		Element sptEl=new Element("Spieltage");
+		Steuerung.createALElements(sptEl, spt, "Spieltag");
+		ligaEl.addContent(sptEl);
+		
+		Element teamsEl=new Element("Teams");
+		Steuerung.createALElements(teamsEl, teams, "Team");
+		ligaEl.addContent(teamsEl);
+		
+		Element nameEl=new Element("Name");
+		nameEl.addContent(name);
+		ligaEl.addContent(nameEl);
+		
+		Element ppsEl=new Element("PPS");
+		ppsEl.addContent(""+punkteProSieg);
+		ligaEl.addContent(ppsEl);
+		
+		Element ppuEl=new Element("PPU");
+		ppuEl.addContent(""+punkteProUnentschieden);
+		ligaEl.addContent(ppuEl);
+		
+		Element ppnEl=new Element("PPN");
+		ppnEl.addContent(""+punkteProNiederlage);
+		ligaEl.addContent(ppnEl);
+		
+		/*Element vitEl=new Element("VIT");//Unbenötigt
+		Steuerung.createALElements(vitEl, vit, "Verein");
+		ligaEl.addContent(vitEl);*/
+		
+		Element rkEl=new Element("RK");
+		for(int i:reihenfolgeKriterien) {
+			Element el=new Element("Kriterium");
+			el.addContent(""+i);
+			rkEl.addContent(el);
+		}
+		ligaEl.addContent(rkEl);
 	}
 	
 	public String getDateiString() {

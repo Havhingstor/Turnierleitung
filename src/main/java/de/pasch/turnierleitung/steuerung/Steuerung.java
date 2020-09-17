@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
@@ -29,7 +31,7 @@ public class Steuerung {
 	private String name = "";
 	private final ArrayList<String> torarten = new ArrayList<>();
 	private final ArrayList<String> strafenarten = new ArrayList<>();
-	public final String version = "0.2.1";
+	public final String version = "0.3";
 
 	public Steuerung() {
 		torarten.add("Rechtsschuss");
@@ -740,6 +742,11 @@ public class Steuerung {
 		Document doc = new SAXBuilder().build(datei);
 		Element re = doc.getRootElement();
 		name = re.getAttributeValue("Name");
+		if(!version.equals(re.getAttributeValue("Version"))) {
+			JOptionPane.showMessageDialog(null, 
+					"Diese Datei stammt aus einer anderen Version, möglicherweise werden nicht alle Daten richtig eingelesen!",
+					"ACHTUNG!", 2);
+		}
 		for (Element e : re.getChildren()) {
 			if (e.getName().equals("Torarten")) {
 				torarten.clear();
@@ -774,6 +781,7 @@ public class Steuerung {
 	public Element getRootElement() {
 		Element el = new Element("Turnier");
 		el.setAttribute(new Attribute("Name", name));
+		el.setAttribute(new Attribute("Version", version));
 		Element torartenElement = new Element("Torarten");
 		el.addContent(torartenElement);
 		for (String torart : torarten) {
@@ -792,8 +800,8 @@ public class Steuerung {
 		return el;
 	}
 
-	public static void createALElements(Element parEl, ArrayList<? extends Object> al, String bez) {
-		for (Object o : al) {
+	public static void createALElements(Element parEl, ArrayList<? extends Object> list, String bez) {
+		for (Object o : list) {
 			Element el = new Element(bez);
 			parEl.addContent(el);
 			el.addContent(o.toString());

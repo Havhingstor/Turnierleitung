@@ -1,5 +1,7 @@
 package de.pasch.turnierleitung.protagonisten;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.steuerung.Pickable;
 
 public class Link implements Linkface,Pickable{
@@ -11,6 +13,23 @@ public class Link implements Linkface,Pickable{
 		this.gewinner=gewinner;
 		this.rundeID=rundeID;
 		this.ID=ID;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element linkEl=new Element("Link");
+		parEl.addContent(linkEl);
+		
+		Element rundeEl=new Element("Runde");
+		rundeEl.addContent(""+rundeID);
+		linkEl.addContent(rundeEl);
+		
+		Element IDEl=new Element("ID");
+		IDEl.addContent(""+ID);
+		linkEl.addContent(IDEl);
+		
+		Element gewinnerEl=new Element("Gewinner");
+		gewinnerEl.addContent(""+gewinner);
+		linkEl.addContent(gewinnerEl);
 	}
 	
 	public String getDateiString() {

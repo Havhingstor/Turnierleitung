@@ -2,11 +2,14 @@ package de.pasch.turnierleitung.turnierelemente;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
+import de.pasch.turnierleitung.steuerung.Steuerung;
 
 public class Spieltag implements Pickable {
 	private ArrayList<Long>teamIDs=new ArrayList<Long>();
@@ -19,6 +22,27 @@ public class Spieltag implements Pickable {
 		this.ID=ID;
 		this.name=name;
 		this.as=as;
+	}
+	
+	public void createXMLElements(Element parEl) {
+		Element spieltagEl=new Element("Spieltag");
+		parEl.addContent(spieltagEl);
+		
+		Element teamsEl=new Element("Teams");
+		Steuerung.createALElements(teamsEl, teamIDs, "Team");
+		spieltagEl.addContent(teamsEl);
+		
+		Element spieleEl=new Element("Spiele");
+		Steuerung.createALElements(spieleEl, spielIDs, "Spiel");
+		spieltagEl.addContent(spieleEl);
+		
+		Element IDEl=new Element("ID");
+		IDEl.addContent(""+ID);
+		spieltagEl.addContent(IDEl);
+		
+		Element nameEl=new Element("Name");
+		nameEl.addContent(name);
+		spieltagEl.addContent(nameEl);
 	}
 	
 	public String getDateiString() {

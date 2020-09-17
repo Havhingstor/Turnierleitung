@@ -280,10 +280,10 @@ public class Runde implements Pickable{
 		Link link=null;
 		boolean heimteam =true;
 		if(IDPicker.pick(as.teams,heimteamID)==null) {
-			link=IDPicker.pick(as.link,heimteamID);
+			link=IDPicker.pick(as.links,heimteamID);
 			heimteam=true;
 		}else if(IDPicker.pick(as.teams,auswaertsteamID)==null) {
-			link=IDPicker.pick(as.link,auswaertsteamID);
+			link=IDPicker.pick(as.links,auswaertsteamID);
 			heimteam=false;
 		}
 		if(link!=null) {
