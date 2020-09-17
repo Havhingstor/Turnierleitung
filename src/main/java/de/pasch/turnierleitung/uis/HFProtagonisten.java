@@ -35,12 +35,14 @@ public class HFProtagonisten {
 	Tab spielerTab;
 	GridPane teamDetailGP;
 	GridPane spielerDetailGP;
-	long letztesTeam=0;
-	long letzterSpieler=0;
+	long letztesTeamTeams=0;
+	long letzterSpielerTeams=0;
+	long letztesTeamSpieler=0;
 	int letzterTab=1;
 	ComboBox<Team>spielerTeamAuswahl;
 	GridPane spielerGP;
 	GridPane std;
+	GridPane teamGP;
 	
 	public HFProtagonisten(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.stage=stage;
@@ -92,7 +94,7 @@ public class HFProtagonisten {
 	}
 	
 	private GridPane createTeamInhalt() {
-		GridPane teamGP=new GridPane();
+		teamGP=new GridPane();
 		teamGP.setAlignment(Pos.TOP_LEFT);
 		teamGP.setPadding(new Insets(5,5,5,5));
 		teamGP.setHgap(5);
@@ -106,7 +108,7 @@ public class HFProtagonisten {
         	teamButton.setPrefWidth(550);
         	teamListeBox.getChildren().add(teamButton);
         	teamButton.setOnAction((e)->{
-        		letztesTeam=t.getID();
+        		letztesTeamTeams=t.getID();
         		aktualisiereTeamDetails(t,teamGP);
         	});
         }
@@ -144,8 +146,8 @@ public class HFProtagonisten {
 		teamGP.add(schaltungen,0,1);
 		
 		Team t=null;
-		if(letztesTeam!=0) {
-			t=IDPicker.pick(steuerung.getTeams(),letztesTeam);
+		if(letztesTeamTeams!=0) {
+			t=IDPicker.pick(steuerung.getTeams(),letztesTeamTeams);
 		}else if(steuerung.getTeams().size()>0) {
 			t=steuerung.getTeams().get(0);
 		}
@@ -264,7 +266,12 @@ public class HFProtagonisten {
 		for(Team t:steuerung.getTeams()) {
 			spielerTeamAuswahl.getItems().add(t);
 		}
-		spielerTeamAuswahl.setValue(steuerung.getTeams().get(0));
+		if(letztesTeamSpieler==0) {
+			spielerTeamAuswahl.setValue(steuerung.getTeams().get(0));
+		}else {
+			spielerTeamAuswahl.setValue(IDPicker.pick
+					(steuerung.getTeams(),letztesTeamSpieler));
+		}
 		
     	VBox spielerListeBox=new VBox();
         ScrollPane spielerListeSP=new ScrollPane(spielerListeBox);
@@ -272,6 +279,7 @@ public class HFProtagonisten {
         aktualisiereSpielerListe(spielerTeamAuswahl.getValue(), spielerListeBox, spielerGP);
 
         spielerTeamAuswahl.setOnAction((e)->{
+        	letztesTeamSpieler=spielerTeamAuswahl.getValue().getID();
 			aktualisiereSpielerListe(spielerTeamAuswahl.getValue(), spielerListeBox, spielerGP);
 		});
 		        
@@ -311,8 +319,8 @@ public class HFProtagonisten {
 		
 		Spieler s=null;
 		long team=spielerTeamAuswahl.getValue().getID();
-		if(letzterSpieler!=0) {
-			s=IDPicker.pick(steuerung.getSpieler(),letzterSpieler);
+		if(letzterSpielerTeams!=0) {
+			s=IDPicker.pick(steuerung.getSpieler(),letzterSpielerTeams);
 		}else if(steuerung.getAktiveSpielerEinesTeams(team).size()>0){
 			s=steuerung.getAktiveSpielerEinesTeams(team).get(0);
 		}
@@ -330,7 +338,7 @@ public class HFProtagonisten {
 	        	spielerButton.setPrefWidth(370);
 	        	spielerListeBox.getChildren().add(spielerButton);
 	        	spielerButton.setOnAction((e)->{
-	        		letzterSpieler=s.getID();
+	        		letzterSpielerTeams=s.getID();
 	        		aktualisiereSpielerDetails(s,spielerGP);
 	        	});
 	     }
@@ -476,8 +484,11 @@ public class HFProtagonisten {
 		}
 		Text titel=new Text(teamName+"-Spieler");
 		titel.setFont(Font.font(25));
+		titel.setOnMouseClicked((e)->{
+			inhalt.getSelectionModel().select(0);
+			aktualisiereTeamDetails(team,teamGP);
+		});
 		std.add(titel, 0, 0);
-		
 		Label kapitaenLab=new Label("Kapitän");
 		kapitaenLab.setFont(Font.font(20));
 		std.add(kapitaenLab, 0, 1);
@@ -559,7 +570,7 @@ public class HFProtagonisten {
 			bp.getChildren().remove(1);
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(inhalt);
-		letztesTeam=team.getID();
+		letztesTeamTeams=team.getID();
 		aktualisiere(steuerung);
 	}
 }

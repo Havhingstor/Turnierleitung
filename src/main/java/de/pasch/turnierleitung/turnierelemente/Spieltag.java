@@ -62,6 +62,10 @@ public class Spieltag implements Pickable {
 		return s;
 	}
 	
+	public ArrayList<Long>getSpieleIDs(){
+		return spielIDs;
+	}
+	
 	public void addTeam(Team team) {
 		this.teamIDs.add(team.getID());
 	}
@@ -96,21 +100,36 @@ public class Spieltag implements Pickable {
 		return name;
 	}
 	
+	public ArrayList<Long>getTeamIDs(){
+		return teamIDs;
+	}
+	
+	public ArrayList<Team>getTeams(){
+		ArrayList<Team>teams=new ArrayList<>();
+		for(long id:teamIDs) {
+			teams.add(IDPicker.pick(as.teams, id));
+		}
+		return teams;
+	}
+	
 	public Team getEinzelnesTeam(){
 		boolean[]teamsBool=new boolean[teamIDs.size()];
 		for(int i=0;i<teamIDs.size();i++) {
 			teamsBool[i]=false;
 		}
-		for(long l:spielIDs) {
-			for(int i=0;i<spielIDs.size();i++) {
-				if(IDPicker.pick(as.spiele,l).getHeimID()==teamIDs.get(i)||
-						IDPicker.pick(as.spiele,l).getHeimID()==teamIDs.get(i)) {
+		ArrayList<Spiel>alleSpiele=this.getSpiele();
+		ArrayList<Team>alleTeams=this.getTeams();
+		for(Spiel sp:alleSpiele) {
+			for(int i=0;i<alleTeams.size();++i) {
+				Team t=alleTeams.get(i);
+				if(sp.getHeimID()==t.getID()||
+						sp.getAuswaertsID()==t.getID()) {
 					teamsBool[i]=true;
 				}
 			}
 			for(int i=0;i<teamsBool.length;i++) {
 				if(!teamsBool[i]) {
-					return IDPicker.pick(as.teams,teamIDs.get(i));
+					return alleTeams.get(i);
 				}
 			}
 		}

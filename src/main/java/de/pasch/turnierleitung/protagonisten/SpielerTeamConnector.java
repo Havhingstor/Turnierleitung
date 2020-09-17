@@ -15,7 +15,7 @@ public class SpielerTeamConnector implements Pickable{
 	private boolean ausgetreten=false;
 	private ArraySpeicher as=null;
 
-	public SpielerTeamConnector(long spielerID,long teamID,int trikotnummer,long ID,ArraySpeicher as) {
+ 	public SpielerTeamConnector(long spielerID,long teamID,int trikotnummer,long ID,ArraySpeicher as) {
 		this.ID=ID;
 		this.spielerID=spielerID;
 		this.teamID=teamID;
@@ -42,6 +42,14 @@ public class SpielerTeamConnector implements Pickable{
 		Element spielerEl=new Element("Spieler");
 		spielerEl.addContent(""+spielerID);
 		stc.addContent(spielerEl);
+		
+		Element trikotnummerEl=new Element("Trikotnummer");
+		trikotnummerEl.addContent(""+trikotnummer);
+		stc.addContent(trikotnummerEl);
+		
+		Element ausgetretenEl=new Element("Ausgetreten");
+		ausgetretenEl.addContent(""+ausgetreten);
+		stc.addContent(ausgetretenEl);
 	}
 	
 	public void setTrikotnummer(int trikotnummer) {

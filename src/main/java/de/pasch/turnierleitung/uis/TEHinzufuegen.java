@@ -33,7 +33,7 @@ public class TEHinzufuegen {
 		gp.setVgap(5);
 		gp.setPadding(new Insets(5));
 		
-		ComboBox<String> artauswahl=new ComboBox<String>();
+		/*ComboBox<String> artauswahl=new ComboBox<String>();
 		artauswahl.getItems().addAll("Liga","KO-Runde");
 		artauswahl.setValue("Liga");
 		gp.add(artauswahl, 0, 0);
@@ -45,7 +45,7 @@ public class TEHinzufuegen {
 				gp.getChildren().removeIf((f)->(!f.equals(artauswahl)));
 				createLigaInh(gp);
 			}
-		});
+		});		*/
 		
 		createLigaInh(gp);
 		
@@ -60,14 +60,14 @@ public class TEHinzufuegen {
 		gp.add(nameLab, 0, 1);
 		gp.add(nameFeld, 1,1);
 		
-		Label eKLab=new Label("Erstes Krierium");
+		Label eKLab=new Label("Erstes Kriterium");
 		gp.add(eKLab, 0, 2);
 		ComboBox<String> eKBox=new ComboBox<String>();
 		eKBox.getItems().addAll("Tore","Spiele");
 		eKBox.setValue("Tore");
 		gp.add(eKBox, 1,2);
 		
-		Label zKLab=new Label("Zweites Krierium");
+		Label zKLab=new Label("Zweites Kriterium");
 		gp.add(zKLab, 0, 3);
 		ComboBox<String> zKBox=new ComboBox<String>();
 		zKBox.getItems().addAll("Auswärtstore","Elfmeterschießen");

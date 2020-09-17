@@ -10,6 +10,7 @@ import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDCreator;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
+import de.pasch.turnierleitung.steuerung.Steuerung;
 
 public class Liga extends Turnierelement implements Pickable {
 	private long ID=0;
@@ -152,11 +153,8 @@ public class Liga extends Turnierelement implements Pickable {
 	}
 	
 	public void removeSpieltag(long ID) {
-		Spieltag spieltag=IDPicker.pick(as.spt,ID);
-		if(spt.contains(ID)&&spieltag.getSpiele().size()==0) {
+		if(spt.contains(ID)) {
 			spt.remove(ID);
-		}else {
-			throw new IllegalArgumentException("Dieser Spieltag enthält bereits Spiele");
 		}
 	}
 	
@@ -343,33 +341,79 @@ public class Liga extends Turnierelement implements Pickable {
 	}
 	
 	public ArrayList<Spiel>fortfuehrenNaechsterSpieltag(IDCreator idc){
-		Random zufall=new Random();
 		Spieltag alterS =IDPicker.pick(as.spt,spt.get(spt.size()-1));
+		int teamNr=teams.size();
 		ArrayList<Spiel>neuerS=new ArrayList<>();
+		long[] teamsSpieltag=new long[teamNr];
+		if(teamNr%2==0) {
+			for(int i=0;i<(teamNr/2);++i) {
+				teamsSpieltag[i]=alterS.getSpiele().get(i).getHeimID();
+			}
+			for(int i=teamNr/2;i<teamNr;++i) {
+				teamsSpieltag[i]=alterS.getSpiele().get(i-teamNr/2).getAuswaertsID();
+			}
+		}else {
+			for(int i=0;i<(teamNr/2);++i) {
+				teamsSpieltag[i]=alterS.getSpiele().get(i).getHeimID();
+			}
+			teamsSpieltag[teamNr/2]=alterS.getEinzelnesTeam().getID();
+			for(int i=teamNr/2+1;i<teamNr;++i) {
+				teamsSpieltag[i]=
+						alterS.getSpiele().get(i-(teamNr/2+1)).getAuswaertsID();
+			}
+		}
+		Ausloser a=new Ausloser(teamsSpieltag);
+		long[][]nsp=a.getAusgelost();
+		for(int i=0;i<teamNr/2;++i) {
+			Spiel spiel=new Spiel(IDPicker.pick(as.teams,nsp[1][i]),IDPicker.pick(as.teams,nsp[1][teamNr-1-i]), idc.createID(), false, as);
+			neuerS.add(spiel);
+		}
+		/*
 		for(int i=0;i<alterS.getSpiele().size();i++) {
 			long heimteam=alterS.getSpiele().get(i).getHeimID();
 			long auswaertsteam=0;
 			if(i<alterS.getSpiele().size()-1) {
 				auswaertsteam=alterS.getSpiele().get(i+1).getAuswaertsID();
 			}else {
-				if(alterS.getSpiele().size()%2==1) {
+				if(teams.size()%2==1) {
 					auswaertsteam=alterS.getEinzelnesTeam().getID();
 				}else {
 					auswaertsteam=alterS.getSpiele().get(1).getAuswaertsID();
 				}
 			}
-			if(zufall.nextBoolean()) {
-				long zw=heimteam;
-				heimteam=auswaertsteam;
-				auswaertsteam=zw;
-			}
 			neuerS.add(new Spiel(IDPicker.pick(as.teams,heimteam),IDPicker.pick(as.teams,auswaertsteam),idc.createID(),false,as));
 		}
+		*/
 		return neuerS;
 	}
 
 	@Override
 	public boolean isLiga() {
 		return true;
+	}
+}
+
+class Ausloser{
+	private int teamNr;
+	private long[][]positionen;	//Erste Stelle: Vorheriges Team + Neues Team, Zweite Stelle sind Positionen
+	
+	Ausloser(long [] teams) {
+		this.teamNr=teams.length;
+		positionen=new long[2][teamNr];
+		for(int i=0; i<teams.length;++i) {
+			positionen[0][i]=teams[i];
+		}
+		auslosen();
+	}
+	
+	private void auslosen() {
+		for(int i=0;i<teamNr-1;++i) {
+			positionen[1][i+1]=positionen[0][i];
+		}
+		positionen[1][0]=positionen[0][teamNr-1];
+	}
+	
+	public long [] [] getAusgelost() {
+		return positionen;
 	}
 }

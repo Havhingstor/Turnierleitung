@@ -500,13 +500,13 @@ public class Spiel implements Pickable {
         public String toString(){
             if(IDPicker.pick(as.teams,heimID)!=null&&
                     IDPicker.pick(as.teams,auswaertsID)!=null){
-                return IDPicker.pick(as.teams,heimID).getKurzname()+" : "+
-                        IDPicker.pick(as.teams,auswaertsID).getKurzname();
+                return IDPicker.pick(as.teams,heimID).getMoeglichKN()+" : "+
+                        IDPicker.pick(as.teams,auswaertsID).getMoeglichKN();
             } else {
                 if(IDPicker.pick(as.teams,auswaertsID)!=null){
-                    return "? : "+IDPicker.pick(as.teams,auswaertsID).getKurzname();
+                    return "? : "+IDPicker.pick(as.teams,auswaertsID).getMoeglichKN();
                 }else if(IDPicker.pick(as.teams,heimID)!=null){
-                    return "? : "+IDPicker.pick(as.teams,heimID).getKurzname();                    
+                    return "? : "+IDPicker.pick(as.teams,heimID).getMoeglichKN();                    
                 }else{
                     return "? : ?";
                 }

@@ -37,6 +37,8 @@ public class HFTurnierelemente {
 	GridPane detGP;
 	TabPane inhalt;
 	HFProtagonisten hfp;
+	Tab uebersichtTab,tabelleTab;
+	int letzterTab=0;
 	
 	public HFTurnierelemente(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -59,6 +61,7 @@ public class HFTurnierelemente {
 	
 	public void aktualisiere(Steuerung steuerung) {
 		this.steuerung=steuerung;
+		
 		
 		ArrayList<Turnierelement>tes=new ArrayList<Turnierelement>();
 		tes.addAll(steuerung.getKORunden());
@@ -135,7 +138,7 @@ public class HFTurnierelemente {
 	
 	private void aktualisiereTEDetails(Turnierelement t,GridPane gp) {
 		String[]beschriftungen=TEDetailsBeschriftungen(t);
-		
+				
 		gp.getChildren().removeAll(inhalt,detGP);
 		
 		if(t!=null) {
@@ -164,9 +167,14 @@ public class HFTurnierelemente {
 				bearbeitenY=5;
 				inhalt=new TabPane();
 				inhalt.setPrefWidth(630);
+				inhalt.getSelectionModel().selectedItemProperty().addListener((e)->{
+					letzterTab=inhalt.getSelectionModel().getSelectedIndex();
+				});
 				Tab uebersichtTab=new Tab("Übersicht",detGP);
 				uebersichtTab.setClosable(false);
+				int letzterTabZwischen=letzterTab;
 				inhalt.getTabs().add(uebersichtTab);
+				letzterTab=letzterTabZwischen;
 				
 				Liga liga=(Liga)t;
 				createZusaetzlichenInhalt(inhalt,liga);
@@ -206,6 +214,7 @@ public class HFTurnierelemente {
 							
 				gp.add(inhalt, 1, 0);
 			}else if(!t.isLiga()) {
+				letzterTab=0;
 				bearbeitenY=6;
 				
 				KORunde kor=(KORunde) t;
@@ -300,14 +309,14 @@ public class HFTurnierelemente {
 		return beschr;
 	}
 	
-	public void createZusaetzlichenInhalt(TabPane inhalt,Liga liga) {
+	private void createZusaetzlichenInhalt(TabPane inhalt,Liga liga) {
 		GridPane gp=new GridPane();
 		gp.setPadding(new Insets(10));
 		gp.setHgap(10);
 		gp.setVgap(10);
 		gp.setAlignment(Pos.TOP_CENTER);
 		
-		Label tabLab=new Label("Tabelle");
+		Label tabLab=new Label("Tabelle: "+liga.getName());
 		tabLab.setFont(Font.font(20));
 		gp.add(tabLab, 0, 0);
 		
@@ -319,39 +328,50 @@ public class HFTurnierelemente {
 		gp.add(tabelleSP, 0, 1);
 		
 		ArrayList<VereinInTabelle>tabelleVIT=liga.berechneGetAktuelleTabelle();
-		int zaehler=1;
 		
+		Label platz=new Label("Platz");
+		platz.setFont(Font.font(15));
+		tabellePane.add(platz, 0, 0);
 		Label name=new Label("Team");
 		name.setFont(Font.font(15));
-		tabellePane.add(name, 0, 0);
+		tabellePane.add(name, 1, 0);
 		Label punkte=new Label("Pkt");
 		punkte.setFont(Font.font(15));
-		tabellePane.add(punkte, 2, 0);
+		tabellePane.add(punkte, 3, 0);
 		Label spiele=new Label("Sp");
 		spiele.setFont(Font.font(15));
-		tabellePane.add(spiele,1, 0);
+		tabellePane.add(spiele,2, 0);
 		Label siege=new Label("S");
 		siege.setFont(Font.font(15));
-		tabellePane.add(siege, 3, 0);
+		tabellePane.add(siege, 4, 0);
 		Label unentschieden=new Label("U");
 		unentschieden.setFont(Font.font(15));
-		tabellePane.add(unentschieden, 4, 0);
+		tabellePane.add(unentschieden, 5, 0);
 		Label niederlagen=new Label("N");
 		niederlagen.setFont(Font.font(15));
-		tabellePane.add(niederlagen, 5, 0);
+		tabellePane.add(niederlagen, 6, 0);
 		Label tore=new Label("+");
 		tore.setFont(Font.font(15));
-		tabellePane.add(tore, 6, 0);
+		tabellePane.add(tore, 7, 0);
 		Label gegentore=new Label("-");
 		gegentore.setFont(Font.font(15));
-		tabellePane.add(gegentore, 7, 0);
+		tabellePane.add(gegentore, 8, 0);
 		Label tordifferenz=new Label("TD");
 		tordifferenz.setFont(Font.font(15));
-		tabellePane.add(tordifferenz, 8, 0);
+		tabellePane.add(tordifferenz, 9, 0);
 		
 		
-		for(VereinInTabelle vit:tabelleVIT) {
+		for(int i=0;i<tabelleVIT.size();++i) {
+			VereinInTabelle vit=tabelleVIT.get(i);
 			Team team=IDPicker.pick(steuerung.getTeams(),vit.getTeamID());
+			
+			Label teamPlatz=new Label(""+(i+1));
+			teamPlatz.setFont(Font.font(15));
+			teamPlatz.setPrefWidth(75);
+			teamPlatz.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
+			});
+			tabellePane.add(teamPlatz, 0, i+1);
 			
 			Label teamName=new Label(team.getMoeglichKN());
 			teamName.setFont(Font.font(15));
@@ -359,65 +379,63 @@ public class HFTurnierelemente {
 			teamName.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamName, 0, zaehler);
+			tabellePane.add(teamName, 1, i+1);
 			
 			Label teamPunkte=new Label(""+vit.getPunkte());
 			teamPunkte.setFont(Font.font(15));
 			teamPunkte.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamPunkte, 2, zaehler);
+			tabellePane.add(teamPunkte, 3, i+1);
 			
 			Label teamSpiele=new Label(""+vit.getSpiele());
 			teamSpiele.setFont(Font.font(15));
 			teamSpiele.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamSpiele, 1, zaehler);
+			tabellePane.add(teamSpiele, 2, i+1);
 			
 			Label teamSiege=new Label(""+vit.getSiege());
 			teamSiege.setFont(Font.font(15));
 			teamSiege.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamSiege, 3, zaehler);
+			tabellePane.add(teamSiege, 4, i+1);
 			
 			Label teamUnentsch=new Label(""+vit.getUnentschieden());
 			teamUnentsch.setFont(Font.font(15));
 			teamUnentsch.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamUnentsch, 4, zaehler);
+			tabellePane.add(teamUnentsch, 5, i+1);
 			
 			Label teamNiederl=new Label(""+vit.getNiederlagen());
 			teamNiederl.setFont(Font.font(15));
 			teamNiederl.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamNiederl, 5, zaehler);
+			tabellePane.add(teamNiederl, 6, i+1);
 			
 			Label teamTore=new Label(""+vit.getTore());
 			teamTore.setFont(Font.font(15));
 			teamTore.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamTore, 6, zaehler);
+			tabellePane.add(teamTore, 7, i+1);
 			
 			Label teamGegentore=new Label(""+vit.getGegentore());
 			teamGegentore.setFont(Font.font(15));
 			teamGegentore.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamGegentore, 7, zaehler);
+			tabellePane.add(teamGegentore, 8, i+1);
 			
 			Label teamTD=new Label(""+vit.getTD());
 			teamTD.setFont(Font.font(15));
 			teamTD.setOnMouseClicked((e)->{
 				hfp=new HFProtagonisten(team,stage, bp, steuerung, akt);
 			});
-			tabellePane.add(teamTD, 8, zaehler);
-			
-			zaehler++;
+			tabellePane.add(teamTD, 9, i+1);
 		}
 		
 		Button rk=new Button("Sortierkriterien bearbeiten");
@@ -429,6 +447,9 @@ public class HFTurnierelemente {
 		
 		Tab tabelleTab=new Tab("Tabelle",gp);
 		tabelleTab.setClosable(false);
+		int letzterTabZwischen=letzterTab;
 		inhalt.getTabs().add(tabelleTab);
+		letzterTab=letzterTabZwischen;
+		inhalt.getSelectionModel().select(letzterTab);
 	}
 }

@@ -16,7 +16,7 @@ public class Tor extends Spielaktivitaet {
 	
 	public Tor(int zeit,int nachspielzeit,Spieler torschuetze,Spieler vorbereiter,Team team,long ID,
 			ArrayList<String>typen,ArraySpeicher as) {
-		super(zeit,nachspielzeit,torschuetze,ID,typen,as);
+		super(zeit,nachspielzeit,torschuetze,ID,typen, as);
 		if(vorbereiter!=null) {
 			vorbereiterID=vorbereiter.getID();
 		}
@@ -37,14 +37,6 @@ public class Tor extends Spielaktivitaet {
 		Element vorbEl=new Element("Vorbereiter");
 		vorbEl.addContent(""+vorbereiterID);
 		element.addContent(vorbEl);
-	}
-	
-	public void setTyp(int index) {
-		typ=typen.get(index);
-	}
-	
-	public String getTyp() {
-		return typ;
 	}
 	
 	public void setTyp(String typ) {

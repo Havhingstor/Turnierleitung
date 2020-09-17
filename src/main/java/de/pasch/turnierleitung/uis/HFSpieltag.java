@@ -32,6 +32,8 @@ public class HFSpieltag {
 	GridPane detailGP;
 	GridPane spielInfos;
 	long letztesTE=0;
+	long letzterSpt=0;
+	long letztesSpiel=0;
 	
 	public HFSpieltag(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -66,21 +68,21 @@ public class HFSpieltag {
 			
 			Turnierelement te=IDPicker.pick(steuerung.getTurnierelemente(),letztesTE);
 			
-			ComboBox<Turnierelement> TEAuswahl=new ComboBox<Turnierelement>();
-			TEAuswahl.getItems().addAll(steuerung.getLigen());
-			TEAuswahl.getItems().addAll(steuerung.getKORunden());
+			ComboBox<Turnierelement> teAuswahl=new ComboBox<Turnierelement>();
+			teAuswahl.getItems().addAll(steuerung.getLigen());
+			teAuswahl.getItems().addAll(steuerung.getKORunden());
 			if(te==null) {
-				te=TEAuswahl.getItems().get(0);
+				te=teAuswahl.getItems().get(0);
 			}
-			TEAuswahl.setValue(te);
-			TEAuswahl.setOnAction((e)->{
-				letztesTE=TEAuswahl.getValue().getID();
-				sptAuswahl.getChildren().removeIf((f)->(f!=TEAuswahl));
-				createSpieltagslisteRest(TEAuswahl, sptAuswahl);
+			teAuswahl.setValue(te);
+			teAuswahl.setOnAction((e)->{
+				letztesTE=teAuswahl.getValue().getID();
+				sptAuswahl.getChildren().removeIf((f)->(f!=teAuswahl));
+				createSpieltagslisteRest(teAuswahl, sptAuswahl);
 			});
-			sptAuswahl.add(TEAuswahl, 0, 0);
+			sptAuswahl.add(teAuswahl, 0, 0);
 			
-			createSpieltagslisteRest(TEAuswahl, sptAuswahl);
+			createSpieltagslisteRest(teAuswahl, sptAuswahl);
 		}
 	}
 	
@@ -90,8 +92,7 @@ public class HFSpieltag {
 		spieltageSP.setPrefSize(200,500);
 		sptAuswahl.add(spieltageSP, 0, 1);
 		
-		if(teAuswahl.getValue().getClass().getName().equals("de.pasch.turnierleitung"
-				+ ".turnierelemente.Liga")) {
+		if(teAuswahl.getValue().isLiga()) {
 			Liga liga=(Liga)teAuswahl.getValue();
 			for(Spieltag spt:liga.getSpieltage()) {
 				Button name=new Button(spt.getName());
@@ -99,6 +100,7 @@ public class HFSpieltag {
 				name.setPrefWidth(170);
 				spieltage.getChildren().add(name);
 				name.setOnAction((e)->{
+					letzterSpt=spt.getID();
 					createSptDetailBereich(spt, liga);
 				});
 			}
@@ -117,7 +119,7 @@ public class HFSpieltag {
 				new ListDialog<Spieltag>(liga.getSpieltage(), stage, "Welcher Spieltag soll gelöscht werden",
 						"Spieltag löschen",(f)->{
 					try {
-						liga.removeSpieltag(f.getID());
+						steuerung.removeSpieltag(f.getID());
 						akt.aktualisieren();
 					}catch(IllegalArgumentException iae) {
 						JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
@@ -125,10 +127,12 @@ public class HFSpieltag {
 				});
 			});
 			
-			Spieltag spieltag=null;
-			try {
-				spieltag=liga.getSpieltage().get(0);
-			}catch(IndexOutOfBoundsException ioobe) {}
+			Spieltag spieltag=IDPicker.pick(liga.getSpieltage(),letzterSpt);
+			if(spieltag==null) {
+				try {
+					spieltag=liga.getSpieltage().get(0);
+				}catch(IndexOutOfBoundsException ioobe) {}
+			}
 			createSptDetailBereich(spieltag, liga);
 		}else {
 			KORunde kor =(KORunde)teAuswahl.getValue();
@@ -140,6 +144,7 @@ public class HFSpieltag {
 				spieltage.getChildren().add(name);
 				name.setOnAction((e)->{
 					createRundenDetailBereich(r, kor);
+					letzterSpt=r.getID();
 				});
 			}
 			
@@ -165,10 +170,12 @@ public class HFSpieltag {
 				});
 			});
 			
-			Rundensammlung rs=null;
-			try {
-				rs=kor.getRundensammlungen().get(0);
-			}catch(IndexOutOfBoundsException ioobe) {}
+			Rundensammlung rs=IDPicker.pick(kor.getRundensammlungen(),letzterSpt);
+			if(rs==null) {
+				try {
+					rs=kor.getRundensammlungen().get(0);
+				}catch(IndexOutOfBoundsException ioobe) {}
+			}
 			createRundenDetailBereich(rs, kor);
 		}
 	}
@@ -226,6 +233,7 @@ public class HFSpieltag {
 					}else {
 						steuerung.addAusgelosterSpieltag(liga.getID(),name);
 					}
+					letzterSpt=steuerung.getSpieltage().get(steuerung.getSpieltage().size()-1).getID();
 					akt.aktualisieren();
 				}
 			}
@@ -250,6 +258,7 @@ public class HFSpieltag {
 					JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
 				}
 			}
+			letzterSpt=steuerung.getSpieltage().get(steuerung.getSpieltage().size()-1).getID();
 			akt.aktualisieren();
 		});
 		detailGP.add(spielplanBer, 0,2);
@@ -259,6 +268,7 @@ public class HFSpieltag {
 		rueckrunde.setPrefWidth(370);
 		rueckrunde.setOnAction((e)->{
 			steuerung.createRueckrunde(liga.getID());
+			letzterSpt=steuerung.getSpieltage().get(steuerung.getSpieltage().size()-1).getID();
 			akt.aktualisieren();
 		});
 		detailGP.add(rueckrunde, 0,3);
@@ -354,6 +364,7 @@ public class HFSpieltag {
 		sAuswahl.setPadding(new Insets(5));
 		sAuswahl.setHgap(5);
 		sAuswahl.setVgap(5);
+		Spiel spiel=null;
 		
 		VBox spieltage =new VBox();
 		ScrollPane spieltageSP=new ScrollPane(spieltage);
@@ -367,8 +378,15 @@ public class HFSpieltag {
 				name.setPrefWidth(185);
 				spieltage.getChildren().add(name);
 				name.setOnAction((e)->{
+					letztesSpiel=sp.getID();
 					createSpielLigaDetails(sp);
 				});
+			}
+			spiel=IDPicker.pick(spieltag.getSpiele(), letztesSpiel);
+			if(spiel==null) {
+				try {
+					spiel=spieltag.getSpiele().get(0);
+				}catch(IndexOutOfBoundsException ioobe) {}catch(NullPointerException npe) {}
 			}
 		}
 		
@@ -390,7 +408,6 @@ public class HFSpieltag {
 						"Spiel löschen",(f)->{
 					try {
 						steuerung.removeSpiel(f.getID());
-						spieltag.removeSpiel(f.getID());
 						akt.aktualisieren();
 					}catch(IllegalArgumentException iae) {
 						JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
@@ -399,10 +416,7 @@ public class HFSpieltag {
 			}
 		});
 		
-		Spiel spiel=null;
-		try {
-			spiel=spieltag.getSpiele().get(0);
-		}catch(IndexOutOfBoundsException ioobe) {}catch(NullPointerException npe) {}
+		
 		createSpielLigaDetails(spiel);
 		
 		gp.add(sAuswahl, 2,0);
@@ -418,16 +432,24 @@ public class HFSpieltag {
 		ScrollPane spieltageSP=new ScrollPane(spieltage);
 		spieltageSP.setPrefSize(200,500);
 		sAuswahl.add(spieltageSP, 0, 1);
+		Runde r=null;
 		
 		if(rs!=null) {
-			for(Runde r:rs.getRunden()) {
-				Button name=new Button(r.toString());
+			for(Runde runde:rs.getRunden()) {
+				Button name=new Button(runde.toString());
 				name.setFont(Font.font(15));
 				name.setPrefWidth(185);
 				spieltage.getChildren().add(name);
 				name.setOnAction((e)->{
-					createBegegnungKORDetails(r);
+					letztesSpiel=runde.getID();
+					createBegegnungKORDetails(runde);
 				});
+			}
+			r=IDPicker.pick(rs.getRunden(), letztesSpiel);
+			if(r==null) {
+				try {
+					r=rs.getRunden().get(0);
+				}catch(IndexOutOfBoundsException ioobe) {}catch(NullPointerException npe) {}
 			}
 		}
 		
@@ -457,11 +479,6 @@ public class HFSpieltag {
 				});
 			}
 		});
-		
-		Runde r=null;
-		try {
-			r=rs.getRunden().get(0);
-		}catch(IndexOutOfBoundsException ioobe) {}catch(NullPointerException npe) {}
 		
 		createBegegnungKORDetails(r);
 		gp.add(sAuswahl, 2,0);
@@ -529,13 +546,17 @@ public class HFSpieltag {
 		if(spiel!=null) {
 			beschr[0]=spiel.getHeimteam().getName();
 			beschr[1]=spiel.getAuswaertsteam().getName();
-			beschr[2]=spiel.getHeimteam().getKurzname()+" "+spiel.getHeimtore().size()+":"
-			+spiel.getAuswaertstore().size()+" "+spiel.getAuswaertsteam().getKurzname();
 			beschr[3]=spiel.getStadion();
 			if(spiel.getNeutralerPlatz()) {
 				beschr[4]="Ja";
 			}else {
 				beschr[4]="Nein";
+			}
+			if(spiel.isErgebnis()) {
+				beschr[2]=spiel.getHeimteam().getMoeglichKN()+" "+spiel.getHeimtore().size()+":"
+						+spiel.getAuswaertstore().size()+" "+spiel.getAuswaertsteam().getMoeglichKN();
+			}else {
+				beschr[2]=spiel.getHeimteam().getMoeglichKN()+" -:- "+spiel.getAuswaertsteam().getMoeglichKN();
 			}
 		}else {
 			for (int i = 0; i < beschr.length; i++) {
@@ -558,7 +579,7 @@ public class HFSpieltag {
 		String[]beschr=createBeschrBegegnung(runde);
 		
 		
-		Label heimLabel=new Label("erstes Heimteam");
+		Label heimLabel=new Label("erstes\nHeimteam");
 		heimLabel.setFont(Font.font(20));
 		spielInfos.add(heimLabel, 0, 0);
 		
@@ -566,7 +587,7 @@ public class HFSpieltag {
 		heimText.setFont(Font.font(20));
 		spielInfos.add(heimText, 1, 0);
 		
-		Label auswLabel=new Label("erstes Auswärtsteam");
+		Label auswLabel=new Label("erstes\nAuswärtsteam");
 		auswLabel.setFont(Font.font(20));
 		spielInfos.add(auswLabel, 0, 1);
 		
@@ -582,13 +603,13 @@ public class HFSpieltag {
 		stadienText.setFont(Font.font(20));
 		spielInfos.add(stadienText, 1,2);
 		
-		Label neutralLabel=new Label("Neutrale Plätze");
+		Label neutralLabel=new Label("Neutrale\nPlätze");
 		neutralLabel.setFont(Font.font(20));
 		spielInfos.add(neutralLabel, 0, 3);
 		
 		Text neutralText=new Text(beschr[3]);
 		neutralText.setFont(Font.font(20));
-		spielInfos.add(neutralText, 1,2);
+		spielInfos.add(neutralText, 1,3);
 		
 		gp.add(spielInfos, 4, 0);
 		
@@ -600,8 +621,8 @@ public class HFSpieltag {
 			
 			beschr[0]=IDPicker.pick(steuerung.getTeams(),runde.getHeimteamID()).getName();
 			beschr[1]=IDPicker.pick(steuerung.getTeams(),runde.getAuswaertsteamID()).getName();
-			beschr[2]=IDPicker.pick(steuerung.getTeams(),runde.getHeimteamID()).getHeimstadion()+
-					IDPicker.pick(steuerung.getTeams(),runde.getAuswaertsteamID()).getHeimstadion();
+			beschr[2]=runde.getStadionHeim()+"\n"+
+					runde.getStadionAuswaerts();
 			
 			if(IDPicker.pick(steuerung.getSpiele(),runde.getSpiele().get(0)).getNeutralerPlatz()) {
 				beschr[3]="Ja";

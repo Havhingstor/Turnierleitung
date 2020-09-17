@@ -55,7 +55,7 @@ public class Spielaktivitaet implements Pickable {
 		parEl.addContent(nzeitEl);
 		
 		Element ausfEl=new Element("Ausfuehrer");
-		ausfEl.addContent(""+zeit);
+		ausfEl.addContent(""+ausfuehrerID);
 		parEl.addContent(ausfEl);
 		
 		Element typenEl=new Element("Typen");
@@ -65,6 +65,10 @@ public class Spielaktivitaet implements Pickable {
 			el.addContent(typ);
 			typenEl.addContent(el);
 		}
+		
+		Element typEl=new Element("Typ");
+		parEl.addContent(typEl);
+		typEl.addContent(typ);
 	}
 	
 	public long getAusfuehrerID() {
@@ -110,5 +114,13 @@ public class Spielaktivitaet implements Pickable {
 	
 	public int getNachspielzeit() {
 		return nachspielzeit;
+	}
+	
+	public void setTyp(int index) {
+		typ=typen.get(index);
+	}
+	
+	public String getTyp() {
+		return typ;
 	}
 }

@@ -5,8 +5,6 @@
  */
 package de.pasch.turnierleitung.uis;
 
-import de.pasch.turnierleitung.turnierelemente.KORunde;
-
 /**
  *
  * @author pasch

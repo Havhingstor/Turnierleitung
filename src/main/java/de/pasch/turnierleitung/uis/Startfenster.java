@@ -7,6 +7,8 @@ package de.pasch.turnierleitung.uis;
 
 import java.io.File;
 
+import javax.swing.JOptionPane;
+
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,7 +21,6 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 
 /**
@@ -29,6 +30,7 @@ import javafx.stage.Stage;
 public class Startfenster extends Application {
     private boolean dateiLadenBool=false;
     private File dateiLadenFile=null;
+    private String turniername=null;
     Hauptfenster hf=null;
     
     public void start(Stage primaryStage){    
@@ -52,8 +54,15 @@ public class Startfenster extends Application {
         neu.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent e){
-                primaryStage.hide();
-                newHauptfenster();
+                String eingabe=JOptionPane.showInputDialog("Welchen Namen soll es haben?");
+                if(eingabe!=null) {
+	                if(eingabe.equals("")){
+	                	eingabe="Neues Turnier";
+	                }
+	                turniername=eingabe;
+	                primaryStage.hide();
+	                newHauptfenster();
+                }
             }
         });
         laden.setOnAction(new EventHandler<ActionEvent>(){
@@ -88,5 +97,9 @@ public class Startfenster extends Application {
     
     public static void main(String[]args){
         launch();
+    }
+    
+    public String getTurniername() {
+    	return turniername;
     }
 }

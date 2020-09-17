@@ -47,6 +47,7 @@ public class Hauptfenster {
         Startfenster sf=startfenster;
         steuerung=new Steuerung();
         if(sf.getDateiLadenBool()){
+        	System.out.println(sf.getDateiLadenFile().getAbsolutePath());
             try {
 				steuerung.regeneriereAusDatei(sf.getDateiLadenFile());
 				aktSpeicherung=sf.getDateiLadenFile();
@@ -54,21 +55,22 @@ public class Hauptfenster {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
         }else{
+        	/*
             boolean erlaubt=false;
             String eingabe="";
             while(!erlaubt){
                 eingabe=JOptionPane.showInputDialog("Welchen Namen soll es haben?");
                 if(eingabe!=null) {
-	                if(!eingabe.equals("")){
-	                    erlaubt=true;
-	                }else{
-	                    JOptionPane.showMessageDialog(null,"Es wurde kein Name eingegeben!");
+                    erlaubt=true;
+	                if(eingabe.equals("")){
+	                	eingabe="Neues Turnier";
 	                }
                 }else {
                     JOptionPane.showMessageDialog(null,"Es wurde kein Name eingegeben!");
                 }
             }
-            steuerung.setName(eingabe);
+            */
+            steuerung.setName(startfenster.getTurniername());
             aktSpeicherung=null;
         }
         stage=new Stage();
@@ -116,6 +118,23 @@ public class Hauptfenster {
         		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
         		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
             );
+            File file=fc.showOpenDialog(this.stage);
+            if(file!=null) {
+            	System.out.println(file.getAbsolutePath());
+            	try {
+    				steuerung.regeneriereAusDatei(file);
+    				aktSpeicherung=file;
+    				akt.aktualisieren();
+    			} catch (IOException | JDOMException e1) {
+    				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
+    			}
+            }
+        	/*
+        	FileChooser fc=new FileChooser();
+            fc.getExtensionFilters().addAll(
+        		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
+        		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
+            );
             File file=fc.showOpenDialog(stage);
             try {
 				steuerung.regeneriereAusDatei(file);
@@ -124,24 +143,18 @@ public class Hauptfenster {
 			} catch (IOException | JDOMException e1) {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
+			*/
         });
         neu.setOnAction((e)->{
-        	boolean erlaubt=false;
-            while(!erlaubt) {
             	String eingabe=JOptionPane.showInputDialog("Welchen Namen soll es haben?");
-	        	if(eingabe!=null) {
-	                if(!eingabe.equals("")){
-	                	steuerung=new Steuerung();
-	                	steuerung.setName(eingabe);
-	                	aktSpeicherung=null;
-	                	akt.aktualisieren();
-	                    erlaubt=true;
-	                }else{
-	                    JOptionPane.showMessageDialog(null,"Es wurde kein Name eingegeben!");
-	                }
-	            }else {
-	            	erlaubt=true;
-	            }
+        	if(eingabe!=null) {
+                if(eingabe.equals("")){
+                	eingabe="Neues Turnier";
+                }
+                steuerung=new Steuerung();
+            	steuerung.setName(eingabe);
+            	aktSpeicherung=null;
+            	akt.aktualisieren();
             }
         });
         speichern.setOnAction((e)->{
@@ -167,21 +180,21 @@ public class Hauptfenster {
                 		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
                     );
             	File neuDatei=null;
-            	while(neuDatei==null){
-            		neuDatei=fc.showSaveDialog(stage);
-            	}
-            	Document doc=new Document();
-        		doc.setRootElement(steuerung.getRootElement());
-                Format format = Format.getPrettyFormat();
-                format.setIndent("    ");
-                try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
-                    XMLOutputter op = new XMLOutputter(format);
-                    op.output(doc, fos);
-                } catch (IOException ioe) {
-            		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
-                }
-        		aktSpeicherung=neuDatei;
-        		akt.aktualisieren();
+            	neuDatei=fc.showSaveDialog(stage);
+        		if(neuDatei!=null) {
+    	        	Document doc=new Document();
+    	    		doc.setRootElement(steuerung.getRootElement());
+    	            Format format = Format.getPrettyFormat();
+    	            format.setIndent("    ");
+    	            try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
+    	                XMLOutputter op = new XMLOutputter(format);
+    	                op.output(doc, fos);
+    	            } catch (IOException ioe) {
+    	        		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
+    	            }
+    	    		aktSpeicherung=neuDatei;
+    	    		akt.aktualisieren();
+        		}
         	}
         });
         spUnter.setOnAction((e)->{
@@ -191,21 +204,21 @@ public class Hauptfenster {
             		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
                 );
         	File neuDatei=null;
-        	while(neuDatei==null){
-        		neuDatei=fc.showSaveDialog(stage);
-        	}
-        	Document doc=new Document();
-    		doc.setRootElement(steuerung.getRootElement());
-            Format format = Format.getPrettyFormat();
-            format.setIndent("    ");
-            try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
-                XMLOutputter op = new XMLOutputter(format);
-                op.output(doc, fos);
-            } catch (IOException ioe) {
-        		JOptionPane.showMessageDialog(null,"Fehler beim Schreien in die Datei!","FEHLER!",0);
-            }
-    		aktSpeicherung=neuDatei;
-    		akt.aktualisieren();
+    		neuDatei=fc.showSaveDialog(stage);
+    		if(neuDatei!=null) {
+	        	Document doc=new Document();
+	    		doc.setRootElement(steuerung.getRootElement());
+	            Format format = Format.getPrettyFormat();
+	            format.setIndent("    ");
+	            try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
+	                XMLOutputter op = new XMLOutputter(format);
+	                op.output(doc, fos);
+	            } catch (IOException ioe) {
+	        		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
+	            }
+	    		aktSpeicherung=neuDatei;
+	    		akt.aktualisieren();
+    		}
         });
         zuProtuebersichtMenu.setOnAction((e)->{
             hfp= new HFProtagonisten(stage,bp,steuerung,akt);
@@ -232,8 +245,8 @@ public class Hauptfenster {
         	hfs=new HFSpieltag(stage, bp, steuerung, akt);
         });
         
-        
-        
+        ///*
+        // Ab hier nur Tests => später entfernen
         steuerung.addTeam("FC Bayern München","FCB","Allianz-Arena");
 		steuerung.addTeam("SV Werder Bremen","SVW","wohninvest Weserstadion");
                 steuerung.getTeams().stream().map((Team team) -> {
@@ -284,8 +297,8 @@ public class Hauptfenster {
             }).forEachOrdered((team) -> {
                 System.out.println(team.getHeimstadion());
             });
-	
-        
+	// bis hier Tests
+        //*/
         
         stage.setMaximized(true);
         Scene scene=new Scene(bp,1200,800);

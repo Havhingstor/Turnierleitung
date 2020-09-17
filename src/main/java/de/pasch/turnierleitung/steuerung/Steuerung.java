@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.jdom2.Attribute;
 import org.jdom2.Document;
 import org.jdom2.Element;
 import org.jdom2.JDOMException;
@@ -106,16 +107,18 @@ public class Steuerung {
 		for (int i = 0; i < as.connectoren.size(); i++) {
 			SpielerTeamConnector stc = as.connectoren.get(i);
 			if (spielerID == stc.getSpielerID()) {
-				if (teamID != stc.getTeamID()) {
+				if ((teamID != stc.getTeamID())&&(!stc.getAusgetreten())) {
 					stc.setAusgetreten(true);
 					wechsel = true;
-				} else {
+				} else if(teamID == stc.getTeamID()) {
+					stc.setAusgetreten(false);
 					stc.setTrikotnummer(trikotnummer);
 				}
 			}
 		}
 		if (wechsel) {
-			SpielerTeamConnector stc2 = new SpielerTeamConnector(spielerID, teamID, trikotnummer, spielerID, as);
+			SpielerTeamConnector stc2 = new SpielerTeamConnector
+					(spielerID, teamID, trikotnummer,idc.createID(), as);
 			as.connectoren.add(stc2);
 		}
 	}
@@ -278,7 +281,7 @@ public class Steuerung {
 			}
 		}
 		if (erlaubt) {
-			Rundensammlung rs = new Rundensammlung(name, idc.createID(), as);
+			Rundensammlung rs = new Rundensammlung(name, idc.createID(), as,kor.getKriterium1(),kor.getKriterium2(),kor.getSpielanzahl());
 			as.rs.add(rs);
 			kor.addRundensammlung(rs.getID());
 		} else {
@@ -292,7 +295,8 @@ public class Steuerung {
 		});
 	}
 
-	public void addRunde(long RSID, boolean auslosung, long heimID, long auswaertsID) {
+	public void addRunde(long RSID, boolean auslosung, long heimID, long auswaertsID,boolean neutralePlaetze,String besPlnHeim, String besPlnAuswaerts) {
+		//Besonderer Platzname deaktiviert, wenn String leer
 		if (auslosung) {
 			long zw = 0;
 			int rd = (int) (Math.random() * 100);
@@ -302,11 +306,33 @@ public class Steuerung {
 				auswaertsID = zw;
 			}
 		}
-		Runde runde = new Runde(heimID, auswaertsID, idc.createID(), as);
-		as.rs.stream().filter((rs) -> (rs.getID() == RSID)).forEachOrdered((rs) -> {
-			rs.addRunde(runde.getID());
-		});
+		String heimstadion, auswaertsstadion;
+		boolean besPlnHeimbl=false,besPlnAuswaertsbl=false;
+		if(besPlnHeim.length()>0) {
+			besPlnHeimbl=true;
+			heimstadion=besPlnHeim;
+		}else {
+			heimstadion=IDPicker.pick(as.teams,heimID).getHeimstadion();
+		}
+		if(besPlnAuswaerts.length()>0) {
+			besPlnAuswaertsbl=true;
+			auswaertsstadion=besPlnAuswaerts;
+		}else {
+			auswaertsstadion=IDPicker.pick(as.teams,auswaertsID).getHeimstadion();
+		}
+		Rundensammlung rs=IDPicker.pick(as.rs,RSID);
+		Runde runde = new Runde(heimID, auswaertsID, idc.createID(), as,rs.getKriteriumEins(),rs.getKriteriumZwei(),rs.getSpielanzahl(), heimstadion, auswaertsstadion);
+		rs.addRunde(runde.getID());
 		as.runden.add(runde);
+		boolean erstHeim=true;
+		for(int i=0;i<rs.getSpielanzahl();++i) {
+			if(erstHeim) {
+				this.addSpiel(heimID, auswaertsID, neutralePlaetze, besPlnHeimbl, besPlnHeim, runde.getID());
+			}else {
+				this.addSpiel(auswaertsID, heimID, neutralePlaetze, besPlnAuswaertsbl, besPlnAuswaerts, runde.getID());
+			}
+			erstHeim=!erstHeim;
+		}
 	}
 
 	public void removeRundensammlung(long ID) {
@@ -364,13 +390,13 @@ public class Steuerung {
 		as.spiele.add(spiel);
 		as.runden.stream().filter((runde) -> (runde.getID() == rundenOderSpieltagID)).forEachOrdered((runde) -> {
 			if ((runde.getHeimteamID() == heimID && runde.getAuswaertsteamID() == auswaertsID)
-					|| (runde.getHeimteamID() == auswaertsID && runde.getAuswaertsteamID() == auswaertsID)) {
+					|| (runde.getHeimteamID() == auswaertsID && runde.getAuswaertsteamID() == heimID)) {
 				runde.addSpiel(neueID);
 			} else {
 				throw new IllegalArgumentException("Das Spiel passt nicht zu der Runde!");
 			}
 		});
-		as.spt.stream().filter((st) -> (st.getID() == rundenOderSpieltagID)).forEachOrdered((st) -> {
+		as.spt.stream().filter((st) -> (st.getID() == rundenOderSpieltagID)).forEach((st) -> {
 			st.addSpiel(neueID);
 		});
 	}
@@ -394,15 +420,29 @@ public class Steuerung {
 
 	public void removeSpiel(long ID) {
 		as.spiele.remove(IDPicker.pick(as.spiele, ID));
-		as.aufstellungen.stream().filter((a) -> (a.getSpielID() == ID)).forEachOrdered((a) -> {
+		as.aufstellungen.stream().filter((a) -> (a.getSpielID() == ID)).forEach((a) -> {
 			as.aufstellungen.remove(a);
 		});
-		as.runden.stream().filter((r) -> (r.getSpiele().contains(ID))).forEachOrdered((r) -> {
+		as.runden.stream().filter((r) -> (r.getSpiele().contains(ID))).forEach((r) -> {
 			r.getSpiele().remove(ID);
 		});
+		as.spt.stream().filter((spt)->(spt.getSpieleIDs().contains(ID))).forEach((spt)->{
+			spt.getSpieleIDs().remove(ID);
+		});
+	}
+	
+	public void removeSpieltag(long ID) {
+		Spieltag sp=IDPicker.pick(as.spt, ID);
+		sp.getSpiele().stream().forEach((spiel)->{
+			removeSpiel(spiel.getID());
+		});
+		for(Liga lg:as.ligen) {
+			lg.getSpieltageID().remove(ID);
+		}
+		as.spt.remove(sp);
 	}
 
-	public void addTor(boolean heimteam, long torschuetzeID, long vorlagengeberID, long spielID, int spielminute,
+	public void addTor(boolean heimteam,long torschuetzeID, long vorlagengeberID, long spielID, int spielminute,
 			int nachspielzeit, int torartIndex) {
 		long teamID = 0;
 		if (heimteam) {
@@ -532,18 +572,18 @@ public class Steuerung {
 	}
 
 	public void removeLiga(long ID) {
-		if (IDPicker.pick(as.ligen, ID).getSpieltage().size() > 0) {
-			throw new IllegalArgumentException("Diese Liga enthält bereits Spieltage!");
-		} else {
-			as.ligen.remove(IDPicker.pick(as.ligen, ID));
+		Liga liga=IDPicker.pick(as.ligen, ID);
+		for(Spieltag spt:liga.getSpieltage()) {
+			this.removeSpieltag(spt.getID());
 		}
+		as.ligen.remove(liga);
 	}
 
 	public void addTeamZuLiga(long teamID, long ligaID) {
 		IDPicker.pick(as.ligen, ligaID).addTeam(teamID);
 	}
 
-	public void addSpieltag(long ligaID, String name) {
+	public Spieltag addSpieltag(long ligaID, String name) {
 		boolean erlaubt = true;
 		for (Spieltag spt : IDPicker.pick(as.ligen, ligaID).getSpieltage()) {
 			if (spt.getName().equals(name)) {
@@ -556,9 +596,10 @@ public class Steuerung {
 				l.addSpieltag(spt);
 			});
 			as.spt.add(spt);
+			return spt;
 		} else {
 			throw new IllegalArgumentException(
-					"In diesem Turnierelement gibt es schon " + "einen Spieltag mit diesem Namen!");
+					"In diesem Turnierelement gibt es schon einen Spieltag mit diesem Namen!");
 		}
 	}
 
@@ -600,6 +641,7 @@ public class Steuerung {
 			throw new IllegalArgumentException("Die Liga muss genau einen Spieltag enthalten!");
 		}
 		for (int i = 0; i < spieltaganzahl / 2 - 1; i++) {
+			liga.getSpieltage().get(0).setName("1. Spieltag");
 			ArrayList<Spiel> spiele = liga.fortfuehrenNaechsterSpieltag(idc);
 			Spieltag spieltag = new Spieltag(idc.createID(), i + 2 + ". Spieltag", as);
 			liga.addSpieltag(spieltag);
@@ -697,7 +739,7 @@ public class Steuerung {
 	public void regeneriereAusDatei(File datei) throws IOException, JDOMException {
 		Document doc = new SAXBuilder().build(datei);
 		Element re = doc.getRootElement();
-		name = re.getName();
+		name = re.getAttributeValue("Name");
 		for (Element e : re.getChildren()) {
 			if (e.getName().equals("Torarten")) {
 				torarten.clear();
@@ -730,7 +772,8 @@ public class Steuerung {
 	 */
 
 	public Element getRootElement() {
-		Element el = new Element(name);
+		Element el = new Element("Turnier");
+		el.setAttribute(new Attribute("Name", name));
 		Element torartenElement = new Element("Torarten");
 		el.addContent(torartenElement);
 		for (String torart : torarten) {

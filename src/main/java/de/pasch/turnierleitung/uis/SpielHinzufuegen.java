@@ -66,19 +66,17 @@ public class SpielHinzufuegen {
 			erlaubt.setText("");
 			
 			heimTeam.setOnAction((e)->{
-				if(heimTeam.getValue().equals(auswaertsTeam.getValue())&&erlaubt.getText().length()==0) {
-					heimTeam.setValue(altHeim.getTeam());
-				}else {
-					altHeim.setTeam(heimTeam.getValue());
+				if(heimTeam.getValue().equals(auswaertsTeam.getValue())) {
+					auswaertsTeam.setValue(altHeim.getTeam());
 				}
+				altHeim.setTeam(heimTeam.getValue());
 			});
 			
 			auswaertsTeam.setOnAction((e)->{
-				if(auswaertsTeam.getValue().equals(heimTeam.getValue())&&erlaubt.getText().length()==0) {
-					auswaertsTeam.setValue(altAuswaerts.getTeam());
-				}else {
-					altAuswaerts.setTeam(auswaertsTeam.getValue());
+				if(auswaertsTeam.getValue().equals(heimTeam.getValue())) {
+					heimTeam.setValue(altAuswaerts.getTeam());
 				}
+				altAuswaerts.setTeam(auswaertsTeam.getValue());
 			});
 			
 			CheckBox neutral=new CheckBox("Neutraler Platz");
@@ -106,6 +104,7 @@ public class SpielHinzufuegen {
 				}
 			});
 			
+			/*
 			Button teamsTauschen=new Button("Teams tauschen");
 			teamsTauschen.setFont(Font.font(20));
 			gp.add(teamsTauschen, 0, 4);
@@ -116,10 +115,11 @@ public class SpielHinzufuegen {
 				auswaertsTeam.setValue(zwTeam);
 				erlaubt.setText("");
 			});
+			*/
 			
 			Button speichern=new Button("Speichern");
 			speichern.setFont(Font.font(20));
-			gp.add(speichern, 1,4);
+			gp.add(speichern, 0,4);
 			speichern.setOnAction((e)->{
 				steuerung.addSpiel(heimTeam.getValue().getID(), auswaertsTeam.getValue().getID(),neutral.isSelected(),
 						stadion.isSelected(),stadionText.getText(), spieltag.getID());

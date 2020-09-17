@@ -67,14 +67,20 @@ public class ArraySpeicher {
 		
 		Element connectorenEl=new Element("Connectoren");
 		for(SpielerTeamConnector stc:connectoren) {
-			stc.createXMLElements(strafenEl);
+			stc.createXMLElements(connectorenEl);
 		}
 		parElement.addContent(connectorenEl);
 		
 		Element aufstellungenEl=new Element("Aufstellungen");
 		for(Aufstellung auf:aufstellungen) {
-			auf.createXMLElements(strafenEl);
+			auf.createXMLElements(aufstellungenEl);
 		}
 		parElement.addContent(aufstellungenEl);
+		
+		Element rundenEl=new Element("Runden");
+		for(Runde runde:runden) {
+			runde.createXMLElements(rundenEl);
+		}
+		parElement.addContent(rundenEl);
 	}
 }

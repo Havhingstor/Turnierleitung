@@ -11,13 +11,66 @@ public class Rundensammlung implements Pickable{
 	private String name="";
 	private long ID=0;
 	private ArraySpeicher as=null;
+	private int kriteriumEins=0;
+	private int kriteriumZwei=0;
+	private int spielanzahl=1;
+	public static final int kriteriumEinsTore=0;
+	public static final int kriteriumEinsSpiele=1;
+	public static final int kriteriumZweiATore=0;
+	public static final int kriteriumZweiElfmeter=1;
 	
-	public Rundensammlung(String name,long ID,ArraySpeicher as) {
+	public Rundensammlung(String name,long ID,ArraySpeicher as,int kriteriumEins,
+			int kriteriumZwei,int spielanzahl) {
+		this.setKriteriumEins(kriteriumEins);
+		this.setKriteriumZwei(kriteriumZwei);
+		this.setSpielanzahl(spielanzahl);
 		this.name=name;
 		this.ID=ID;
 		this.as=as;
 	}
 	
+	/**
+	 * @return the kriteriumEins
+	 */
+	public int getKriteriumEins() {
+		return kriteriumEins;
+	}
+
+	/**
+	 * @param kriteriumEins the kriteriumEins to set
+	 */
+	public void setKriteriumEins(int kriteriumEins) {
+		this.kriteriumEins = kriteriumEins;
+	}
+
+	/**
+	 * @return the kriteriumZwei
+	 */
+	public int getKriteriumZwei() {
+		return kriteriumZwei;
+	}
+
+	/**
+	 * @param kriteriumZwei the kriteriumZwei to set
+	 */
+	public void setKriteriumZwei(int kriteriumZwei) {
+		this.kriteriumZwei = kriteriumZwei;
+	}
+
+	/**
+	 * @return the spielanzahl
+	 */
+	public int getSpielanzahl() {
+		return spielanzahl;
+	}
+
+	/**
+	 * @param spielanzahl the spielanzahl to set
+	 */
+	public void setSpielanzahl(int spielanzahl) {
+		this.spielanzahl = spielanzahl;
+	}
+
 	public String getDateiString() {
 		String string="<Rundensammlung>\n<Name>"+name+"</Name>\n<ID>"+ID+"</ID>\n<Runden>\n";
 		for(long runde:runden) {

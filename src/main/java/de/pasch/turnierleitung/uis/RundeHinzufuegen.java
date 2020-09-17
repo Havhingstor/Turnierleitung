@@ -10,6 +10,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.stage.Modality;
@@ -64,27 +65,70 @@ public class RundeHinzufuegen {
 			erlaubt.setText("");
 			
 			heimTeam.setOnAction((e)->{
-				if(heimTeam.getValue().equals(auswaertsTeam.getValue())&&erlaubt.getText().length()==0) {
-					heimTeam.setValue(altHeim.getTeam());
-				}else {
-					altHeim.setTeam(heimTeam.getValue());
+				if(heimTeam.getValue().equals(auswaertsTeam.getValue())) {
+					auswaertsTeam.setValue(altHeim.getTeam());
 				}
+				altHeim.setTeam(heimTeam.getValue());
 			});
 			
 			auswaertsTeam.setOnAction((e)->{
-				if(auswaertsTeam.getValue().equals(heimTeam.getValue())&&erlaubt.getText().length()==0) {
-					auswaertsTeam.setValue(altAuswaerts.getTeam());
+				if(auswaertsTeam.getValue().equals(heimTeam.getValue())) {
+					heimTeam.setValue(altAuswaerts.getTeam());
+				}
+				altAuswaerts.setTeam(auswaertsTeam.getValue());
+			});
+			
+			CheckBox besPlatzHeim=new CheckBox("Besonderer Platzname");
+			besPlatzHeim.setFont(Font.font(15));
+			gp.add(besPlatzHeim, 0, 2);
+			
+			TextField stadionTextHeim=new TextField();
+			stadionTextHeim.setFont(Font.font(20));
+			stadionTextHeim.setEditable(false);
+			gp.add(stadionTextHeim, 0,3);
+			
+			ZWText altNameHeim=new ZWText();
+			besPlatzHeim.setOnAction((e)->{
+				if(!besPlatzHeim.isSelected()) {
+					altNameHeim.setText(stadionTextHeim.getText());
+					stadionTextHeim.setText("");
+					stadionTextHeim.setEditable(false);
 				}else {
-					altAuswaerts.setTeam(auswaertsTeam.getValue());
+					stadionTextHeim.setEditable(true);
+					stadionTextHeim.setText(altNameHeim.getText());
+				}
+			});
+			
+			CheckBox besPlatzAuswaerts=new CheckBox("Besonderer Platzname");
+			besPlatzAuswaerts.setFont(Font.font(15));
+			gp.add(besPlatzAuswaerts, 1, 2);
+			
+			TextField stadionTextAuswaerts=new TextField();
+			stadionTextAuswaerts.setFont(Font.font(20));
+			stadionTextAuswaerts.setEditable(false);
+			gp.add(stadionTextAuswaerts, 1,3);
+			
+			ZWText altNameAuswaerts=new ZWText();
+			besPlatzAuswaerts.setOnAction((e)->{
+				if(!besPlatzAuswaerts.isSelected()) {
+					altNameAuswaerts.setText(stadionTextAuswaerts.getText());
+					stadionTextAuswaerts.setText("");
+					stadionTextAuswaerts.setEditable(false);
+				}else {
+					stadionTextAuswaerts.setEditable(true);
+					stadionTextAuswaerts.setText(altNameAuswaerts.getText());
 				}
 			});
 			
 			CheckBox neutral=new CheckBox("Neutraler Platz");
 			neutral.setFont(Font.font(15));
-			gp.add(neutral, 0, 2);
+			gp.add(neutral, 0, 4);
 						
+			CheckBox auslosung=new CheckBox("Erstes Heimteam Auslosen");
+			auslosung.setFont(Font.font(15));
+			gp.add(auslosung, 1, 4);
 			
-			
+			/*
 			Button teamsTauschen=new Button("Teams tauschen");
 			teamsTauschen.setFont(Font.font(20));
 			gp.add(teamsTauschen, 0, 4);
@@ -95,13 +139,15 @@ public class RundeHinzufuegen {
 				auswaertsTeam.setValue(zwTeam);
 				erlaubt.setText("");
 			});
+			*/
 			
 			Button speichern=new Button("Speichern");
 			speichern.setFont(Font.font(20));
-			gp.add(speichern, 1,4);
+			gp.add(speichern, 0,5);
 			speichern.setOnAction((e)->{
-				steuerung.addRunde(rs.getID(), false,
-						heimTeam.getValue().getID(), auswaertsTeam.getValue().getID());
+				steuerung.addRunde(rs.getID(), auslosung.isSelected(),
+						heimTeam.getValue().getID(), auswaertsTeam.getValue().getID(), 
+						neutral.isSelected(),stadionTextHeim.getText() , stadionTextAuswaerts.getText());
 				akt.aktualisieren();
 				stage.hide();
 			});

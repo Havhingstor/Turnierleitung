@@ -29,7 +29,7 @@ public class UeberFenster {
 		text1.setFont(Font.font("Verdana",FontWeight.BOLD,25));
 		pane.add(text1,0,0);
 		
-		Label text2=new Label("created and developed 2019 and 2020");
+		Label text2=new Label("created and developed");
 		text2.setAlignment(Pos.CENTER);
 		text2.setFont(Font.font("Verdana",FontWeight.BOLD,25));
 		pane.add(text2,0,1);
@@ -44,7 +44,7 @@ public class UeberFenster {
 		text4.setFont(Font.font("Verdana",FontWeight.BOLD,25));
 		pane.add(text4,0,3);
 		
-		Scene scene=new Scene(pane,600,300);
+		Scene scene=new Scene(pane,400,225);
 		stage.setScene(scene);
 		stage.show();
 	}

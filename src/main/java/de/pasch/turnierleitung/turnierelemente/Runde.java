@@ -2,11 +2,14 @@ package de.pasch.turnierleitung.turnierelemente;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Link;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
+import de.pasch.turnierleitung.steuerung.Steuerung;
 
 public class Runde implements Pickable{
 	private long heimteamID=0;
@@ -15,21 +18,131 @@ public class Runde implements Pickable{
 	private final ArrayList<Long>spieleIDs=new ArrayList<>();
 	private final long ID;
 	private ArraySpeicher as=null;
+	private int kriteriumEins=0;
+	private int kriteriumZwei=0;
+	private int spielanzahl=1;
+	private String stadionHeim;
+	private String stadionAuswaerts;
 	
-	/*
-	 * erstesKriterium =Spiele/Tore
-	 * zweitesKriterium=Auswärtstore/Elfmeterschie�en
-	 */
-	private int erstesKriteriumIndex=1;
-	private int zweitesKriteriumIndex=0;
-	
-	public Runde(long heimteamID,long auswaertsteamID,long ID,ArraySpeicher as) {
+	public static final int kriteriumEinsTore=0;
+	public static final int kriteriumEinsSpiele=1;
+	public static final int kriteriumZweiATore=0;
+	public static final int kriteriumZweiElfmeter=1;
+		
+	public Runde(long heimteamID,long auswaertsteamID,long ID,ArraySpeicher as,int kriteriumEins,
+			int kriteriumZwei, int spielanzahl,String stadionHeim, String stadionAuswaerts) {
 		this.heimteamID=heimteamID;
 		this.auswaertsteamID=auswaertsteamID;
 		this.ID=ID;
 		this.as=as;
+		this.kriteriumEins=kriteriumEins;
+		this.kriteriumZwei=kriteriumZwei;
+		this.spielanzahl=spielanzahl;
+		this.stadionHeim=stadionHeim;
+		this.stadionAuswaerts=stadionAuswaerts;
 	}
 	
+	public void createXMLElements(Element parEl) {
+		Element runde=new Element("Runde");
+		parEl.addContent(runde);
+		
+		Element heimEl=new Element("Heimteam");
+		heimEl.addContent(""+heimteamID);
+		parEl.addContent(heimEl);
+		
+		Element auswEl=new Element("Auswaertsteam");
+		heimEl.addContent(""+auswaertsteamID);
+		parEl.addContent(auswEl);
+		
+		Element gewinnerEl=new Element("Gewinner");
+		gewinnerEl.addContent(""+gewinnerID);
+		parEl.addContent(gewinnerEl);
+		
+		Element spieleEl=new Element("Spiele");
+		Steuerung.createALElements(spieleEl,spieleIDs,"Spiel");
+		parEl.addContent(spieleEl);
+		
+		Element IDEl=new Element("ID");
+		IDEl.addContent(""+ID);
+		parEl.addContent(IDEl);
+		
+		Element kriteriumEinsEl=new Element("KriteriumEins");
+		kriteriumEinsEl.addContent(""+kriteriumEins);
+		parEl.addContent(kriteriumEinsEl);
+		
+		Element kriteriumZweiEl=new Element("KriteriumZwei");
+		kriteriumZweiEl.addContent(""+kriteriumZwei);
+		parEl.addContent(kriteriumZweiEl);
+		
+		Element spielanzahlEl=new Element("Spielanzahl");
+		spielanzahlEl.addContent(""+spielanzahl);
+		parEl.addContent(spielanzahlEl);
+		
+		Element stadionHeimEl=new Element("Heimstadion");
+		stadionHeimEl.addContent(""+stadionHeim);
+		parEl.addContent(stadionHeimEl);
+		
+		Element stadionAuswEl=new Element("Auswaertsstadion");
+		stadionAuswEl.addContent(""+stadionAuswaerts);
+		parEl.addContent(stadionAuswEl);
+	}
+	
+	/**
+	 * @return the stadionHeim
+	 */
+	public String getStadionHeim() {
+		return stadionHeim;
+	}
+
+	/**
+	 * @return the stadionAuswaerts
+	 */
+	public String getStadionAuswaerts() {
+		return stadionAuswaerts;
+	}
+
+	/**
+	 * @return the kriteriumEins
+	 */
+	public int getKriteriumEins() {
+		return kriteriumEins;
+	}
+
+	/**
+	 * @param kriteriumEins the kriteriumEins to set
+	 */
+	public void setKriteriumEins(int kriteriumEins) {
+		this.kriteriumEins = kriteriumEins;
+	}
+
+	/**
+	 * @return the kriteriumZwei
+	 */
+	public int getKriteriumZwei() {
+		return kriteriumZwei;
+	}
+
+	/**
+	 * @param kriteriumZwei the kriteriumZwei to set
+	 */
+	public void setKriteriumZwei(int kriteriumZwei) {
+		this.kriteriumZwei = kriteriumZwei;
+	}
+
+	/**
+	 * @return the spielanzahl
+	 */
+	public int getSpielanzahl() {
+		return spielanzahl;
+	}
+
+	/**
+	 * @param spielanzahl the spielanzahl to set
+	 */
+	public void setSpielanzahl(int spielanzahl) {
+		this.spielanzahl = spielanzahl;
+	}
+
 	public String getDateiString() {
 		String string="<Runde>\n<Heimteam>"+heimteamID+"</Heimteam>\n<Auswaertsteam>"+auswaertsteamID+"</Auswaertsteam>\n<Gewinner>"+gewinnerID+"</Gewinner>\n<ID>"+ID+"</ID>\n<Spiele>";
 		for(long spiel:spieleIDs) {
@@ -77,7 +190,7 @@ public class Runde implements Pickable{
 			}
 		}
 		if(erlaubt) {
-			if(erstesKriteriumIndex==0) {
+			if(kriteriumEins==1) {
 				for(long s:spieleIDs) {
 					for(Spiel spiel:as.spiele) {
 						if(spiel.getID()==s) {
@@ -115,7 +228,7 @@ public class Runde implements Pickable{
 				gewinnerID=auswaertsteamID;
 				return auswaertsteamID;
 			}else {
-				if(zweitesKriteriumIndex==0) {
+				if(kriteriumZwei==0) {
 					for(long s:spieleIDs) {
 						for(Spiel spiel:as.spiele) {
 							if(spiel.getID()==s) {
@@ -144,14 +257,6 @@ public class Runde implements Pickable{
 		}else {
 			return 0;
 		}
-	}
-	
-	public void setErstesKriterium(int index) {
-		erstesKriteriumIndex=index;
-	}
-	
-	public void setZweitesKriterium(int index) {
-		zweitesKriteriumIndex=index;
 	}
 	
         @Override
