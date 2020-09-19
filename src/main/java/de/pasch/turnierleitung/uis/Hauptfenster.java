@@ -8,6 +8,7 @@ package de.pasch.turnierleitung.uis;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Optional;
 
 import javax.swing.JOptionPane;
 
@@ -16,18 +17,21 @@ import org.jdom2.JDOMException;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import de.pasch.turnierleitung.protagonisten.Team;
-import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -43,15 +47,16 @@ public class Hauptfenster {
     HFSpiele hfs;
     Einstellungsfenster einst;
     File aktSpeicherung=null;
+    boolean spNoetig;
     
     public  Hauptfenster(Startfenster startfenster) {
         Startfenster sf=startfenster;
         steuerung=new Steuerung();
         if(sf.getDateiLadenBool()){
-        	System.out.println(sf.getDateiLadenFile().getAbsolutePath());
             try {
 				steuerung.regeneriereAusDatei(sf.getDateiLadenFile());
 				aktSpeicherung=sf.getDateiLadenFile();
+				spNoetig=false;
 			} catch (IOException | JDOMException e1) {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
@@ -59,6 +64,7 @@ public class Hauptfenster {
         	steuerung.setName("Beispielturner");
         	aktSpeicherung=null;
         	beispielSetup();
+        	spNoetig=true;
         }else{
         	/*
             boolean erlaubt=false;
@@ -77,6 +83,7 @@ public class Hauptfenster {
             */
             steuerung.setName(startfenster.getTurniername());
             aktSpeicherung=null;
+            spNoetig=false;
         }
         stage=new Stage();
         if(aktSpeicherung==null) {
@@ -84,6 +91,7 @@ public class Hauptfenster {
         }else {
         	stage.setTitle(steuerung.getName()+" - "+aktSpeicherung.getName());
         }
+        
         MenuBar menuBar=new MenuBar();
         Menu datei=new Menu("Datei");
         Menu ansichten=new Menu("Ansichten");
@@ -119,6 +127,63 @@ public class Hauptfenster {
         menus.getChildren().addAll(menuBar,schnellwechsel);
         bp.setTop(menus);
         
+        stage.setOnCloseRequest((e)->{
+        	if(spNoetig) {
+        	ButtonType ja=new ButtonType("Ja");
+        	ButtonType nein=new ButtonType("Nein");
+        	ButtonType abbr=new ButtonType("Abbrechen");
+        	
+        	Alert schließen=new Alert(Alert.AlertType.CONFIRMATION,
+        			"Soll die Datei gespeichert werden?",ja,nein,abbr) ;
+        	schließen.setHeaderText("ACHTUNG!");
+        	schließen.initModality(Modality.APPLICATION_MODAL);
+        	
+        	Optional<ButtonType> antwort=schließen.showAndWait();
+        	if(antwort.get().equals(ja)) {
+	        		boolean getan=false;
+		        	if(aktSpeicherung!=null) {
+		    				Document doc=new Document();
+		            		doc.setRootElement(steuerung.getRootElement());
+		                    Format format = Format.getPrettyFormat();
+		                    format.setIndent("    ");
+		                    try (FileOutputStream fos = new FileOutputStream(aktSpeicherung)) {
+		                        XMLOutputter op = new XMLOutputter(format);
+		                        op.output(doc, fos);
+		                    } catch (IOException ioe) {
+		                		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
+		                		e.consume();
+		                    } 
+		            		getan=true;
+		        		}
+		        	if(!getan) {
+		        		FileChooser fc=new FileChooser();
+		            	fc.getExtensionFilters().addAll(
+		                		new FileChooser.ExtensionFilter("Turnierleitungsdatei", "*.tul"),
+		                		new FileChooser.ExtensionFilter("XML-Datei", "*.xml")
+		                    );
+		            	File neuDatei=null;
+		            	neuDatei=fc.showSaveDialog(stage);
+		        		if(neuDatei!=null) {
+		    	        	Document doc=new Document();
+		    	    		doc.setRootElement(steuerung.getRootElement());
+		    	            Format format = Format.getPrettyFormat();
+		    	            format.setIndent("    ");
+		    	            try (FileOutputStream fos = new FileOutputStream(neuDatei)) {
+		    	                XMLOutputter op = new XMLOutputter(format);
+		    	                op.output(doc, fos);
+		    	            } catch (IOException ioe) {
+		    	        		JOptionPane.showMessageDialog(null,"Fehler beim Schreiben in die Datei!","FEHLER!",0);
+		    	        		e.consume();
+		    	            }
+		    	    		aktSpeicherung=neuDatei;
+		        		}
+		        	}
+	        	}else if(antwort.get().equals(abbr)) {
+	        		e.consume();
+	        	}
+        	}
+        });
+        
         dateiLaden.setOnAction((e)->{
         	FileChooser fc=new FileChooser();
             fc.getExtensionFilters().addAll(
@@ -131,6 +196,7 @@ public class Hauptfenster {
     				steuerung.regeneriereAusDatei(file);
     				aktSpeicherung=file;
     				akt.aktualisieren();
+    				spNoetig=false;
     			} catch (IOException | JDOMException e1) {
     				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
     			}
@@ -161,6 +227,7 @@ public class Hauptfenster {
             	steuerung.setName(eingabe);
             	aktSpeicherung=null;
             	akt.aktualisieren();
+            	spNoetig=false;
             }
         });
         speichern.setOnAction((e)->{
@@ -202,6 +269,7 @@ public class Hauptfenster {
     	    		akt.aktualisieren();
         		}
         	}
+        	spNoetig=false;
         });
         spUnter.setOnAction((e)->{
         	FileChooser fc=new FileChooser();
@@ -224,6 +292,7 @@ public class Hauptfenster {
 	            }
 	    		aktSpeicherung=neuDatei;
 	    		akt.aktualisieren();
+	    		spNoetig=false;
     		}
         });
         zuProtuebersichtMenu.setOnAction((e)->{
@@ -264,6 +333,7 @@ public class Hauptfenster {
     }
     
     public void aktualisieren(){
+    	spNoetig=true;
         if((stage!=null)&&(steuerung!=null)){
             if(aktSpeicherung==null) {
             	stage.setTitle(steuerung.getName());
@@ -306,5 +376,18 @@ public class Hauptfenster {
 		steuerung.addSpieler("Joshua", "Kimmich",1000001 ,32);
 		steuerung.getTeams().get(0).setKapitaen(steuerung.getSpieler().get(0));
 		steuerung.getTeams().get(0).setVizekapitaen(steuerung.getSpieler().get(1));
+   }
+   
+   public static void setLink(Text text,Handler<Text> h) {
+	   text.setUnderline(true);
+	   text.setOnMouseEntered((e)->{
+		   text.setFill(Color.BLUE);
+	   });
+	   text.setOnMouseExited((e)->{
+		   text.setFill(Color.BLACK);
+	   });
+	   text.setOnMouseClicked((e)->{
+		   h.handle(text);
+	   });
    }
 }

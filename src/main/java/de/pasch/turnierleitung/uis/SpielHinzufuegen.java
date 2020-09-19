@@ -1,6 +1,7 @@
 package de.pasch.turnierleitung.uis;
 
 import de.pasch.turnierleitung.protagonisten.Team;
+import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
@@ -21,14 +22,31 @@ public class SpielHinzufuegen {
 	Stage stage;
 	Aktualisierer akt;
 	Steuerung steuerung;
+	Liga liga;
 	Spieltag spieltag;
+	boolean bearbeiten=false;
+	Spiel bearbeitenSpiel;
 	
 	public SpielHinzufuegen(Stage primstage,Aktualisierer akt,Steuerung steuerung,
 			Spieltag spieltag,Liga liga) {
 		this.akt=akt;
 		this.steuerung=steuerung;
 		this.spieltag=spieltag;
+		this.liga=liga;
+		aufbauen(primstage);
+	}
+	
+	public SpielHinzufuegen(Stage primstage,Aktualisierer akt,Steuerung steuerung,Spieltag spieltag,Liga liga,Spiel bearbeiten) {
+		this.liga=liga;
+		this.spieltag=spieltag;
+		this.akt=akt;
+		this.steuerung=steuerung;
+		this.bearbeitenSpiel=bearbeiten;
+		this.bearbeiten=true;
+		aufbauen(primstage);
+	}
 		
+	private void aufbauen(Stage primstage) {	
 		stage=new Stage();
 		stage.initModality(Modality.WINDOW_MODAL);
 		stage.initOwner(primstage);
@@ -50,20 +68,35 @@ public class SpielHinzufuegen {
 			
 			ComboBox<Team>heimTeam=new ComboBox<Team>();
 			heimTeam.getItems().addAll(liga.getTeams());
-			Team letztesHeimteam=heimTeam.getItems().get(0);
+			Team letztesHeimteam;
+			if(bearbeiten) {
+				letztesHeimteam=bearbeitenSpiel.getHeimteam();
+			}else {
+				letztesHeimteam=spieltag.getTeams().get(0);
+			}
 			ZWTeam altHeim=new ZWTeam(letztesHeimteam);
 			heimTeam.setValue(letztesHeimteam);
 			gp.add(heimTeam, 0, 1);
 			
 			ComboBox<Team>auswaertsTeam=new ComboBox<Team>();
 			auswaertsTeam.getItems().addAll(liga.getTeams());
-			Team letztesAuswaertsteam=auswaertsTeam.getItems().get(1);
+			Team letztesAuswaertsteam;
+			if(bearbeiten) {
+				letztesAuswaertsteam=bearbeitenSpiel.getAuswaertsteam();
+			}else {
+				letztesAuswaertsteam=spieltag.getTeams().get(1);
+			}
 			ZWTeam altAuswaerts=new ZWTeam(letztesAuswaertsteam);
 			auswaertsTeam.setValue(letztesAuswaertsteam);
 			gp.add(auswaertsTeam, 1, 1);
 			
 			ZWText erlaubt=new ZWText();
 			erlaubt.setText("");
+			
+			if(bearbeiten) {
+				heimTeam.setDisable(true);
+				auswaertsTeam.setDisable(true);
+			}
 			
 			heimTeam.setOnAction((e)->{
 				if(heimTeam.getValue().equals(auswaertsTeam.getValue())) {
@@ -121,10 +154,16 @@ public class SpielHinzufuegen {
 			speichern.setFont(Font.font(20));
 			gp.add(speichern, 0,4);
 			speichern.setOnAction((e)->{
-				steuerung.addSpiel(heimTeam.getValue().getID(), auswaertsTeam.getValue().getID(),neutral.isSelected(),
-						stadion.isSelected(),stadionText.getText(), spieltag.getID());
-				akt.aktualisieren();
-				stage.hide();
+				if(!bearbeiten) {
+					steuerung.addSpiel(heimTeam.getValue().getID(), auswaertsTeam.getValue().getID(),neutral.isSelected(),
+							stadion.isSelected(),stadionText.getText(), spieltag.getID());
+					akt.aktualisieren();
+					stage.hide();
+				}else {
+					steuerung.editSpiel(neutral.isSelected(), stadion.isSelected(), stadionText.getText(), bearbeitenSpiel.getID());
+					akt.aktualisieren();
+					stage.hide();
+				}
 			});
 			
 			Scene scene=new Scene(gp,500,350);

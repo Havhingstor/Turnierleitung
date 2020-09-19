@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -35,6 +36,8 @@ public class HFSpieltag {
 	long letzterSpt=0;
 	long letztesSpiel=0;
 	HFProtagonisten hfp;
+	HFSpiele hfs;
+	HFTurnierelemente hft;
 	
 	public HFSpieltag(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -91,6 +94,12 @@ public class HFSpieltag {
 		if(hfp!=null) {
 			hfp.aktualisiere(steuerung);
 		}
+		if(hfs!=null) {
+			hfs.aktualisiere(steuerung);
+		}
+		if(hft!=null) {
+			hft.aktualisiere(steuerung);
+		}
 		
 		gp.getChildren().clear();
 		if(steuerung.getLigen().size()+steuerung.getKORunden().size()>0) {
@@ -116,7 +125,14 @@ public class HFSpieltag {
 				sptAuswahl.getChildren().removeIf((f)->(f!=teAuswahl));
 				createSpieltagslisteRest(teAuswahl, sptAuswahl);
 			});
-			sptAuswahl.add(teAuswahl, 0, 0);
+			Button teDetails=new Button("<-Tabelle");
+			teDetails.setOnAction((e)->{
+				hft=new HFTurnierelemente(teAuswahl.getValue(), stage, bp, steuerung, akt);
+			});
+			HBox auswahlBox=new HBox();
+			auswahlBox.getChildren().addAll(teAuswahl,teDetails);
+			
+			sptAuswahl.add(auswahlBox, 0, 0);
 			
 			createSpieltagslisteRest(teAuswahl, sptAuswahl);
 		}
@@ -415,7 +431,7 @@ public class HFSpieltag {
 				spieltage.getChildren().add(name);
 				name.setOnAction((e)->{
 					letztesSpiel=sp.getID();
-					createSpielLigaDetails(sp);
+					createSpielLigaDetails(sp,liga,spieltag);
 				});
 			}
 			spiel=IDPicker.pick(spieltag.getSpiele(), letztesSpiel);
@@ -452,7 +468,7 @@ public class HFSpieltag {
 			}
 		});		
 		
-		createSpielLigaDetails(spiel);
+		createSpielLigaDetails(spiel,liga,spieltag);
 		
 		gp.add(sAuswahl, 2,0);
 	}
@@ -519,7 +535,7 @@ public class HFSpieltag {
 		gp.add(sAuswahl, 2,0);
 	}
 	
-	public void createSpielLigaDetails(Spiel spiel) {
+	public void createSpielLigaDetails(Spiel spiel,Liga liga,Spieltag spt) {
 		gp.getChildren().remove(spielInfos);
 		
 		spielInfos=new GridPane();
@@ -571,13 +587,26 @@ public class HFSpieltag {
 		neutrText.setFont(Font.font(20));
 		spielInfos.add(neutrText, 1,4);
 		
+		Button edit=new Button("Spiel bearbeiten");
+		edit.setFont(Font.font("Verdana",15));
+		edit.setDisable(true);
+		spielInfos.add(edit, 0, 5,2,1);
+		
 		if(spiel!=null) {
-			heimText.setOnMouseClicked((e)->{
+			Hauptfenster.setLink(heimText,(t)->{
 				hfp=new HFProtagonisten(spiel.getHeimteam(), stage, bp, steuerung, akt);
 			});
-			auswText.setOnMouseClicked((e)->{
+			Hauptfenster.setLink(auswText,(e)->{
 				hfp=new HFProtagonisten(spiel.getAuswaertsteam(), stage, bp, steuerung, akt);
 			});
+			Hauptfenster.setLink(ergebText,(e)->{
+				hfs=new HFSpiele(liga, spt,spiel, stage, bp, steuerung, akt);
+			});
+			edit.setOnAction((e)->{
+				steuerung.getLiga(letztesTE);
+				new SpielHinzufuegen(stage, akt, steuerung, spt,liga, spiel);
+			});
+			edit.setDisable(false);
 		}
 		
 		gp.add(spielInfos, 4, 0);

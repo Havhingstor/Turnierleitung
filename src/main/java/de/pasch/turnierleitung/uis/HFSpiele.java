@@ -58,7 +58,7 @@ public class HFSpiele {
 		aktualisiere(steuerung);
 	}
 	
-	public HFSpiele(Liga liga,Spieltag spt,Stage stage,BorderPane bp,Steuerung steuerung, Aktualisierer akt) {
+	public HFSpiele(Liga liga,Spieltag spt,Spiel sp,Stage stage,BorderPane bp,Steuerung steuerung, Aktualisierer akt) {
 		this.stage=stage;
 		this.bp=bp;
 		this.steuerung=steuerung;
@@ -66,6 +66,7 @@ public class HFSpiele {
 		
 		letztesTE=liga;
 		letzterSpt=spt;
+		letztesSpiel=sp;
 		
 		gp=new GridPane();
 		gp.setPadding(new Insets(5));
@@ -112,7 +113,7 @@ public class HFSpiele {
 		gp.add(turnierBox, 0, 0);
 		ComboBox<Turnierelement> teAuswahl=new ComboBox<Turnierelement>();
 		turnierBox.getChildren().add(teAuswahl);
-		Button zuTurnierelement=new Button("<-Details zeigen");
+		Button zuTurnierelement=new Button("<-Tabelle zeigen");
 		zuTurnierelement.setOnAction((e)->{
 			hft=new HFTurnierelemente(teAuswahl.getValue(), stage, bp, steuerung, akt);
 		});

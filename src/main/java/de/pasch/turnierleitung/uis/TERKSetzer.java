@@ -45,7 +45,8 @@ public class TERKSetzer {
 			gp.add(lab, 0, i);
 		}
 		
-		ComboBox[] combos=new ComboBox[5];
+		@SuppressWarnings("unchecked")
+		ComboBox<String>[] combos=new ComboBox[5];
 		
 		for(int i=0;i<5;i++) {
 			combos[i]=new ComboBox<String>();

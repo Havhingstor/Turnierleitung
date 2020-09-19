@@ -2,8 +2,6 @@ package de.pasch.turnierleitung.turnierelemente;
 
 import org.jdom2.Element;
 
-import de.pasch.turnierleitung.steuerung.Steuerung;
-
 public class PlatzierungInKORunde {
 	private int platz=0;
 	private long spielID=0;
