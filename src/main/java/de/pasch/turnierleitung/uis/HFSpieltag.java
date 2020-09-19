@@ -34,6 +34,7 @@ public class HFSpieltag {
 	long letztesTE=0;
 	long letzterSpt=0;
 	long letztesSpiel=0;
+	HFProtagonisten hfp;
 	
 	public HFSpieltag(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -53,9 +54,44 @@ public class HFSpieltag {
 		
 		aktualisiere(steuerung);
 	}
+	/**
+	 * @param spt darf null sein
+	 * @param spiel darf null sein
+	 */
+	public HFSpieltag(Liga liga,Spieltag spt,Spiel spiel,Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
+		this.steuerung=steuerung;
+		this.bp=bp;
+		this.stage=stage;
+		this.akt=akt;
+		
+		letztesTE=liga.getID();
+		if(spt!=null) {
+			letzterSpt=spt.getID();
+		}
+		if(spiel!=null) {
+			letztesSpiel=spiel.getID();
+		}
+		
+		gp=new GridPane();
+		gp.setPadding(new Insets(5));
+		gp.setVgap(5);
+		gp.setHgap(5);
+		
+		try {
+			bp.getChildren().remove(1);
+		}catch(IndexOutOfBoundsException ioobe) {}
+		bp.setCenter(gp);
+		
+		aktualisiere(steuerung);
+	}
 	
 	public void aktualisiere(Steuerung steuerung) {
 		this.steuerung=steuerung;
+		
+		if(hfp!=null) {
+			hfp.aktualisiere(steuerung);
+		}
+		
 		gp.getChildren().clear();
 		if(steuerung.getLigen().size()+steuerung.getKORunden().size()>0) {
 			GridPane sptAuswahl=new GridPane();
@@ -414,8 +450,7 @@ public class HFSpieltag {
 					}
 				});
 			}
-		});
-		
+		});		
 		
 		createSpielLigaDetails(spiel);
 		
@@ -536,6 +571,15 @@ public class HFSpieltag {
 		neutrText.setFont(Font.font(20));
 		spielInfos.add(neutrText, 1,4);
 		
+		if(spiel!=null) {
+			heimText.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(spiel.getHeimteam(), stage, bp, steuerung, akt);
+			});
+			auswText.setOnMouseClicked((e)->{
+				hfp=new HFProtagonisten(spiel.getAuswaertsteam(), stage, bp, steuerung, akt);
+			});
+		}
+		
 		gp.add(spielInfos, 4, 0);
 		
 	}
@@ -553,8 +597,8 @@ public class HFSpieltag {
 				beschr[4]="Nein";
 			}
 			if(spiel.isErgebnis()) {
-				beschr[2]=spiel.getHeimteam().getMoeglichKN()+" "+spiel.getHeimtore().size()+":"
-						+spiel.getAuswaertstore().size()+" "+spiel.getAuswaertsteam().getMoeglichKN();
+				beschr[2]=spiel.getHeimteam().getMoeglichKN()+" "+spiel.getHeimtoreZahl()+":"
+						+spiel.getAuswaertstoreZahl()+" "+spiel.getAuswaertsteam().getMoeglichKN();
 			}else {
 				beschr[2]=spiel.getHeimteam().getMoeglichKN()+" -:- "+spiel.getAuswaertsteam().getMoeglichKN();
 			}
@@ -632,8 +676,8 @@ public class HFSpieltag {
 			
 			for(int i=0;i<runde.getSpiele().size();i++) {
 				Spiel spiel=IDPicker.pick(steuerung.getSpiele(),runde.getSpiele().get(i));
-				beschr[4+i]=spiel.getHeimteam().getKurzname()+" "+spiel.getHeimtore().size()+":"
-						+spiel.getAuswaertstore().size()+" "+spiel.getAuswaertsteam().getKurzname();
+				beschr[4+i]=spiel.getHeimteam().getKurzname()+" "+spiel.getHeimtoreZahl()+":"
+						+spiel.getAuswaertstoreZahl()+" "+spiel.getAuswaertsteam().getKurzname();
 			}
 			
 			return beschr;

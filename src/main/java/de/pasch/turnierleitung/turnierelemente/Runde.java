@@ -210,11 +210,11 @@ public class Runde implements Pickable{
 						if(spiel.getID()==s) {
 							if(spiel.abschließenUndGewinner()) {
 								if(spiel.getHeimID()==heimteamID) {
-									werteHeimSpieler+=spiel.getMengeHeimtore();
-									werteAuswaertsSpieler+=spiel.getMengeAuswaertstore();
+									werteHeimSpieler+=spiel.getHeimtoreZahl();
+									werteAuswaertsSpieler+=spiel.getAuswaertstoreZahl();
 								}else {
-									werteAuswaertsSpieler+=spiel.getMengeHeimtore();
-									werteHeimSpieler+=spiel.getMengeAuswaertstore();
+									werteAuswaertsSpieler+=spiel.getHeimtoreZahl();
+									werteHeimSpieler+=spiel.getAuswaertstoreZahl();
 								}
 							}
 						}
@@ -234,9 +234,9 @@ public class Runde implements Pickable{
 							if(spiel.getID()==s) {
 								if(spiel.abschließenUndGewinner()) {
 									if(spiel.getHeimID()==heimteamID) {
-										zusatzwertungAuswaerts+=spiel.getMengeAuswaertstore();
+										zusatzwertungAuswaerts+=spiel.getAuswaertstoreZahl();
 									}else {
-										zusatzwertungHeim+=spiel.getMengeAuswaertstore();
+										zusatzwertungHeim+=spiel.getAuswaertstoreZahl();
 									}
 								}
 							}

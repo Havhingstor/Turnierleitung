@@ -5,6 +5,9 @@
  */
 package de.pasch.turnierleitung.uis;
 
+import javax.swing.JOptionPane;
+
+import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
@@ -14,7 +17,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javax.swing.JOptionPane;
 
 /**
  *
@@ -22,7 +24,7 @@ import javax.swing.JOptionPane;
  */
 public class TeamHinzufuegen {
     
-    public TeamHinzufuegen(Stage primStage,Aktualisierer akt,Steuerung steuerung){
+    public TeamHinzufuegen(Stage primStage,Aktualisierer akt,Steuerung steuerung,Handler<Team> h){
         Stage stage=new Stage();
         stage.setTitle("Neues Team");
         stage.initModality(Modality.WINDOW_MODAL);
@@ -59,6 +61,7 @@ public class TeamHinzufuegen {
             try{
                 if(!nameFeld.getText().equals("")){
                     steuerung.addTeam(nameFeld.getText(),kurznFeld.getText(),stadionFeld.getText());
+                    h.handle(steuerung.getTeams().get(steuerung.getTeams().size()-1));
                     akt.aktualisieren();
                     stage.hide();
                 }else{

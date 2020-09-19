@@ -43,7 +43,7 @@ public final class Testklasse {
                 System.out.println(spiel.getID());
                 return spiel;
             }).map((spiel) -> {
-                System.out.println(spiel.getHeimtore().get(0).getZeit());
+                System.out.println(spiel.getHeimtoreDirekt().get(0).getZeit());
                 return spiel;
             }).forEachOrdered((spiel) -> {
                 System.out.println(IDPicker.pick(steuerung.getTeams(),spiel.getGewinnerID()));

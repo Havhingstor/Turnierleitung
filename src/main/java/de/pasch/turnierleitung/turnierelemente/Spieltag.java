@@ -164,4 +164,13 @@ public class Spieltag implements Pickable {
 	public String toString() {
 		return name;
 	}
+	
+	public boolean istAbgeschlossen() {
+		for(long spID:spielIDs) {
+			if(!IDPicker.pick(as.spiele, spID).isErgebnis()) {
+				return false;
+			}
+		}
+		return true;
+	}
 }

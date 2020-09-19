@@ -60,6 +60,7 @@ public class HFProtagonisten {
 	
 	public void aktualisiere(Steuerung steuerung) {
 		this.steuerung=steuerung;
+		
 		Tab letzterTabTab=inhalt.getSelectionModel().getSelectedItem();
 		if(letzterTabTab==teamTab) {
 			letzterTab=0;
@@ -117,8 +118,19 @@ public class HFProtagonisten {
         Button neu=new Button("Neues Team");
         neu.setPrefSize(100,30);
         schaltungen.getChildren().add(neu);
+        /*
         neu.setOnAction((e)->{
-            new TeamHinzufuegen(stage,akt,steuerung);
+            	new TeamHinzufuegen(stage, akt, steuerung,new Handler<Team>() {
+            		public void handle(Team t) {
+            			letztesTeamTeams=t.getID();
+            		}
+            	});
+            });
+            */
+        neu.setOnAction((e)->{
+        	new TeamHinzufuegen(stage, akt, steuerung,(t)->{
+    			letztesTeamTeams=t.getID();
+        	});
         });
         Button loe=new Button("Team löschen" );
         loe.setPrefSize(100,30);

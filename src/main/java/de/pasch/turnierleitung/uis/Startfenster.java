@@ -29,6 +29,7 @@ import javafx.stage.Stage;
  */
 public class Startfenster extends Application {
     private boolean dateiLadenBool=false;
+    private boolean beispielBool=false;
     private File dateiLadenFile=null;
     private String turniername=null;
     Hauptfenster hf=null;
@@ -41,13 +42,16 @@ public class Startfenster extends Application {
         grid.setVgap(5);
         Text text=new Text("Wie wollen Sie die Turnierleitungssoftware starten?");
         text.setFont(Font.font("Verdana", FontWeight.THIN, 15));
-        grid.add(text, 0, 0,2,1);
+        grid.add(text, 0, 0,3,1);
         Button neu=new Button("Neues Turnier erstellen");
         neu.setFont(Font.font("Verdana",FontWeight.THIN,12));
-        Button laden=new Button("Turnier laden"); laden.setFont(Font.font("Verdana",FontWeight.THIN,12));
+        Button laden=new Button("Turnier laden"); 
         laden.setFont(Font.font("Verdana",FontWeight.THIN,12));
+        Button beispiel=new Button("Beispielturnier laden"); 
+        beispiel.setFont(Font.font("Verdana",FontWeight.THIN,12));
         grid.add(neu,0,1);
         grid.add(laden,1,1);
+        grid.add(beispiel, 2, 1);
         Scene scene = new Scene(grid,500,100);
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -81,13 +85,22 @@ public class Startfenster extends Application {
                 }
             }
         });
+        beispiel.setOnAction((e)->{
+        	beispielBool=true;
+        	primaryStage.hide();
+        	newHauptfenster();
+        });
     }
     
     private void newHauptfenster(){
         hf=new Hauptfenster(this);
     }
     
-    public boolean getDateiLadenBool(){
+    public boolean getBeispielBool() {
+		return beispielBool;
+	}
+
+	public boolean getDateiLadenBool(){
         return dateiLadenBool;
     }
     

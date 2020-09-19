@@ -19,6 +19,8 @@ public class Spiel implements Pickable {
 	private String stadion = "";
 	private ArrayList<Long> heimtore = new ArrayList<>();
 	private ArrayList<Long> auswaertstore = new ArrayList<>();
+	private int alternativeHeimtore=0;
+	private int alternativeAuswaertstore=0;
 	private ArrayList<Long> heimstrafen = new ArrayList<>();
 	private ArrayList<Long> auswaertsstrafen = new ArrayList<>();
 	private long gewinnerID = 0;
@@ -251,24 +253,51 @@ public class Spiel implements Pickable {
 		return neutralerPlatz;
 	}
 
-	public int getMengeHeimtore() {
+	public int getMengeHeimtoreDirekt() {
 		return heimtore.size();
 	}
 
-	public int getMengeAuswaertstore() {
+	public int getMengeAuswaertstoreDirekt() {
 		return auswaertstore.size();
 	}
+	public void setMinimaleHeimtore(int alternativeHeimtore) {
+		if(alternativeHeimtore>=heimtore.size()) {
+			this.alternativeHeimtore = alternativeHeimtore;
+			abschließenUndGewinner();
+		}
+		if(getHeimtoreZahl()+getAuswaertstoreZahl()>0) {
+			ergebnis=true;
+		}
+	}
+
+	public void setMinimaleAuswaertstore(int alternativeAuswaertstore) {
+		if(alternativeAuswaertstore>=auswaertstore.size()) {
+			this.alternativeAuswaertstore = alternativeAuswaertstore;
+			abschließenUndGewinner();
+		}
+		if(getHeimtoreZahl()+getAuswaertstoreZahl()>0) {
+			ergebnis=true;
+		}
+	}
+
 
 	public void addTor(Tor tor) {
 		if (tor.getTeamID() == heimID) {
 			heimtore.add(tor.getID());
 			ergebnis=true;
+			if(heimtore.size()>alternativeHeimtore) {
+				alternativeHeimtore=heimtore.size();
+			}
 		} else if (tor.getTeamID() == auswaertsID) {
 			auswaertstore.add(tor.getID());
 			ergebnis=true;
+			if(auswaertstore.size()>alternativeAuswaertstore) {
+				alternativeAuswaertstore=auswaertstore.size();
+			}
 		} else {
 			throw new IllegalArgumentException("Tor kann keinem Team zugeordnet werden!");
 		}
+		abschließenUndGewinner();
 	}
 
 	public void removeTor(long ID) {
@@ -280,10 +309,19 @@ public class Spiel implements Pickable {
 			throw new IllegalArgumentException(
 					"Dieses Tor ist weder als Heim- noch als " + "Ausw�rtstor registriert!");
 		}
-
+		abschließenUndGewinner();
 	}
 
-	public ArrayList<Tor> getHeimtore() {
+	
+	public int getHeimtoreZahl() {
+		return alternativeHeimtore;
+	}
+	
+	public int getAuswaertstoreZahl() {
+		return alternativeAuswaertstore;
+	}
+	
+	public ArrayList<Tor> getHeimtoreDirekt() {
 		ArrayList<Tor> tore = new ArrayList<>();
                 heimtore.forEach((l) -> {
                     tore.add(IDPicker.pick(as.tore, l));
@@ -291,7 +329,7 @@ public class Spiel implements Pickable {
 		return tore;
 	}
 
-	public ArrayList<Tor> getAuswaertstore() {
+	public ArrayList<Tor> getAuswaertstoreDirekt() {
 		ArrayList<Tor> tore = new ArrayList<>();
                 auswaertstore.forEach((l) -> {
                     tore.add(IDPicker.pick(as.tore, l));
@@ -346,7 +384,7 @@ public class Spiel implements Pickable {
 		return tore;
 	}
 
-	public ArrayList<Strafe> getAuswaertsstarfen() {
+	public ArrayList<Strafe> getAuswaertsstrafen() {
 		ArrayList<Strafe> tore = new ArrayList<>();
                 auswaertsstrafen.forEach((l) -> {
                     tore.add(IDPicker.pick(as.strafen, l));
@@ -364,10 +402,10 @@ public class Spiel implements Pickable {
 	}
 
 	public boolean abschließenUndGewinner() {
-		if (heimtore.size() > auswaertstore.size()) {
+		if (getHeimtoreZahl() > getAuswaertstoreZahl()) {
 			gewinnerID = heimID;
 			unentschieden = false;
-		} else if (heimtore.size() < auswaertstore.size()) {
+		} else if (getHeimtoreZahl() < getAuswaertstoreZahl()) {
 			gewinnerID = auswaertsID;
 			unentschieden = false;
 		} else {

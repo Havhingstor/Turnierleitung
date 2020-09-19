@@ -1,5 +1,5 @@
 package de.pasch.turnierleitung.uis;
 
-public interface LDHandler<T> {
+public interface Handler<T> {
 	public void handle(T t);
 }

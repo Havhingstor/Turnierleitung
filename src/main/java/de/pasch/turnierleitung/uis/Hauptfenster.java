@@ -39,7 +39,8 @@ public class Hauptfenster {
     Steuerung steuerung;
     Stage stage;
     HFTurnierelemente hft;
-    HFSpieltag hfs;
+    HFSpieltag hfst;
+    HFSpiele hfs;
     Einstellungsfenster einst;
     File aktSpeicherung=null;
     
@@ -54,6 +55,10 @@ public class Hauptfenster {
 			} catch (IOException | JDOMException e1) {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
+        }else if(sf.getBeispielBool()) {
+        	steuerung.setName("Beispielturner");
+        	aktSpeicherung=null;
+        	beispielSetup();
         }else{
         	/*
             boolean erlaubt=false;
@@ -91,11 +96,12 @@ public class Hauptfenster {
         MenuItem zuProtuebersichtMenu=new MenuItem("Protagonisten");
         MenuItem zuTurnierelementeuebersichtMenu=new MenuItem("Turnierelemente");
         MenuItem zuSpieltagsuebersichtMenu=new MenuItem("Spieltage");
+        MenuItem zuSpieluebersichtMenu=new MenuItem("Spiele");
         MenuItem zuEinstellungen=new MenuItem("Einstellungen");
         MenuItem ueber=new MenuItem("Über");
         hilfe.getItems().add(ueber);
         ansichten.getItems().addAll(zuProtuebersichtMenu,
-        		zuTurnierelementeuebersichtMenu,zuSpieltagsuebersichtMenu);
+        		zuTurnierelementeuebersichtMenu,zuSpieltagsuebersichtMenu,zuSpieluebersichtMenu);
         datei.getItems().addAll(dateiLaden,neu,speichern,spUnter,zuEinstellungen);
         Aktualisierer akt=new Aktualisierer(this);
        
@@ -105,8 +111,9 @@ public class Hauptfenster {
         Button zuProtuebersichtbSchn=new Button("Protagonisten");
         Button zuTurnuebersichtbSchn=new Button("Turnierelemente");
         Button zuSpieltaguebersichtSchn=new Button("Spieltage");
+        Button zuSpieluebersichtSchn=new Button("Spiele");
        
-        schnellwechsel.getItems().addAll(zuProtuebersichtbSchn,zuTurnuebersichtbSchn,zuSpieltaguebersichtSchn);
+        schnellwechsel.getItems().addAll(zuProtuebersichtbSchn,zuTurnuebersichtbSchn,zuSpieltaguebersichtSchn,zuSpieluebersichtSchn);
         BorderPane bp=new BorderPane();
         VBox menus=new VBox();
         menus.getChildren().addAll(menuBar,schnellwechsel);
@@ -120,7 +127,6 @@ public class Hauptfenster {
             );
             File file=fc.showOpenDialog(this.stage);
             if(file!=null) {
-            	System.out.println(file.getAbsolutePath());
             	try {
     				steuerung.regeneriereAusDatei(file);
     				aktSpeicherung=file;
@@ -239,67 +245,18 @@ public class Hauptfenster {
         	hft=new HFTurnierelemente(stage, bp, steuerung, akt);
         });
         zuSpieltagsuebersichtMenu.setOnAction((e)->{
-        	hfs=new HFSpieltag(stage, bp, steuerung, akt);
+        	hfst=new HFSpieltag(stage, bp, steuerung, akt);
         });
         zuSpieltaguebersichtSchn.setOnAction((e)->{
-        	hfs=new HFSpieltag(stage, bp, steuerung, akt);
+        	hfst=new HFSpieltag(stage, bp, steuerung, akt);
         });
-        
-        ///*
-        // Ab hier nur Tests => später entfernen
-        steuerung.addTeam("FC Bayern München","FCB","Allianz-Arena");
-		steuerung.addTeam("SV Werder Bremen","SVW","wohninvest Weserstadion");
-                steuerung.getTeams().stream().map((Team team) -> {
-                    System.out.println(team.toString());
-                    return team;
-                }).forEachOrdered((team) -> {
-                System.out.println(team.getHeimstadion());
-            });
-		int[]ar= {1,2,3,4,5};
-		steuerung.addLiga(3,1,0,"Testliga",ar);
-		steuerung.addTeamZuLiga(1000001, 1000003);
-		steuerung.addTeamZuLiga(1000002,1000003);
-		steuerung.addSpieltag(steuerung.getLigen().get(0).getID(),"TestST");
-		
-		steuerung.addSpiel(1000001l, 1000002l, false, false, "", steuerung.getSpieltage().get(0).getID());
-                steuerung.getSpiele().stream().map((spiel) -> {
-                    System.out.println(spiel.abschließenUndGewinner());
-                return spiel;
-            }).map((spiel) -> {
-                System.out.println(spiel.getStadion());
-                return spiel;
-            }).forEachOrdered((spiel) -> {
-                System.out.println(spiel.getID());
-            });
-		steuerung.addTor(true, 0, 0,steuerung.getSpiele().get(0).getID(), 17, 0, 2);
-                steuerung.getSpiele().stream().map((spiel) -> {
-                    System.out.println(spiel.abschließenUndGewinner());
-                return spiel;
-            }).map((spiel) -> {
-                System.out.println(spiel.getStadion());
-                return spiel;
-            }).map((spiel) -> {
-                System.out.println(spiel.getID());
-                return spiel;
-            }).map((spiel) -> {
-                System.out.println(spiel.getHeimtore().get(0).getZeit());
-                return spiel;
-            }).forEachOrdered((spiel) -> {
-                System.out.println(IDPicker.pick(steuerung.getTeams(),spiel.getGewinnerID()));
-            });
-		System.out.println(steuerung.getLigen().get(0).berechneGetAktuelleTabelle());
-		steuerung.addTeam("1. FC Nürnberg","FCN","Max-Morlock-Stadion");
-		steuerung.addTeamZuLiga(steuerung.getTeams().get(2).getID(), 1000003);
-		System.out.println(steuerung.getLigen().get(0).berechneGetAktuelleTabelle());
-                steuerung.getTeams().stream().map((team) -> {
-                    System.out.println(team.toString());
-                return team;
-            }).forEachOrdered((team) -> {
-                System.out.println(team.getHeimstadion());
-            });
-	// bis hier Tests
-        //*/
-        
+        zuSpieluebersichtMenu.setOnAction((e)->{
+        	hfs=new HFSpiele(stage,bp,steuerung,akt);
+        });
+        zuSpieluebersichtSchn.setOnAction((e)->{
+        	hfs=new HFSpiele(stage,bp,steuerung,akt);        	
+        });
+                
         stage.setMaximized(true);
         Scene scene=new Scene(bp,1200,800);
         stage.setScene(scene);
@@ -323,8 +280,31 @@ public class Hauptfenster {
         if(einst!=null) {
         	einst.aktualisiere(steuerung);
         }
+        if(hfst!=null) {
+        	hfst.aktualisiere(steuerung);
+        }
         if(hfs!=null) {
         	hfs.aktualisiere(steuerung);
         }
     }
+    
+   public void beispielSetup() {
+	   steuerung.addTeam("FC Bayern München","FCB","Allianz-Arena");
+	   steuerung.addTeam("SV Werder Bremen","SVW","wohninvest Weserstadion");
+		int[]ar= {1,2,3,4,5};
+		steuerung.addLiga(3,1,0,"Testliga",ar);
+		steuerung.addTeamZuLiga(1000001, 1000003);
+		steuerung.addTeamZuLiga(1000002,1000003);
+		steuerung.addSpieltag(steuerung.getLigen().get(0).getID(),"TestST");
+		
+		steuerung.addSpiel(1000001l, 1000002l, false, false, "", steuerung.getSpieltage().get(0).getID());
+        steuerung.addTor(true, 0, 0,steuerung.getSpiele().get(0).getID(), 17, 0, 2);
+		steuerung.addTeam("1. FC Nürnberg","FCN","Max-Morlock-Stadion");
+		steuerung.addTeamZuLiga(steuerung.getTeams().get(2).getID(), 1000003);
+		steuerung.addSpieler("Manuel", "Neuer",1000001 , 1);
+		steuerung.addSpieler("Thomas", "Müller",1000001 , 25);
+		steuerung.addSpieler("Joshua", "Kimmich",1000001 ,32);
+		steuerung.getTeams().get(0).setKapitaen(steuerung.getSpieler().get(0));
+		steuerung.getTeams().get(0).setVizekapitaen(steuerung.getSpieler().get(1));
+   }
 }

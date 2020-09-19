@@ -23,7 +23,7 @@ import javafx.stage.Stage;
  */
 public class ListDialog<T> {
     public ListDialog(List<T> list,Stage primStage,double width,
-            String messageString,String title,LDHandler<T> ldh){
+            String messageString,String title,Handler<T> ldh){
     	if(list.size()>0) {
 	        Stage stage=new Stage();
 	        if(primStage!=null){
@@ -58,7 +58,7 @@ public class ListDialog<T> {
     }
     
     public ListDialog(List<T> al,Stage primStage,
-            String messageString,String title,LDHandler<T> ldh){
+            String messageString,String title,Handler<T> ldh){
         new ListDialog<T>(al,primStage,250,messageString,title,ldh);
     }
 }

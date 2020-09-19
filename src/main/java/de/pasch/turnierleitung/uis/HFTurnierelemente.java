@@ -39,6 +39,8 @@ public class HFTurnierelemente {
 	HFProtagonisten hfp;
 	Tab uebersichtTab,tabelleTab;
 	int letzterTab=0;
+	HFSpiele hfs;
+	HFSpieltag hfst;
 	
 	public HFTurnierelemente(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.steuerung=steuerung;
@@ -59,9 +61,39 @@ public class HFTurnierelemente {
 		aktualisiere(steuerung);
 	}
 	
+	public HFTurnierelemente(Turnierelement te,Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
+		this.steuerung=steuerung;
+		this.bp=bp;
+		this.stage=stage;
+		this.akt=akt;
+		
+		letztesTE=te.getID();
+		if(te.isLiga()) {
+			letzterTab=1;
+		}
+		
+		gp=new GridPane();
+		gp.setPadding(new Insets(5));
+		gp.setVgap(5);
+		gp.setHgap(5);
+		
+		try {
+			bp.getChildren().remove(1);
+		}catch(IndexOutOfBoundsException ioobe) {}
+		bp.setCenter(gp);
+		
+		aktualisiere(steuerung);
+	}
+	
 	public void aktualisiere(Steuerung steuerung) {
 		this.steuerung=steuerung;
 		
+		if(hfs!=null) {
+			hfs.aktualisiere(steuerung);
+		}
+		if(hfst!=null) {
+			hfst.aktualisiere(steuerung);
+		}
 		
 		ArrayList<Turnierelement>tes=new ArrayList<Turnierelement>();
 		tes.addAll(steuerung.getKORunden());
@@ -167,12 +199,13 @@ public class HFTurnierelemente {
 				bearbeitenY=5;
 				inhalt=new TabPane();
 				inhalt.setPrefWidth(630);
+				int letzterTabZwischen=letzterTab;
 				inhalt.getSelectionModel().selectedItemProperty().addListener((e)->{
 					letzterTab=inhalt.getSelectionModel().getSelectedIndex();
 				});
+				
 				Tab uebersichtTab=new Tab("Übersicht",detGP);
 				uebersichtTab.setClosable(false);
-				int letzterTabZwischen=letzterTab;
 				inhalt.getTabs().add(uebersichtTab);
 				letzterTab=letzterTabZwischen;
 				
@@ -318,6 +351,9 @@ public class HFTurnierelemente {
 		
 		Label tabLab=new Label("Tabelle: "+liga.getName());
 		tabLab.setFont(Font.font(20));
+		tabLab.setOnMouseClicked((e)->{
+			hfst=new HFSpieltag(liga, null, null, stage, bp, steuerung, akt);
+		});
 		gp.add(tabLab, 0, 0);
 		
 		GridPane tabellePane=new GridPane();
@@ -438,12 +474,23 @@ public class HFTurnierelemente {
 			tabellePane.add(teamTD, 9, i+1);
 		}
 		
+		HBox buttons=new HBox();
+		buttons.setSpacing(10);
+		gp.add(buttons,0,2);
+		
 		Button rk=new Button("Sortierkriterien bearbeiten");
 		rk.setOnAction((e)->{
 			new TERKSetzer(liga, stage, akt);
 		});
 		rk.setFont(Font.font(15));
-		gp.add(rk, 0, 2);
+		
+		Button spi=new Button("Spiele anzeigen");
+		spi.setOnAction((e)->{
+			hfs=new HFSpiele(stage, bp, steuerung, akt);
+		});
+		spi.setFont(Font.font(15));
+		
+		buttons.getChildren().addAll(rk,spi);
 		
 		Tab tabelleTab=new Tab("Tabelle",gp);
 		tabelleTab.setClosable(false);

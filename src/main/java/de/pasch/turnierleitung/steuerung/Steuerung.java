@@ -199,6 +199,11 @@ public class Steuerung {
 				t.setName(name);
 				t.setKurzname(kurzname);
 				t.setHeimstadion(heimstadion);
+				for(Spiel sp:as.spiele) {
+					if(sp.getHeimID()==t.getID()){
+						editSpiel(sp.getNeutralerPlatz(),sp.getSeperaterPlatzname(),sp.getStadion(), sp.getID());
+					}
+				}
 			}
 		}
 	}
@@ -421,6 +426,7 @@ public class Steuerung {
 	}
 
 	public void removeSpiel(long ID) {
+		Spiel spiel=IDPicker.pick(as.spiele, ID);
 		as.spiele.remove(IDPicker.pick(as.spiele, ID));
 		as.aufstellungen.stream().filter((a) -> (a.getSpielID() == ID)).forEach((a) -> {
 			as.aufstellungen.remove(a);
@@ -431,6 +437,18 @@ public class Steuerung {
 		as.spt.stream().filter((spt)->(spt.getSpieleIDs().contains(ID))).forEach((spt)->{
 			spt.getSpieleIDs().remove(ID);
 		});
+		for(Tor t:spiel.getHeimtoreDirekt()) {
+			as.tore.remove(t);
+		}
+		for(Tor t:spiel.getAuswaertstoreDirekt()) {
+			as.tore.remove(t);
+		}
+		for(Strafe s:spiel.getHeimstrafen()) {
+			as.strafen.remove(s);
+		}
+		for(Strafe s:spiel.getAuswaertsstrafen()) {
+			as.strafen.remove(s);
+		}
 	}
 	
 	public void removeSpieltag(long ID) {
@@ -485,8 +503,9 @@ public class Steuerung {
 					.forEachOrdered((spiel) -> {
 						spiel.removeTor(ID);
 					});
-			as.tore.remove(tor);
+			//as.tore.remove(tor);
 		});
+		as.tore.removeIf((t)->(t.getID()==ID));
 	}
 
 	public ArrayList<Tor> getTore() {

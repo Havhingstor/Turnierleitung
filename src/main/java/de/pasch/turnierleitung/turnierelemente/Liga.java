@@ -251,9 +251,9 @@ public class Liga extends Turnierelement implements Pickable {
 			for(Spiel s:st.getSpiele()) {
 				if(s.isErgebnis()) {
 					if(s.getHeimID()==ID) {
-						tore+=s.getMengeHeimtore();
+						tore+=s.getHeimtoreZahl();
 					}else if(s.getAuswaertsID()==ID) {
-						tore+=s.getMengeAuswaertstore();
+						tore+=s.getAuswaertstoreZahl();
 					}
 				}
 			}
@@ -266,9 +266,9 @@ public class Liga extends Turnierelement implements Pickable {
 		for(Spieltag st:getSpieltage()) {
 			for(Spiel s:st.getSpiele()) {if(s.isErgebnis()) {
 					if(s.getHeimID()==ID) {
-						tore+=s.getMengeAuswaertstore();
+						tore+=s.getAuswaertstoreZahl();
 					}else if(s.getAuswaertsID()==ID) {
-						tore+=s.getMengeHeimtore();
+						tore+=s.getHeimtoreZahl();
 					}
 				}
 			}
