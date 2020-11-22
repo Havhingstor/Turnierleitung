@@ -5,6 +5,10 @@ import de.pasch.turnierleitung.steuerung.Pickable;
 public abstract class Turnierelement implements Comparable<Turnierelement>,Pickable {
 	private long ID;
 	private String name;
+	private int hoechstStartelf=11;
+	private int hoechstAuswechselspieler=9;
+	private int hoechstAuswechslung=5;
+	private int hoechstAuswechslungNachspielzeit=6;
 	
 	public long getID() {
 		return ID;
@@ -35,4 +39,36 @@ public abstract class Turnierelement implements Comparable<Turnierelement>,Picka
 	}
 	
 	public abstract boolean isLiga();
+
+	public int getHoechstStartelf() {
+		return hoechstStartelf;
+	}
+
+	public void setHoechstStartelf(int hoechstStartelf) {
+		this.hoechstStartelf = hoechstStartelf;
+	}
+
+	public int getHoechstAuswechselspieler() {
+		return hoechstAuswechselspieler;
+	}
+
+	public void setHoechstAuswechselspieler(int hoechstAuswechselspieler) {
+		this.hoechstAuswechselspieler = hoechstAuswechselspieler;
+	}
+
+	public int getHoechstAuswechslung() {
+		return hoechstAuswechslung;
+	}
+
+	public void setHoechstAuswechslung(int hoechstAuswechslung) {
+		this.hoechstAuswechslung = hoechstAuswechslung;
+	}
+
+	public int getHoechstAuswechslungNachspielzeit() {
+		return hoechstAuswechslungNachspielzeit;
+	}
+
+	public void setHoechstAuswechslungNachspielzeit(int hoechstAuswechslungNachspielzeit) {
+		this.hoechstAuswechslungNachspielzeit = hoechstAuswechslungNachspielzeit;
+	}
 }

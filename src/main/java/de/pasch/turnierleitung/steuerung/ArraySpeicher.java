@@ -8,7 +8,6 @@ import de.pasch.turnierleitung.protagonisten.Link;
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
 import de.pasch.turnierleitung.protagonisten.Team;
-import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.spiele.Strafe;
 import de.pasch.turnierleitung.spiele.Tor;
@@ -26,7 +25,7 @@ public class ArraySpeicher {
 	public ArrayList<Spiel>spiele=new ArrayList<Spiel>();
 	public ArrayList<Strafe>strafen=new ArrayList<Strafe>();
 	public ArrayList<SpielerTeamConnector>connectoren=new ArrayList<SpielerTeamConnector>();
-	public ArrayList<Aufstellung>aufstellungen=new ArrayList<Aufstellung>();
+	//public ArrayList<Aufstellung>aufstellungen=new ArrayList<Aufstellung>();
 	public ArrayList<Runde>runden=new ArrayList<Runde>();
 	public ArrayList<Rundensammlung>rs=new ArrayList<Rundensammlung>();
 	public ArrayList<Spieltag>spt=new ArrayList<Spieltag>();
@@ -71,11 +70,11 @@ public class ArraySpeicher {
 		}
 		parElement.addContent(connectorenEl);
 		
-		Element aufstellungenEl=new Element("Aufstellungen");
+		/*Element aufstellungenEl=new Element("Aufstellungen");
 		for(Aufstellung auf:aufstellungen) {
 			auf.createXMLElements(aufstellungenEl);
 		}
-		parElement.addContent(aufstellungenEl);
+		parElement.addContent(aufstellungenEl);*/
 		
 		Element rundenEl=new Element("Runden");
 		for(Runde runde:runden) {

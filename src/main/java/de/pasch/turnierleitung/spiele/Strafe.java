@@ -86,6 +86,11 @@ public class Strafe extends Spielaktivitaet {
 	public void setGefoulten(Spieler spieler) {
 		this.gefoulterID=spieler.getID();
 	}
+
+	@Override
+	public boolean isTor() {
+		return false;
+	}
 }
 
 

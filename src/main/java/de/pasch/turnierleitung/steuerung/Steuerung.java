@@ -15,6 +15,7 @@ import org.jdom2.input.SAXBuilder;
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
 import de.pasch.turnierleitung.protagonisten.Team;
+import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.spiele.Strafe;
 import de.pasch.turnierleitung.spiele.Tor;
@@ -24,6 +25,7 @@ import de.pasch.turnierleitung.turnierelemente.Runde;
 import de.pasch.turnierleitung.turnierelemente.Rundensammlung;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
+import javafx.util.Pair;
 
 public class Steuerung {
 	private final ArraySpeicher as = new ArraySpeicher();
@@ -101,24 +103,48 @@ public class Steuerung {
 		return 0;
 	}
 
+	public String getTrikotnummerEinesSpielersString(long ID) {
+		for (SpielerTeamConnector stc : as.connectoren) {
+			if (stc.getSpielerID() == ID && !stc.getAusgetreten()) {
+				if(stc.getTrikotnummer()>0) {
+					return ""+stc.getTrikotnummer();
+				}else {
+					return "-";
+				}
+			}
+		}
+		return "-";
+	}
+	
 	public void editSpieler(String vorname, String nachname, int trikotnummer, long teamID, long spielerID) {
 		as.spieler.stream().filter((s) -> (s.getID() == spielerID)).forEachOrdered((s) -> {
 			s.setName(vorname, nachname);
 		});
 		boolean wechsel = false;
+		boolean schonSTC=false;
 		for (int i = 0; i < as.connectoren.size(); i++) {
 			SpielerTeamConnector stc = as.connectoren.get(i);
 			if (spielerID == stc.getSpielerID()) {
 				if ((teamID != stc.getTeamID())&&(!stc.getAusgetreten())) {
-					stc.setAusgetreten(true);
-					wechsel = true;
+					boolean erlaubt=true;
+					for(Aufstellung aufst:getAlleAufstellungen()) {
+						if(aufst.getAllespieler(as.spieler).contains(IDPicker.pick(as.spieler, spielerID))&&!aufst.isBeendet()) {
+							throw new IllegalArgumentException("A"+aufst.getSpielID());
+						}
+					
+					}
+					if(erlaubt) {
+						stc.setAusgetreten(true);
+						wechsel = true;
+					}
 				} else if(teamID == stc.getTeamID()) {
 					stc.setAusgetreten(false);
 					stc.setTrikotnummer(trikotnummer);
+					schonSTC=true;
 				}
 			}
 		}
-		if (wechsel) {
+		if (wechsel&&!schonSTC) {
 			SpielerTeamConnector stc2 = new SpielerTeamConnector
 					(spielerID, teamID, trikotnummer,idc.createID(), as);
 			as.connectoren.add(stc2);
@@ -302,7 +328,7 @@ public class Steuerung {
 		});
 	}
 
-	public void addRunde(long RSID, boolean auslosung, long heimID, long auswaertsID,boolean neutralePlaetze,String besPlnHeim, String besPlnAuswaerts) {
+	public void addRunde(long RSID,KORunde kor, boolean auslosung, long heimID, long auswaertsID,boolean neutralePlaetze,String besPlnHeim, String besPlnAuswaerts) {
 		//Besonderer Platzname deaktiviert, wenn String leer
 		if (auslosung) {
 			long zw = 0;
@@ -334,9 +360,9 @@ public class Steuerung {
 		boolean erstHeim=true;
 		for(int i=0;i<rs.getSpielanzahl();++i) {
 			if(erstHeim) {
-				this.addSpiel(heimID, auswaertsID, neutralePlaetze, besPlnHeimbl, besPlnHeim, runde.getID());
+				this.addSpiel(heimID, auswaertsID, neutralePlaetze, besPlnHeimbl, besPlnHeim, runde.getID(), kor);
 			}else {
-				this.addSpiel(auswaertsID, heimID, neutralePlaetze, besPlnAuswaertsbl, besPlnAuswaerts, runde.getID());
+				this.addSpiel(auswaertsID, heimID, neutralePlaetze, besPlnAuswaertsbl, besPlnAuswaerts, runde.getID(), kor);
 			}
 			erstHeim=!erstHeim;
 		}
@@ -385,10 +411,14 @@ public class Steuerung {
 	}
 
 	public void addSpiel(long heimID, long auswaertsID, boolean neutralerPlatz, boolean seperaterPlatzname,
-			String seperaterPlatznameName, long rundenOderSpieltagID) {
+			String seperaterPlatznameName, long rundenOderSpieltagID,Turnierelement te) {
 		long neueID = idc.createID();
+		Aufstellung heim=new Aufstellung(heimID, neueID, te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
+				te.getHoechstAuswechslung(),te.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
+		Aufstellung auswaerts=new Aufstellung(auswaertsID,neueID,te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
+				te.getHoechstAuswechslung(),te.getHoechstAuswechslungNachspielzeit(),idc.createID(), as);
 		Spiel spiel = new Spiel(IDPicker.pick(as.teams, heimID), IDPicker.pick(as.teams, auswaertsID), neueID,
-				neutralerPlatz, as);
+				neutralerPlatz, as,heim,auswaerts);
 		if (seperaterPlatzname) {
 			spiel.setStadion(seperaterPlatznameName);
 		} else {
@@ -428,9 +458,6 @@ public class Steuerung {
 	public void removeSpiel(long ID) {
 		Spiel spiel=IDPicker.pick(as.spiele, ID);
 		as.spiele.remove(IDPicker.pick(as.spiele, ID));
-		as.aufstellungen.stream().filter((a) -> (a.getSpielID() == ID)).forEach((a) -> {
-			as.aufstellungen.remove(a);
-		});
 		as.runden.stream().filter((r) -> (r.getSpiele().contains(ID))).forEach((r) -> {
 			r.getSpiele().remove(ID);
 		});
@@ -449,6 +476,15 @@ public class Steuerung {
 		for(Strafe s:spiel.getAuswaertsstrafen()) {
 			as.strafen.remove(s);
 		}
+	}
+	
+	public ArrayList<Aufstellung>getAlleAufstellungen(){
+		ArrayList<Aufstellung>aufst=new ArrayList<Aufstellung>();
+		for(Spiel sp:as.spiele) {
+			aufst.add(sp.getAufstHeim());
+			aufst.add(sp.getAufstAuswaerts());
+		}
+		return aufst;
 	}
 	
 	public void removeSpieltag(long ID) {
@@ -687,8 +723,13 @@ public class Steuerung {
 			st.getSpiele().stream().map((sp) -> {
 				long heimID = sp.getAuswaertsID();
 				long auswaertsID = sp.getHeimID();
+				long neueID=idc.createID();
+				Liga te=IDPicker.pick(as.ligen, ligaID);
+				Aufstellung heim=new Aufstellung(heimID, neueID, te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
+						te.getHoechstAuswechslung(),te.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
+				Aufstellung auswaerts=new Aufstellung(auswaertsID,neueID,0,0,0,0,idc.createID(), as);
 				Spiel spiel = new Spiel(IDPicker.pick(as.teams, heimID), IDPicker.pick(as.teams, auswaertsID),
-						idc.createID(), false, as);
+						neueID, false, as, heim, auswaerts);
 				return spiel;
 			}).map((spiel) -> {
 				as.spiele.add(spiel);
@@ -756,7 +797,7 @@ public class Steuerung {
 		liga.setPunkteProNiederlage(ppn);
 		liga.setReihenfolgeKriterien(rk);
 	}
-
+	
 	public void regeneriereAusDatei(File datei) throws IOException, JDOMException {
 		Document doc = new SAXBuilder().build(datei);
 		Element re = doc.getRootElement();
@@ -825,5 +866,21 @@ public class Steuerung {
 			parEl.addContent(el);
 			el.addContent(o.toString());
 		}
+	}
+	
+	public Pair<Liga,Spieltag>getLSVonSpiel(long ID){
+		Spieltag rSpt=null;
+		for(Spieltag spt:as.spt) {
+			if(spt.getSpieleIDs().contains(ID)) {
+				rSpt=spt;
+			}
+		}
+		Liga rLig = null;
+		for(Liga lig:as.ligen) {
+			if(lig.getSpieltageID().contains(rSpt.getID())) {
+				rLig=lig;
+			}
+		}
+		return new Pair<Liga,Spieltag>(rLig,rSpt);
 	}
 }

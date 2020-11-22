@@ -9,7 +9,7 @@ import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
 
-public class Spielaktivitaet implements Pickable {
+public abstract class Spielaktivitaet implements Pickable {
 	
 	protected long ID=0;
 	protected int zeit=0;
@@ -30,6 +30,8 @@ public class Spielaktivitaet implements Pickable {
 		this.typen.addAll(typen);
 		this.as=as;
 	}
+	
+	public abstract boolean isTor();
 	
 	public String getDateiString() {
 		String string="<ID>"+ID+"</ID>\n<Zeit>"+zeit+"</Zeit>\n<Nachspielzeit>"+nachspielzeit+"</Nachspielzeit>\n"

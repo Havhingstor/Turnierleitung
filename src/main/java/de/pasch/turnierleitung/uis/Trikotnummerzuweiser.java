@@ -68,7 +68,7 @@ public class Trikotnummerzuweiser {
 			name.setPrefWidth(300);
 			box.getChildren().add(name);
 			Label nummer=new Label("           "+
-			steuerung.getTrikotnummerEinesSpielers(s.getID()));
+			steuerung.getTrikotnummerEinesSpielersString(s.getID()));
 			nummer.setPrefWidth(50);
 			box.getChildren().add(nummer);
 			spielerNummern.getChildren().add(box);

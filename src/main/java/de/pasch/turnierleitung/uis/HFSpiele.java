@@ -1,21 +1,32 @@
 package de.pasch.turnierleitung.uis;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.swing.JOptionPane;
 
+import de.pasch.turnierleitung.protagonisten.Spieler;
+import de.pasch.turnierleitung.protagonisten.Team;
+import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.spiele.Tor;
+import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -23,6 +34,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class HFSpiele {
@@ -201,7 +213,7 @@ public class HFSpiele {
 	 */
 	private void createSpielAnsicht(Spiel sp) {
 		GridPane spielInfos=new GridPane();
-		spielInfos.setPadding(new Insets(10,10,10,10));
+		spielInfos.setPadding(new Insets(10));
 		spielInfos.setHgap(10);
 		spielInfos.setVgap(10);
 		gp.add(spielInfos, 1,1);
@@ -252,6 +264,9 @@ public class HFSpiele {
 		spielInfos.add(neutrText, 1,3+verschiebung);
 		
 		createMinimaltorEingabe(sp,spielInfos);
+		if(sp!=null) {
+			createAufstellungen(sp,spielInfos,verschiebung);
+		}
 	}
 	
 	private void createMinimaltorEingabe(Spiel sp,GridPane spielInfo) {		
@@ -393,19 +408,41 @@ public class HFSpiele {
 				auswaertstore.setText(""+sp.getAuswaertstoreZahl());
 				aktivierer.setText("Ergebnis löschen");
 				aktivierer.setOnAction((e)->{
-					int best=JOptionPane.showConfirmDialog(null, "Sollen wirklich alle Tore "
-							+ "(samt der vollständig eingegebenen) gelöscht werden?",
-							"ACHTUNG!", JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
-					if(best==JOptionPane.OK_OPTION) {
-						ArrayList<Tor> tore=new ArrayList<Tor>(sp.getHeimtoreDirekt());
-						tore.addAll(sp.getAuswaertstoreDirekt());
-						for(Tor t:tore) {
-							steuerung.removeTor(t.getID());
+					boolean erlaubt=true;
+					Spieler fS = null;
+					for(Spieler spieler:sp.getAufstHeim().getAllespieler(steuerung.getSpieler())) {
+						if(!steuerung.getAktivesTeamEinesSpielers(spieler.getID()).equals(sp.getHeimteam())) {
+							erlaubt=false;
+							fS=spieler;
+							break;
 						}
-						sp.setMinimaleAuswaertstore(0);
-						sp.setMinimaleHeimtore(0);
-						sp.setErgebnis(false);
-						akt.aktualisieren();
+					}
+					if(erlaubt) {
+						int best=JOptionPane.showConfirmDialog(null, "Sollen wirklich alle Tore "
+								+ "(samt der vollständig eingegebenen) gelöscht werden?",
+								"ACHTUNG!", JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+						if(best==JOptionPane.OK_OPTION) {
+							ArrayList<Tor> tore=new ArrayList<Tor>(sp.getHeimtoreDirekt());
+							tore.addAll(sp.getAuswaertstoreDirekt());
+							for(Tor t:tore) {
+								steuerung.removeTor(t.getID());
+							}
+							sp.setMinimaleAuswaertstore(0);
+							sp.setMinimaleHeimtore(0);
+							sp.setErgebnis(false);
+							akt.aktualisieren();
+						}
+					}else {
+						ButtonType sA=new ButtonType("Spieler anzeigen");
+						Alert al=new Alert(AlertType.ERROR);
+						al.getButtonTypes().add(sA);
+						al.setTitle("Fehler");
+						al.setHeaderText(null);
+						al.setContentText(fS.getName()+" spielt nicht mehr bei seinem Verein. Deshalb kann das Ergebnis nicht mehr entfernt werden!");
+						Optional<ButtonType>btn=al.showAndWait();
+						if(btn.get().equals(sA)) {
+							hfp=new HFProtagonisten(fS, stage, bp, steuerung, akt);
+						}
 					}
 				});
 			}else {
@@ -453,5 +490,277 @@ public class HFSpiele {
 		return beschr;
 	}
 	
+	private void createAufstellungen(Spiel spiel, GridPane spielInfo,int verschiebung) {
+		TabPane aufstellungen=new TabPane();
+		aufstellungen.setPadding(new Insets(5));
+		spielInfo.add(aufstellungen, 0, 4+verschiebung,2,1);
+		
+		Tab heim=new Tab("Aufstellung-Heimteam");
+		heim.setClosable(false);
+		aufstellungen.getTabs().add(heim);
+		
+		Tab auswaerts=new Tab("Aufstellung-Auswärtsteam");
+		auswaerts.setClosable(false);
+		aufstellungen.getTabs().add(auswaerts);
+		aufstellungenTabs(heim,spiel,true);
+		aufstellungenTabs(auswaerts,spiel,false);
+	}
 	
+	private void aufstellungenTabs(Tab tab,Spiel spiel,boolean heim) {
+		Aufstellung aufst;
+		if(heim) {
+			aufst=spiel.getAufstHeim();
+		}else {
+			aufst=spiel.getAufstAuswaerts();
+		}
+		
+		Team team;
+		if(heim) {
+			team=spiel.getHeimteam();
+		}else {
+			team=spiel.getAuswaertsteam();
+		}
+		
+		GridPane aufstellung=new GridPane();
+		aufstellung.setPadding(new Insets(5));
+		aufstellung.setVgap(5);
+		aufstellung.setHgap(5);
+		
+		GridPane start=new GridPane();
+		start.setPadding(new Insets(5));
+		start.setVgap(5);
+		start.setHgap(5);
+		
+		ScrollPane spStart=new ScrollPane(start);
+		spStart.setPrefWidth(160);
+		
+		aufstellung.add(spStart, 0, 1);
+		
+		Label startelfLabel=new Label("Startelf");
+		aufstellung.add(startelfLabel, 0, 0);
+		
+		int zaehler=1;
+		//for(int i=0;i<6;++i)
+		for(Spieler s:aufst.getStartelf(steuerung.getSpieler())) {
+			Text trikotnummer=new Text(steuerung.getTrikotnummerEinesSpielersString(s.getID()));
+			trikotnummer.setFont(Font.font("Verdana"));
+			start.add(trikotnummer, 0, zaehler);
+			
+			Text name=new Text(s.getName());
+			name.setFont(Font.font("Verdana"));
+			start.add(name, 1, zaehler);
+			
+			if(aufst.getKapitaenID()==s.getID()) {
+				Text kapt=new Text("C");
+				name.setFont(Font.font("Verdana"));
+				start.add(kapt, 2, zaehler);
+			}
+			++zaehler;
+		}
+		
+		GridPane bank=new GridPane();
+		bank.setPadding(new Insets(5));
+		bank.setVgap(5);
+		bank.setHgap(5);
+		
+		ScrollPane spBank=new ScrollPane(bank);
+		spBank.setPrefWidth(160);
+		
+		aufstellung.add(spBank, 1, 1);
+		
+		Label bankLabel=new Label("Auswechselbank");
+		aufstellung.add(bankLabel, 1, 0);
+		
+		zaehler=1;
+		for(Spieler s:aufst.getAuswechselspieler(steuerung.getSpieler())) {
+			Text trikotnummer=new Text(steuerung.getTrikotnummerEinesSpielersString(s.getID()));
+			trikotnummer.setFont(Font.font("Verdana"));
+			bank.add(trikotnummer, 0, zaehler);
+			
+			Text name=new Text(s.getName());
+			name.setFont(Font.font("Verdana"));
+			bank.add(name, 1, zaehler);
+			++zaehler;
+		}
+		
+		VBox btns=new VBox();
+		btns.setSpacing(5);
+		aufstellung.add(btns, 2, 1);
+		
+		Button setzen=new Button("Aufstellung eingeben");
+		setzen.setFont(Font.font("Verdana"));
+		setzen.setOnAction((e)->{
+			if(!spiel.isErgebnis()) {
+				Stage aufstStage=new Stage();
+				aufstStage.setTitle("Aufstellung bearbeiten");
+				aufstStage.initModality(Modality.WINDOW_MODAL);
+				aufstStage.initOwner(stage);
+				
+				GridPane aufstGp=new GridPane();
+				aufstGp.setPadding(new Insets(5));
+				aufstGp.setVgap(5);
+				aufstGp.setHgap(5);
+				
+				Label startBearb=new Label("Startaufstellung");
+				aufstGp.add(startBearb, 0, 0);
+				
+				ZwLong[] zwl=new ZwLong[aufst.getHoechstAuswechselspieler()+aufst.getHoechstStartelf()];
+				
+				ArrayList<ComboBox<Spieler>>cBoxen=new ArrayList<ComboBox<Spieler>>();
+				for(int i=0;i<aufst.getHoechstStartelf();++i) {
+					ComboBox<Spieler>box=new ComboBox<Spieler>();
+					box.getItems().add(null);
+					box.getItems().addAll(steuerung.getAktiveSpielerEinesTeams(team.getID()));
+					cBoxen.add(box);
+					if(aufst.getStartelfNummer()>i) {
+						box.setValue(aufst.getStartelf(steuerung.getSpieler()).get(i));
+					}
+					if(box.getValue()!=null) {
+						zwl[i]=new ZwLong(box.getValue().getID());
+					}else {
+						zwl[i]=new ZwLong(0l);
+					}
+					final int iE=i;
+					box.setOnAction((f)->{
+						if(box.getValue()!=null) {
+							for(int h=0;h<cBoxen.size();++h) {
+								ComboBox<Spieler>cB=cBoxen.get(h);
+								if(cB.getValue()!=null&&!box.equals(cB)&&box.getValue().equals(cB.getValue())) {
+									cB.setValue(IDPicker.pick(steuerung.getSpieler(),zwl[iE].getWert()));
+									zwl[h].setWert(cB.getValue().getID());
+								}
+							}
+						}
+						if(box.getValue()!=null) {
+							zwl[iE].setWert(box.getValue().getID());
+						}
+					});
+					aufstGp.add(box, 0, i+1);
+				}
+				
+				Label bankBearb=new Label("Auswechselbank");
+				aufstGp.add(bankBearb, 1, 0);
+				
+				for(int i=0;i<aufst.getHoechstAuswechselspieler();++i) {
+					ComboBox<Spieler>box=new ComboBox<Spieler>();
+					box.getItems().add(null);
+					box.getItems().addAll(steuerung.getAktiveSpielerEinesTeams(team.getID()));
+					cBoxen.add(box);
+					if(aufst.getAuswechselspielerNummer()>i) {
+						box.setValue(aufst.getAuswechselspieler(steuerung.getSpieler()).get(i));
+					}
+					if(box.getValue()!=null) {
+						zwl[i+aufst.getHoechstStartelf()]=new ZwLong(box.getValue().getID());
+					}else {
+						zwl[i+aufst.getHoechstStartelf()]=new ZwLong(0l);
+					}
+					final int iE=i;
+					box.setOnAction((f)->{
+						if(box.getValue()!=null) {
+							for(int h=0;h<cBoxen.size();++h) {
+								ComboBox<Spieler>cB=cBoxen.get(h);
+								if(cB.getValue()!=null&&!box.equals(cB)&&box.getValue().equals(cB.getValue())) {
+									cB.setValue(IDPicker.pick(steuerung.getSpieler(),zwl[iE+aufst.getHoechstStartelf()].getWert()));
+									zwl[h].setWert(cB.getValue().getID());
+								}
+							}
+						}
+						if(box.getValue()!=null) {
+							zwl[iE+aufst.getHoechstStartelf()].setWert(box.getValue().getID());
+						}					
+					});
+					aufstGp.add(box, 1, i+1);
+				}
+				
+				Button ok=new Button("OK");
+				ok.setOnAction((f)->{
+					for(Spieler sp:aufst.getStartelf(steuerung.getSpieler())) {
+						aufst.removeSpielerStartelf(sp);
+					}
+					for(Spieler sp:aufst.getAuswechselspieler(steuerung.getSpieler())) {
+						aufst.removeSpielerBank(sp);
+					}
+					for(int i=0;i<aufst.getHoechstStartelf();++i) {
+						if(cBoxen.get(i).getValue()!=null) {
+							aufst.addSpielerStartelf(cBoxen.get(i).getValue());
+						}
+					}
+					for(int i=aufst.getHoechstStartelf();i<cBoxen.size();++i) {
+						if(cBoxen.get(i).getValue()!=null) {
+							aufst.addSpielerBank(cBoxen.get(i).getValue());
+						}
+					}
+					aufstStage.hide();
+					akt.aktualisieren();
+				});
+				aufstGp.add(ok, 2, 1);
+				
+				aufstGp.setPrefSize(350, 410);
+				
+				Scene aufstScene=new Scene(aufstGp);
+				aufstStage.setScene(aufstScene);
+				aufstStage.show();
+			}else {
+				Alert warnung=new Alert(AlertType.INFORMATION);
+				warnung.initModality(Modality.WINDOW_MODAL);
+				warnung.initOwner(stage);
+				warnung.setTitle("Bearbeiten der Aufstellung nicht möglich!");
+				warnung.setHeaderText(null);
+				warnung.setContentText("Da das Spiel schon ein Ergebnis hat, "
+						+ "kann die Aufstellung nicht bearbeiten werden.\n"
+						+ "Zum Bearbeiten Ergebnis entfernen.");
+				warnung.showAndWait();
+			}
+		});
+		btns.getChildren().add(setzen);
+		
+		Button kapitaen=new Button("Kapitän bestimmen");
+		kapitaen.setFont(Font.font("Verdana"));
+		kapitaen.setOnAction((e)->{
+			if(!spiel.isErgebnis()) {
+				Stage kapStage=new Stage();
+				kapStage.setTitle("Kapitän bestimmen");
+				kapStage.initModality(Modality.WINDOW_MODAL);
+				kapStage.initOwner(stage);
+				
+				GridPane gp=new GridPane();
+				gp.setPadding(new Insets(5));
+				gp.setHgap(5);
+				gp.setVgap(5);
+				
+				Scene scene=new Scene(gp);
+				kapStage.setScene(scene);
+				kapStage.show();
+			}else {
+				Alert warnung=new Alert(AlertType.INFORMATION);
+				warnung.initModality(Modality.WINDOW_MODAL);
+				warnung.initOwner(stage);
+				warnung.setTitle("Bestimmen des Kapitäns nicht möglich!");
+				warnung.setHeaderText(null);
+				warnung.setContentText("Da das Spiel schon ein Ergebnis hat, "
+						+ "kann der Kapitän nicht bestimmt werden.\n"
+						+ "Zum Bearbeiten Ergebnis entfernen.");
+				warnung.showAndWait();
+			}
+		});
+		btns.getChildren().add(kapitaen);
+		
+		tab.setContent(aufstellung);
+	}
+	
+	private class ZwLong{
+		private long wert=0l;
+		
+		private ZwLong(long l) {
+			wert=l;
+		}
+		
+		public long getWert() {
+			return wert;
+		}
+
+		public void setWert(long wert) {
+			this.wert = wert;
+		}
+	}
 }

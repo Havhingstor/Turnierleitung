@@ -78,4 +78,9 @@ public class Tor extends Spielaktivitaet {
 	public Team getTeam() {
 		return IDPicker.pick(as.teams, teamID);
 	}
+
+	@Override
+	public boolean isTor() {
+		return true;
+	}
 }

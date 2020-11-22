@@ -7,6 +7,7 @@ import java.util.Random;
 import org.jdom2.Element;
 
 import de.pasch.turnierleitung.protagonisten.Team;
+import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDCreator;
@@ -382,7 +383,12 @@ public class Liga extends Turnierelement implements Pickable {
 				heimID=auswaertsID;
 				auswaertsID=zw;
 			}
-			spiele.add(new Spiel(IDPicker.pick(as.teams,heimID),IDPicker.pick(as.teams, auswaertsID),idc.createID(),false,as));
+			long neueID=idc.createID();
+			Aufstellung heim=new Aufstellung(heimID, neueID, this.getHoechstStartelf(), this.getHoechstAuswechselspieler(),
+					this.getHoechstAuswechslung(),this.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
+			Aufstellung auswaerts=new Aufstellung(auswaertsID,neueID,this.getHoechstStartelf(), this.getHoechstAuswechselspieler(),
+					this.getHoechstAuswechslung(),this.getHoechstAuswechslungNachspielzeit(),idc.createID(), as);
+			spiele.add(new Spiel(IDPicker.pick(as.teams,heimID),IDPicker.pick(as.teams, auswaertsID),neueID,false,as,heim,auswaerts));
 		}
 		return spiele;
 	}
@@ -412,7 +418,12 @@ public class Liga extends Turnierelement implements Pickable {
 		Ausloser a=new Ausloser(teamsSpieltag);
 		long[][]nsp=a.getAusgelost();
 		for(int i=0;i<teamNr/2;++i) {
-			Spiel spiel=new Spiel(IDPicker.pick(as.teams,nsp[1][i]),IDPicker.pick(as.teams,nsp[1][teamNr-1-i]), idc.createID(), false, as);
+			long neueID=idc.createID();
+			Aufstellung heim=new Aufstellung(nsp[1][i], neueID, this.getHoechstStartelf(), this.getHoechstAuswechselspieler(),
+					this.getHoechstAuswechslung(),this.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
+			Aufstellung auswaerts=new Aufstellung(nsp[1][teamNr-1-i],neueID,this.getHoechstStartelf(), this.getHoechstAuswechselspieler(),
+					this.getHoechstAuswechslung(),this.getHoechstAuswechslungNachspielzeit(),idc.createID(), as);
+			Spiel spiel=new Spiel(IDPicker.pick(as.teams,nsp[1][i]),IDPicker.pick(as.teams,nsp[1][teamNr-1-i]), neueID, false, as,heim,auswaerts);
 			neuerS.add(spiel);
 		}
 		/*

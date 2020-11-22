@@ -2,6 +2,7 @@ package de.pasch.turnierleitung.uis;
 
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.Steuerung;
+import de.pasch.turnierleitung.turnierelemente.KORunde;
 import de.pasch.turnierleitung.turnierelemente.Rundensammlung;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -23,7 +24,7 @@ public class RundeHinzufuegen {
 	Rundensammlung rs;
 	
 	public RundeHinzufuegen(Stage primstage,Aktualisierer akt,Steuerung steuerung,
-			Rundensammlung rs) {
+			Rundensammlung rs,KORunde kor) {
 		this.akt=akt;
 		this.steuerung=steuerung;
 		this.rs=rs;
@@ -145,7 +146,7 @@ public class RundeHinzufuegen {
 			speichern.setFont(Font.font(20));
 			gp.add(speichern, 0,5);
 			speichern.setOnAction((e)->{
-				steuerung.addRunde(rs.getID(), auslosung.isSelected(),
+				steuerung.addRunde(rs.getID(), kor,auslosung.isSelected(),
 						heimTeam.getValue().getID(), auswaertsTeam.getValue().getID(), 
 						neutral.isSelected(),stadionTextHeim.getText() , stadionTextAuswaerts.getText());
 				akt.aktualisieren();

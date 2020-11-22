@@ -31,14 +31,18 @@ public class Spiel implements Pickable {
 	private boolean nachspielzeit=false;
 	private boolean seperaterPlatzname=false;
 	private ArraySpeicher as=null;
+	private Aufstellung aufstHeim;
+	private Aufstellung aufstAuswaerts;
 
-	public Spiel(Team heimteam, Team auswaertsteam, long ID, boolean neutralerPlatz,ArraySpeicher as) {
+	public Spiel(Team heimteam, Team auswaertsteam, long ID, boolean neutralerPlatz,ArraySpeicher as,Aufstellung heim,Aufstellung auswaerts) {
 		this.ID = ID;
 		this.heimID = heimteam.getID();
 		this.auswaertsID = auswaertsteam.getID();
 		this.neutralerPlatz = neutralerPlatz;
 		this.stadion = heimteam.getHeimstadion();
 		this.as=as;
+		aufstHeim=heim;
+		aufstAuswaerts=auswaerts;
 	}
 	
 	
@@ -55,6 +59,7 @@ public class Spiel implements Pickable {
 	 */
 	public void setErgebnis(boolean ergebnis) {
 		this.ergebnis = ergebnis;
+		
 	}
 	
 	public void createXMLElements(Element parEl) {
@@ -282,13 +287,13 @@ public class Spiel implements Pickable {
 
 
 	public void addTor(Tor tor) {
-		if (tor.getTeamID() == heimID) {
+		if (tor.getTeamID() == heimID&&isInTime(tor,true)) {
 			heimtore.add(tor.getID());
 			ergebnis=true;
 			if(heimtore.size()>alternativeHeimtore) {
 				alternativeHeimtore=heimtore.size();
 			}
-		} else if (tor.getTeamID() == auswaertsID) {
+		} else if (tor.getTeamID() == auswaertsID&&isInTime(tor,false)) {
 			auswaertstore.add(tor.getID());
 			ergebnis=true;
 			if(auswaertstore.size()>alternativeAuswaertstore) {
@@ -354,10 +359,10 @@ public class Spiel implements Pickable {
 	}
 
 	public void addStrafe(Strafe strafe) {
-		if (strafe.getTeamID() == heimID) {
+		if (strafe.getTeamID() == heimID&&isInTime(strafe,true)) {
 			heimstrafen.add(strafe.getID());
 			ergebnis=true;
-		} else if (strafe.getTeamID() == auswaertsID) {
+		} else if (strafe.getTeamID() == auswaertsID&&isInTime(strafe,false)) {
 			auswaertsstrafen.add(strafe.getID());
 			ergebnis=true;
 		} else {
@@ -534,7 +539,17 @@ public class Spiel implements Pickable {
 		return nachspielzeit;
 	}
 	
-        @Override
+        public Aufstellung getAufstHeim() {
+		return aufstHeim;
+	}
+
+
+		public Aufstellung getAufstAuswaerts() {
+		return aufstAuswaerts;
+	}
+
+
+		@Override
         public String toString(){
             if(IDPicker.pick(as.teams,heimID)!=null&&
                     IDPicker.pick(as.teams,auswaertsID)!=null){
@@ -556,6 +571,51 @@ public class Spiel implements Pickable {
 		private ArrayList<Boolean>auswaertsGetroffen=new ArrayList<Boolean>();
 		private ArrayList<Long>heimSpieler=new ArrayList<Long>();
 		private ArrayList<Long>auswaertsSpieler=new ArrayList<Long>();
+	}
+	
+	public <S extends Spielaktivitaet>boolean isInTime(S akt,boolean heim){
+		if(heim&&aufstHeim.getAktuelleAufstellung(akt.zeit+akt.getNachspielzeit()).size()>0) {
+			if(akt.isTor()) {
+				Tor t=(Tor)akt;
+				if(t.getVorbereiterID()>0&&!aufstHeim.getAktuelleAufstellung(t.getZeit()+t.getNachspielzeit()).
+						contains(t.getVorbereiterID())){
+							return false;
+						}
+				if(t.getAusfuehrerID()>0&&!aufstHeim.getAktuelleAufstellung(t.getZeit()+t.getNachspielzeit()).
+						contains(t.getAusfuehrerID())){
+							return false;
+						}
+			}else {
+				Strafe s=(Strafe)akt;
+				if(s.getAusfuehrerID()>0&&!aufstHeim.getAktuelleAufstellung(s.getZeit()+s.getNachspielzeit()).
+						contains(s.getAusfuehrerID())){
+							return false;
+						}
+				if(s.getGefoultenID()>0&&!aufstHeim.getAktuelleAufstellung(s.getZeit()+s.getNachspielzeit()).
+						contains(s.getGefoultenID())){
+							return false;
+						}
+			}
+		}else if(!heim&&aufstAuswaerts.getAktuelleAufstellung(akt.zeit+akt.getNachspielzeit()).size()>0) {
+			if(akt.getAusfuehrerID()>0&&!aufstAuswaerts.getAktuelleAufstellung(akt.getZeit()+akt.getNachspielzeit()).
+					contains(akt.getAusfuehrerID())){
+						return false;
+					}
+					if(akt.isTor()) {
+						Tor t=(Tor)akt;
+						if(t.getVorbereiterID()>0&&!aufstAuswaerts.getAktuelleAufstellung(t.getZeit()+t.getNachspielzeit()).
+								contains(t.getVorbereiterID())){
+									return false;
+								}
+					}else {
+						Strafe s=(Strafe)akt;
+						if(s.getGefoultenID()>0&&!aufstAuswaerts.getAktuelleAufstellung(s.getZeit()+s.getNachspielzeit()).
+								contains(s.getGefoultenID())){
+									return false;
+								}
+					}
+		}
+		return true;
 	}
 
 }

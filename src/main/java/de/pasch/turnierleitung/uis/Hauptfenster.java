@@ -64,7 +64,7 @@ public class Hauptfenster {
         	steuerung.setName("Beispielturner");
         	aktSpeicherung=null;
         	beispielSetup();
-        	spNoetig=true;
+        	spNoetig=false;
         }else{
         	/*
             boolean erlaubt=false;
@@ -135,7 +135,7 @@ public class Hauptfenster {
         	
         	Alert schließen=new Alert(Alert.AlertType.CONFIRMATION,
         			"Soll die Datei gespeichert werden?",ja,nein,abbr) ;
-        	schließen.setHeaderText("ACHTUNG!");
+        	schließen.setHeaderText(null);
         	schließen.initModality(Modality.APPLICATION_MODAL);
         	
         	Optional<ButtonType> antwort=schließen.showAndWait();
@@ -367,15 +367,21 @@ public class Hauptfenster {
 		steuerung.addTeamZuLiga(1000002,1000003);
 		steuerung.addSpieltag(steuerung.getLigen().get(0).getID(),"TestST");
 		
-		steuerung.addSpiel(1000001l, 1000002l, false, false, "", steuerung.getSpieltage().get(0).getID());
-        steuerung.addTor(true, 0, 0,steuerung.getSpiele().get(0).getID(), 17, 0, 2);
+		steuerung.addSpiel(1000001l, 1000002l, false, false, "", steuerung.getSpieltage().get(0).getID(), steuerung.getLigen().get(0));
 		steuerung.addTeam("1. FC Nürnberg","FCN","Max-Morlock-Stadion");
 		steuerung.addTeamZuLiga(steuerung.getTeams().get(2).getID(), 1000003);
 		steuerung.addSpieler("Manuel", "Neuer",1000001 , 1);
 		steuerung.addSpieler("Thomas", "Müller",1000001 , 25);
-		steuerung.addSpieler("Joshua", "Kimmich",1000001 ,32);
+		steuerung.addSpieler("Joshua", "Kimmich",1000001 ,6);
+		steuerung.addSpieler("Joshua", "Zirkzee",1000001 ,14);
 		steuerung.getTeams().get(0).setKapitaen(steuerung.getSpieler().get(0));
 		steuerung.getTeams().get(0).setVizekapitaen(steuerung.getSpieler().get(1));
+		steuerung.getSpiele().get(0).getAufstHeim().addSpielerStartelf(steuerung.getSpieler().get(0));
+		steuerung.getSpiele().get(0).getAufstHeim().addSpielerStartelf(steuerung.getSpieler().get(1));
+		steuerung.getSpiele().get(0).getAufstHeim().addSpielerStartelf(steuerung.getSpieler().get(2));
+		steuerung.getSpiele().get(0).getAufstHeim().addSpielerBank(steuerung.getSpieler().get(3));
+		steuerung.getSpiele().get(0).getAufstHeim().setKapitaenID(steuerung.getSpieler().get(0).getID());
+        steuerung.addTor(true, steuerung.getSpieler().get(1).getID(), 0,steuerung.getSpiele().get(0).getID(), 17, 0, 2);
    }
    
    public static void setLink(Text text,Handler<Text> h) {

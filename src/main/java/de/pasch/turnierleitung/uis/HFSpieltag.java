@@ -395,7 +395,7 @@ public class HFSpieltag {
 		});
 		detailGP.add(auslosen, 0,1);
 		
-		createBegegnungKORListe(runde);
+		createBegegnungKORListe(runde,kor);
 	}
 	
 	public String[] createBeschrRunde(Rundensammlung runde) {
@@ -473,7 +473,7 @@ public class HFSpieltag {
 		gp.add(sAuswahl, 2,0);
 	}
 	
-	public void createBegegnungKORListe(Rundensammlung rs) {
+	public void createBegegnungKORListe(Rundensammlung rs,KORunde kor) {
 		GridPane sAuswahl=new GridPane();
 		sAuswahl.setPadding(new Insets(5));
 		sAuswahl.setHgap(5);
@@ -509,7 +509,7 @@ public class HFSpieltag {
 		sAuswahl.add(neu, 0, 2);
 		neu.setOnAction((e)->{
 			if(rs!=null) {
-				new RundeHinzufuegen(stage, akt, steuerung, rs);
+				new RundeHinzufuegen(stage, akt, steuerung, rs,kor);
 			}
 		});
 		

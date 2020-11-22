@@ -1,17 +1,22 @@
 package de.pasch.turnierleitung.uis;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import javax.swing.JOptionPane;
 
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
 import de.pasch.turnierleitung.protagonisten.Team;
+import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -43,6 +48,7 @@ public class HFProtagonisten {
 	GridPane spielerGP;
 	GridPane std;
 	GridPane teamGP;
+	HFSpiele hfs;
 	
 	public HFProtagonisten(Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
 		this.stage=stage;
@@ -55,14 +61,22 @@ public class HFProtagonisten {
 			bp.getChildren().remove(1);
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(inhalt);
-		aktualisiere(steuerung);
+		aktualisiere(steuerung,false);
 	}
 	
 	public void aktualisiere(Steuerung steuerung) {
+		aktualisiere(steuerung,false);
+	}
+	
+	public void aktualisiere(Steuerung steuerung,boolean other) {
 		this.steuerung=steuerung;
 		
+		if(hfs!=null){
+			hfs.aktualisiere(steuerung);
+		}
+		
 		Tab letzterTabTab=inhalt.getSelectionModel().getSelectedItem();
-		if(letzterTabTab==teamTab) {
+		if(!other&&letzterTabTab==teamTab) {
 			letzterTab=0;
 		}else {
 			letzterTab=1;
@@ -439,7 +453,23 @@ public class HFProtagonisten {
     		        				0, f.getID(),spieler.getID());
     		        		akt.aktualisieren();
     	                }catch(IllegalArgumentException iae){
-    	                   JOptionPane.showMessageDialog(null,iae.getMessage(),"Fehler",0);
+    	                	if(iae.getMessage().charAt(0)=='A') {
+    	                		ButtonType zuSp=new ButtonType("Spiel anzeigen");
+    	                		Alert al=new Alert(AlertType.ERROR);
+    	                		al.getButtonTypes().add(zuSp);
+    	                		al.setTitle("Fehler");
+    	                		al.setHeaderText(null);
+    	                		al.setContentText("Der Spieler ist in einem Spiel gelistet, welches noch nicht abgeschlossen ist."
+    	                				+ " Deshalb kann er gerade nicht gewechselt werden!");
+    	                		al.setHeight(200);
+    	                		Optional<ButtonType>btn=al.showAndWait();
+    	                		if(btn.get().equals(zuSp)) {
+    	                			Spiel sp=IDPicker.pick(steuerung.getSpiele(),Long.valueOf(iae.getMessage().substring(1)));
+    	                			hfs=new HFSpiele(steuerung.getLSVonSpiel(sp.getID()).getKey(),steuerung.getLSVonSpiel(sp.getID()).getValue(),sp, stage, bp, steuerung, akt);
+    	                		}
+    	                	}else {
+    	                		JOptionPane.showMessageDialog(null,iae.getMessage(),"Fehler",0);
+    	                	}
     	                }
     	            }
         	});
@@ -583,6 +613,22 @@ public class HFProtagonisten {
 		}catch(IndexOutOfBoundsException ioobe) {}
 		bp.setCenter(inhalt);
 		letztesTeamTeams=team.getID();
-		aktualisiere(steuerung);
+		aktualisiere(steuerung,false);
+	}
+	
+	public HFProtagonisten(Spieler spieler,Stage stage,BorderPane bp,Steuerung steuerung,Aktualisierer akt) {
+		this.stage=stage;
+		this.bp=bp;
+		this.steuerung=steuerung;
+		this.akt=akt;
+		inhalt=new TabPane();
+		inhalt.setPadding(new Insets(5,5,5,5));
+		try {
+			bp.getChildren().remove(1);
+		}catch(IndexOutOfBoundsException ioobe) {}
+		bp.setCenter(inhalt);
+		letzterSpielerTeams=spieler.getID();
+		letztesTeamSpieler=steuerung.getAktivesTeamEinesSpielers(spieler.getID()).getID();
+		aktualisiere(steuerung,true);
 	}
 }

@@ -36,7 +36,7 @@ public class PlatzierungInKORunde {
 		teamEl.addContent(""+teamID);
 		pikEl.addContent(teamEl);
 		
-		Element platziertEl=new Element("Platzier");
+		Element platziertEl=new Element("Platziert");
 		platziertEl.addContent(""+platziert);
 		pikEl.addContent(platziertEl);
 	}

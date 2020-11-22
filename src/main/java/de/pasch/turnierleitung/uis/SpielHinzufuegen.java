@@ -156,7 +156,7 @@ public class SpielHinzufuegen {
 			speichern.setOnAction((e)->{
 				if(!bearbeiten) {
 					steuerung.addSpiel(heimTeam.getValue().getID(), auswaertsTeam.getValue().getID(),neutral.isSelected(),
-							stadion.isSelected(),stadionText.getText(), spieltag.getID());
+							stadion.isSelected(),stadionText.getText(), spieltag.getID(),liga);
 					akt.aktualisieren();
 					stage.hide();
 				}else {

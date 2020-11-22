@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.jdom2.Element;
 
 import de.pasch.turnierleitung.protagonisten.Spieler;
+import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
 import de.pasch.turnierleitung.steuerung.Steuerung;
@@ -17,20 +18,23 @@ public class Aufstellung implements Pickable{
 	private ArrayList<Long>auswechselspieler=new ArrayList<Long>();
 	private int auswechslungen=0;
 	private ArrayList<SpielerInAufstellung>SIAs=new ArrayList<SpielerInAufstellung>();
-	private boolean beendet=false;
+	private long kapitaenID;
+	//private boolean beendet=false;
 	private int hoechstStartelf=11;
-	private int hoechstAuswechselspieler=5;
-	private int hoechstAuswechslung=3;
+	private int hoechstAuswechselspieler=9;
+	private int hoechstAuswechslung=5;
 	private boolean nachspielzeit;
-	private int hoechstAuswechslungNachspielzeit=4;
+	private int hoechstAuswechslungNachspielzeit=6;
+	private ArraySpeicher as;
 	
-	public Aufstellung(long vereinsID,long spielID,int hoechstStartelf,int hoechstAuswechselspieler,int hoechstAuswechslung,int hoechstAuswechslungNachspielzeit,long ID) {
+	public Aufstellung(long vereinsID,long spielID,int hoechstStartelf,int hoechstAuswechselspieler,int hoechstAuswechslung,int hoechstAuswechslungNachspielzeit,long ID,ArraySpeicher as) {
 		this.vereinsID=vereinsID;
 		this.hoechstStartelf=hoechstStartelf;
 		this.hoechstAuswechselspieler=hoechstAuswechselspieler;
 		this.hoechstAuswechslung=hoechstAuswechslung;
 		this.hoechstAuswechslungNachspielzeit=hoechstAuswechslungNachspielzeit;
 		this.spielID=spielID;
+		this.as=as;
 	}
 	
 	public void createXMLElements(Element parEl) {
@@ -53,9 +57,9 @@ public class Aufstellung implements Pickable{
 		auswEl.addContent(""+auswechslungen);
 		aufstellung.addContent(auswEl);
 		
-		Element beendetEl=new Element("Beendet");
+		/*Element beendetEl=new Element("Beendet");
 		beendetEl.addContent(""+beendet);
-		aufstellung.addContent(beendetEl);
+		aufstellung.addContent(beendetEl);*/
 		
 		Element hoechstStartelfEl=new Element("hoechstStartelf");
 		hoechstStartelfEl.addContent(""+hoechstStartelf);
@@ -93,7 +97,7 @@ public class Aufstellung implements Pickable{
 	}
 	
 	public void addSpielerStartelf(Spieler spieler) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(startelf.size()<hoechstStartelf) {
 				startelf.add(spieler.getID());
 				SpielerInAufstellung sia=new SpielerInAufstellung(spieler.getID());
@@ -109,14 +113,46 @@ public class Aufstellung implements Pickable{
 		}
 	}
 	
+	public void removeSpielerStartelf(Spieler spieler) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
+			if(startelf.size()>0) {
+				startelf.remove(spieler.getID());
+				ArrayList<SpielerInAufstellung>SIAsn=new ArrayList<SpielerInAufstellung>(SIAs);
+				for(SpielerInAufstellung sia:SIAsn) {
+					if(sia.getSpielerID()==spieler.getID()) {
+						SIAs.remove(sia);
+					}
+				}
+			}
+		}else {
+			throw new IllegalArgumentException("Die Aufstellung ist bereits beendet!");
+		}
+	}
+	
 	public void addSpielerBank(Spieler spieler) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(auswechselspieler.size()<hoechstAuswechselspieler) {
 				auswechselspieler.add(spieler.getID());
 				SpielerInAufstellung sia=new SpielerInAufstellung(spieler.getID());
 				SIAs.add(sia);
 			}else {
 				throw new IllegalArgumentException("Die Bank ist bereits voll!");
+			}
+		}else {
+			throw new IllegalArgumentException("Die Aufstellung ist bereits beendet!");
+		}
+	}
+	
+	public void removeSpielerBank(Spieler spieler) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
+			if(auswechselspieler.size()>0) {
+				auswechselspieler.remove(spieler.getID());
+				ArrayList<SpielerInAufstellung>SIAsn=new ArrayList<SpielerInAufstellung>(SIAs);
+				for(SpielerInAufstellung sia:SIAsn) {
+					if(sia.getSpielerID()==spieler.getID()) {
+						SIAs.remove(sia);
+					}
+				}
 			}
 		}else {
 			throw new IllegalArgumentException("Die Aufstellung ist bereits beendet!");
@@ -147,8 +183,15 @@ public class Aufstellung implements Pickable{
 		return spieler;
 	}
 	
+	public ArrayList<Spieler> getAllespieler(ArrayList<Spieler>liste){
+		ArrayList<Spieler>spieler=new ArrayList<Spieler>();
+		spieler.addAll(getAuswechselspieler(liste));
+		spieler.addAll(getStartelf(liste));
+		return spieler;
+	}
+	
 	public void setHoechstStartelf(int anzahl) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(startelf.size()<=anzahl) {
 				hoechstStartelf=anzahl;
 			}else {
@@ -160,7 +203,7 @@ public class Aufstellung implements Pickable{
 	}
 	
 	public void setHoechstAuswechselspieler(int anzahl) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(auswechselspieler.size()<=anzahl) {
 				hoechstAuswechselspieler=anzahl;
 			}else {
@@ -172,7 +215,7 @@ public class Aufstellung implements Pickable{
 	}
 	
 	public void setHoechstAuswechslungen(int anzahl) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(!nachspielzeit) {
 				if(auswechslungen<=anzahl) {
 					hoechstAuswechslung=anzahl;
@@ -186,7 +229,7 @@ public class Aufstellung implements Pickable{
 	}
 	
 	public void setHoechstNachspielzeitAuswechslungen(int anzahl) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(auswechslungen<=anzahl) {
 				hoechstAuswechslungNachspielzeit=anzahl;
 			}else {
@@ -242,7 +285,7 @@ public class Aufstellung implements Pickable{
 	}
 	
 	public void addWechsel(int zeit,long ausgewechseltID,long eingewechseltID) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			if(wechselMoeglich()) {
 				boolean eingewechselt=false;
 				boolean ausgewechselt=false;
@@ -278,7 +321,7 @@ public class Aufstellung implements Pickable{
 	}
 	
 	public void removeWechsel(long ausgewechseltID,long eingewechseltID) {
-		if(!beendet) {
+		if(!IDPicker.pick(as.spiele,spielID).isErgebnis()) {
 			
 			boolean eingewechselt=false;
 			boolean ausgewechselt=false;
@@ -308,9 +351,9 @@ public class Aufstellung implements Pickable{
 		}
 	}
 	
-	public void setSpielID(long ID) {
+	/*public void setSpielID(long ID) {
 		spielID=ID;
-	}
+	}*/
 	
 	public long getSpielID() {
 		return spielID;
@@ -322,5 +365,17 @@ public class Aufstellung implements Pickable{
 	
 	public long getVereinsID() {
 		return vereinsID;
+	}
+
+	public long getKapitaenID() {
+		return kapitaenID;
+	}
+
+	public void setKapitaenID(long kapitaenID) {
+		this.kapitaenID = kapitaenID;
+	}
+	
+	public boolean isBeendet() {
+		return IDPicker.pick(as.spiele,spielID).isErgebnis();
 	}
 }

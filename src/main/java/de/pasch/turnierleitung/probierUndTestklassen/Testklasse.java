@@ -22,7 +22,7 @@ public final class Testklasse {
 		steuerung.addTeamZuLiga(1000002,1000003);
 		steuerung.addSpieltag(steuerung.getLigen().get(0).getID(),"TestST");
 		
-		steuerung.addSpiel(1000001l, 1000002l, false, false, "", steuerung.getSpieltage().get(0).getID());
+		steuerung.addSpiel(1000001l, 1000002l, false, false, "", steuerung.getSpieltage().get(0).getID(),steuerung.getLigen().get(0));
                 steuerung.getSpiele().stream().map((spiel) -> {
                     System.out.println(spiel.abschließenUndGewinner());
                 return spiel;
