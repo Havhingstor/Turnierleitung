@@ -780,13 +780,15 @@ public class HFSpiele {
 		ereignisDetailsGP.setPadding(new Insets(5));
 		ereignisDetailsGP.setVgap(5);
 		ereignisDetailsGP.setHgap(5);
-		ereignisDetailsGP.setAlignment(Pos.CENTER);
+		ereignisDetailsGP.setAlignment(Pos.CENTER_LEFT);
 		
 		ereignisGP.add(ereignisDetailsGP, 0, 3,2,1);
 		
+		//ereignis=sp.getHeimtoreDirekt().get(0); //Test für die Details eines Ereignisses
+		
 		createEreignisBeschreibung(ereignisDetailsGP, ereignis);
 		
-		//ereignisGP.add(new Label(sp.getHeimtoreDirekt().get(0).toString()), 0, 0); //Test für das Ausgeben voneinem Ereignis
+		//ereignisGP.add(new Label(sp.getHeimtoreDirekt().get(0).toString()), 0, 0); //Test für das Ausgeben von einem Ereignis
 	}
 	
 	private void createEreignisBeschreibung(GridPane ereignisDetailsGP,Spielaktivitaet ereignis) {
@@ -794,6 +796,69 @@ public class HFSpiele {
 		spielerLabel.setFont(Font.font(20));
 		ereignisDetailsGP.add(spielerLabel, 0, 1);
 		
+		Label zeitLabel=new Label("Zeit");
+		zeitLabel.setFont(Font.font(20));
+		ereignisDetailsGP.add(zeitLabel, 0, 2);
+		
+		Label artLabel=new Label("Art");
+		artLabel.setFont(Font.font(20));
+		ereignisDetailsGP.add(artLabel, 0, 3);
+		
+		Label teamLabel=new Label("Team");
+		teamLabel.setFont(Font.font(20));
+		ereignisDetailsGP.add(teamLabel, 0, 4);
+		
+		if(ereignis==null) {
+			Label ueberschriftLabel=new Label("Nichts ausgewählt");
+			ueberschriftLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
+		}else if(ereignis.isTor()) {
+			Label ueberschriftLabel=new Label("Tor");
+			ueberschriftLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
+			
+			Label vorlagengeberLabel=new Label("Vorlagengeber");
+			vorlagengeberLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(vorlagengeberLabel, 0, 5);
+			
+			String[]beschriftungen=getDetailsTor((Tor)ereignis);
+			
+			Text spielerText=new Text(beschriftungen[0]);
+			spielerText.setFont(Font.font(20));
+			ereignisDetailsGP.add(spielerText, 1, 1);
+			
+			Text zeitText=new Text(beschriftungen[1]);
+			zeitText.setFont(Font.font(20));
+			ereignisDetailsGP.add(zeitText, 1, 2);
+			
+			Text artText=new Text(beschriftungen[2]);
+			artText.setFont(Font.font(20));
+			ereignisDetailsGP.add(artText, 1, 3);
+			
+			Text teamText=new Text(beschriftungen[3]);
+			teamText.setFont(Font.font(20));
+			ereignisDetailsGP.add(teamText, 1, 4);
+			
+			Text vorlagengeberText=new Text(beschriftungen[4]);
+			vorlagengeberText.setFont(Font.font(20));
+			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
+		}else {
+			
+		}
+	}
+	
+	private String[] getDetailsTor(Tor tor) {
+		String[]returner=new String[5];
+		returner[0]=tor.getAusfuehrer().getName();
+		returner[1]=tor.getZeitUndNachspielzeit();
+		returner[2]=tor.getTyp();
+		returner[3]=tor.getTeam().getMoeglichKN();
+		if(tor.getVorbereiter()!=null) {
+			returner[4]=tor.getVorbereiter().getName();
+		}else {
+			returner[4]="Nicht angegeben";
+		}
+		return returner;
 	}
 	
 	private class ZwLong{

@@ -118,6 +118,14 @@ public abstract class Spielaktivitaet implements Pickable {
 		return nachspielzeit;
 	}
 	
+	public String getZeitUndNachspielzeit() {
+		if(nachspielzeit==0) {
+			return zeit+"'";
+		}else {
+			return zeit+"+"+nachspielzeit+"'";
+		}
+	}
+	
 	public void setTyp(int index) {
 		typ=typen.get(index);
 	}
@@ -128,6 +136,6 @@ public abstract class Spielaktivitaet implements Pickable {
 	
 	@Override
 	public String toString() {
-		return (isTor()?"Tor: ":"Strafe: ")+(IDPicker.pick(as.spieler,ausfuehrerID).toString())+(" ("+zeit+"+"+nachspielzeit+"')");
+		return (isTor()?"Tor: ":"Strafe: ")+(IDPicker.pick(as.spieler,ausfuehrerID).toString())+(" ("+getZeitUndNachspielzeit()+")");
 	}
 }
