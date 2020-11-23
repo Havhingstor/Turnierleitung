@@ -9,6 +9,7 @@ import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
+import de.pasch.turnierleitung.spiele.Spielaktivitaet;
 import de.pasch.turnierleitung.spiele.Tor;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
@@ -758,6 +759,8 @@ public class HFSpiele {
 		
 		gp.add(ereignisGP, 2,0,1,2);
 		
+		Spielaktivitaet ereignis=null;
+		
 		Label ueberschrift=new Label("Spielereignisse");
 		ueberschrift.setFont(Font.font(20));
 		ereignisGP.add(ueberschrift, 0, 0,2,1);
@@ -781,7 +784,16 @@ public class HFSpiele {
 		
 		ereignisGP.add(ereignisDetailsGP, 0, 3,2,1);
 		
+		createEreignisBeschreibung(ereignisDetailsGP, ereignis);
+		
 		//ereignisGP.add(new Label(sp.getHeimtoreDirekt().get(0).toString()), 0, 0); //Test für das Ausgeben voneinem Ereignis
+	}
+	
+	private void createEreignisBeschreibung(GridPane ereignisDetailsGP,Spielaktivitaet ereignis) {
+		Label spielerLabel=new Label("Spieler");
+		spielerLabel.setFont(Font.font(20));
+		ereignisDetailsGP.add(spielerLabel, 0, 1);
+		
 	}
 	
 	private class ZwLong{
