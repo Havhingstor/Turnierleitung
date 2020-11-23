@@ -11,16 +11,14 @@ import de.pasch.turnierleitung.steuerung.IDPicker;
 
 public class Tor extends Spielaktivitaet {
 	
-	private long teamID;
 	private long vorbereiterID;
 	
 	public Tor(int zeit,int nachspielzeit,Spieler torschuetze,Spieler vorbereiter,Team team,long ID,
 			ArrayList<String>typen,ArraySpeicher as) {
-		super(zeit,nachspielzeit,torschuetze,ID,typen, as);
+		super(zeit,nachspielzeit,torschuetze,ID,typen,team.getID(), as);
 		if(vorbereiter!=null) {
 			vorbereiterID=vorbereiter.getID();
 		}
-		teamID=team.getID();
 	}
 	
 	public String getDateiString() {
@@ -63,21 +61,6 @@ public class Tor extends Spielaktivitaet {
 		this.vorbereiterID=spieler.getID();
 	}
 	
-	public void setTeam(Team team) {
-		teamID=team.getID();
-	}
-	
-	public void setTeam(long teamID) {
-		this.teamID=teamID;
-	}
-	
-	public long getTeamID() {
-		return teamID;
-	}
-	
-	public Team getTeam() {
-		return IDPicker.pick(as.teams, teamID);
-	}
 
 	@Override
 	public boolean isTor() {

@@ -12,15 +12,13 @@ import de.pasch.turnierleitung.steuerung.IDPicker;
 public class Strafe extends Spielaktivitaet {
 	
 	private long gefoulterID;
-	private long teamID;
 	
 	public Strafe(int zeit,int nachspielzeit,Spieler foulender, Spieler gefoulter,
 			Team team,long ID,ArrayList<String>typen,ArraySpeicher as) {
-		super(zeit,nachspielzeit,foulender,ID,typen,as);
+		super(zeit,nachspielzeit,foulender,ID,typen,team.getID(),as);
 		if(gefoulter!=null) {
 			this.gefoulterID=gefoulter.getID();
 		}
-		this.teamID=team.getID();
 	}
 	
 	public String getDateiString() {
@@ -53,22 +51,6 @@ public class Strafe extends Spielaktivitaet {
 		}else {
 			throw new IllegalArgumentException("Dieses Element ist nicht vorhanden!");
 		}
-	}
-	
-	public long getTeamID() {
-		return teamID;
-	}
-	
-	public Team getTeam() {
-		return IDPicker.pick(as.teams,teamID);
-	}
-	
-	public void setTeamID(long ID) {
-		this.teamID=ID;
-	}
-	
-	public void setTeam(Team team) {
-		this.teamID=team.getID();
 	}
 	
 	public long getGefoultenID() {

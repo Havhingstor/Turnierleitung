@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.jdom2.Element;
 
 import de.pasch.turnierleitung.protagonisten.Spieler;
+import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
@@ -17,10 +18,12 @@ public abstract class Spielaktivitaet implements Pickable {
 	protected String typ="";
 	protected ArrayList<String>typen=new ArrayList<String>();
 	protected long ausfuehrerID=0;
+	protected long teamID=0;
 	protected ArraySpeicher as=null;
 	
 	protected Spielaktivitaet(int zeit,int nachspielzeit,Spieler ausfuehrer,
-			long ID,ArrayList<String>typen,ArraySpeicher as) {
+			long ID,ArrayList<String>typen,long teamID,ArraySpeicher as) {
+		this.teamID=teamID;
 		this.zeit=zeit;
 		this.nachspielzeit=nachspielzeit;
 		this.ID=ID;
@@ -134,8 +137,29 @@ public abstract class Spielaktivitaet implements Pickable {
 		return typ;
 	}
 	
+
+	public void setTeam(Team team) {
+		teamID=team.getID();
+	}
+	
+	public void setTeam(long teamID) {
+		this.teamID=teamID;
+	}
+	
+	public long getTeamID() {
+		return teamID;
+	}
+	
+	public Team getTeam() {
+		return IDPicker.pick(as.teams, teamID);
+	}
+	
 	@Override
 	public String toString() {
 		return (isTor()?"Tor: ":"Strafe: ")+(IDPicker.pick(as.spieler,ausfuehrerID).toString())+(" ("+getZeitUndNachspielzeit()+")");
+	}
+	
+	public String toStringGebrochen() {
+		return (isTor()?"Tor: ":"Strafe: ")+(IDPicker.pick(as.spieler,ausfuehrerID).toString())+("\n("+getZeitUndNachspielzeit()+")");
 	}
 }

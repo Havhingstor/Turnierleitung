@@ -617,5 +617,14 @@ public class Spiel implements Pickable {
 		}
 		return true;
 	}
+	
+	public ArrayList<Spielaktivitaet> getEreignisseSortiert(){
+		ArrayList<Spielaktivitaet> ereignisse=new ArrayList<Spielaktivitaet>();
+		ereignisse.addAll(getHeimtoreDirekt());
+		ereignisse.addAll(getAuswaertstoreDirekt());
+		ereignisse.addAll(getHeimstrafen());
+		ereignisse.addAll(getAuswaertsstrafen());
+		return ereignisse;
+	}
 
 }

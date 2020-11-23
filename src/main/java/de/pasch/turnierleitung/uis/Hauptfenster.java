@@ -382,6 +382,7 @@ public class Hauptfenster {
 		steuerung.getSpiele().get(0).getAufstHeim().addSpielerBank(steuerung.getSpieler().get(3));
 		steuerung.getSpiele().get(0).getAufstHeim().setKapitaenID(steuerung.getSpieler().get(0).getID());
         steuerung.addTor(true, steuerung.getSpieler().get(1).getID(), 0,steuerung.getSpiele().get(0).getID(), 17, 0, 2);
+        steuerung.addStrafe(true, steuerung.getSpieler().get(2).getID(), 0,steuerung.getSpiele().get(0).getID(), 35, 0, 0);
    }
    
    public static void setLink(Text text,Handler<Text> h) {

@@ -10,6 +10,7 @@ import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.spiele.Spielaktivitaet;
+import de.pasch.turnierleitung.spiele.Strafe;
 import de.pasch.turnierleitung.spiele.Tor;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
@@ -47,6 +48,7 @@ public class HFSpiele {
 	Turnierelement letztesTE;
 	Spieltag letzterSpt;
 	Spiel letztesSpiel;
+	Spielaktivitaet letztesEreignis;
 	HFProtagonisten hfp;
 	HFTurnierelemente hft;
 	HFSpieltag hfst;
@@ -759,16 +761,49 @@ public class HFSpiele {
 		
 		gp.add(ereignisGP, 2,0,1,2);
 		
-		Spielaktivitaet ereignis=null;
+		//Spielaktivitaet ereignis=null;
 		
 		Label ueberschrift=new Label("Spielereignisse");
 		ueberschrift.setFont(Font.font(20));
 		ereignisGP.add(ueberschrift, 0, 0,2,1);
 		
-		VBox ereignisBox=new VBox(); //Die Container für die Auflistung der Spielereignisse
-		ereignisBox.setPrefSize(275,500);
-		ScrollPane ereignisSP=new ScrollPane(ereignisBox);
-		ereignisGP.add(ereignisSP, 0, 1,2,1);
+		GridPane ereignisListeGP=new GridPane(); //Die Container für die Auflistung der Spielereignisse
+		ereignisListeGP.setPrefSize(280,500);
+		//ereignisListeGP.setAlignment(Pos.TOP_CENTER);
+		ScrollPane ereignisListeSP=new ScrollPane(ereignisListeGP);
+		ereignisGP.add(ereignisListeSP, 0, 1,2,1);
+		
+		if(sp!=null) {
+			Label heimUeberschrift=new Label(sp.getHeimteam().getMoeglichKN());
+			heimUeberschrift.setFont(Font.font(20));
+			heimUeberschrift.setPrefWidth(140);
+			heimUeberschrift.setAlignment(Pos.CENTER);
+			ereignisListeGP.add(heimUeberschrift, 0, 0);
+			
+			Label auswaertsUeberschrift=new Label(sp.getAuswaertsteam().getMoeglichKN());
+			auswaertsUeberschrift.setFont(Font.font(20));
+			auswaertsUeberschrift.setPrefWidth(140);
+			auswaertsUeberschrift.setAlignment(Pos.CENTER);
+			ereignisListeGP.add(auswaertsUeberschrift, 1, 0);
+			
+			ArrayList<Spielaktivitaet> ereignisse=sp.getEreignisseSortiert();
+			for(int i=0;i<ereignisse.size();++i) {
+				Button ereignisBtn=new Button(ereignisse.get(i).toStringGebrochen());
+				ereignisBtn.setPrefWidth(140);
+				final int j=i;
+				ereignisBtn.setOnAction((e)->{
+					letztesEreignis=ereignisse.get(j);
+					akt.aktualisieren();
+				});
+				if(ereignisse.get(i).getTeamID()==sp.getHeimID()) {
+					ereignisBtn.setAlignment(Pos.CENTER_LEFT);
+					ereignisListeGP.add(ereignisBtn, 0, i+1);
+				}else {
+					ereignisListeGP.add(ereignisBtn, 1, i+1);
+					ereignisBtn.setAlignment(Pos.CENTER_RIGHT);
+				}
+			}
+		}
 		
 		Button hinzufuegen=new Button("Spielereignis hinzufügen"); //Die Buttons zum hinzufügen und entfernen von Ereignissen
 		ereignisGP.add(hinzufuegen, 0, 2);
@@ -776,7 +811,7 @@ public class HFSpiele {
 		Button entfernen=new Button("Spielereignis entfernen");
 		ereignisGP.add(entfernen, 1, 2);
 		
-		GridPane ereignisDetailsGP=new GridPane(); //Container für die Detaildaten einer Ereignisses
+		GridPane ereignisDetailsGP=new GridPane(); //Container für die Detaildaten eines Ereignisses
 		ereignisDetailsGP.setPadding(new Insets(5));
 		ereignisDetailsGP.setVgap(5);
 		ereignisDetailsGP.setHgap(5);
@@ -784,13 +819,17 @@ public class HFSpiele {
 		
 		ereignisGP.add(ereignisDetailsGP, 0, 3,2,1);
 		
-		//ereignis=sp.getHeimtoreDirekt().get(0); //Test für die Details eines Ereignisses
+		if(!sp.getEreignisseSortiert().contains(letztesEreignis)&&sp.getEreignisseSortiert().size()>0) {
+			letztesEreignis=sp.getEreignisseSortiert().get(0); //Test für die Details eines Ereignisses
+		}else if(sp.getEreignisseSortiert().size()<0){
+			letztesEreignis=null;
+		}
 		
-		createEreignisBeschreibung(ereignisDetailsGP, ereignis);
+		createEreignisBeschreibung(ereignisDetailsGP, letztesEreignis);
 		
 		//ereignisGP.add(new Label(sp.getHeimtoreDirekt().get(0).toString()), 0, 0); //Test für das Ausgeben von einem Ereignis
 	}
-	
+		
 	private void createEreignisBeschreibung(GridPane ereignisDetailsGP,Spielaktivitaet ereignis) {
 		Label spielerLabel=new Label("Spieler");
 		spielerLabel.setFont(Font.font(20));
@@ -843,7 +882,35 @@ public class HFSpiele {
 			vorlagengeberText.setFont(Font.font(20));
 			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
 		}else {
+			Label ueberschriftLabel=new Label("Strafe");
+			ueberschriftLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
+
+			Label gefoulterLabel=new Label("Gefoulter");
+			gefoulterLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(gefoulterLabel, 0, 5);
 			
+			String[]beschriftungen=getDetailsStrafe((Strafe)ereignis);
+			
+			Text spielerText=new Text(beschriftungen[0]);
+			spielerText.setFont(Font.font(20));
+			ereignisDetailsGP.add(spielerText, 1, 1);
+			
+			Text zeitText=new Text(beschriftungen[1]);
+			zeitText.setFont(Font.font(20));
+			ereignisDetailsGP.add(zeitText, 1, 2);
+			
+			Text artText=new Text(beschriftungen[2]);
+			artText.setFont(Font.font(20));
+			ereignisDetailsGP.add(artText, 1, 3);
+			
+			Text teamText=new Text(beschriftungen[3]);
+			teamText.setFont(Font.font(20));
+			ereignisDetailsGP.add(teamText, 1, 4);
+			
+			Text vorlagengeberText=new Text(beschriftungen[4]);
+			vorlagengeberText.setFont(Font.font(20));
+			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
 		}
 	}
 	
@@ -855,6 +922,20 @@ public class HFSpiele {
 		returner[3]=tor.getTeam().getMoeglichKN();
 		if(tor.getVorbereiter()!=null) {
 			returner[4]=tor.getVorbereiter().getName();
+		}else {
+			returner[4]="Nicht angegeben";
+		}
+		return returner;
+	}
+	
+	private String[]getDetailsStrafe(Strafe strafe){
+		String[]returner=new String[5];
+		returner[0]=strafe.getAusfuehrer().getName();
+		returner[1]=strafe.getZeitUndNachspielzeit();
+		returner[2]=strafe.getTyp();
+		returner[3]=strafe.getTeam().getMoeglichKN();
+		if(strafe.getGefoulten()!=null) {
+			returner[4]=strafe.getGefoulten().getName();
 		}else {
 			returner[4]="Nicht angegeben";
 		}
