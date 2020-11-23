@@ -264,6 +264,7 @@ public class HFSpiele {
 		spielInfos.add(neutrText, 1,3+verschiebung);
 		
 		createMinimaltorEingabe(sp,spielInfos);
+		createSpielereignisFeld(gp, sp);
 		if(sp!=null) {
 			createAufstellungen(sp,spielInfos,verschiebung);
 		}
@@ -746,6 +747,41 @@ public class HFSpiele {
 		btns.getChildren().add(kapitaen);
 		
 		tab.setContent(aufstellung);
+	}
+	
+	private  void createSpielereignisFeld(GridPane gp, Spiel sp) {
+		GridPane ereignisGP=new GridPane();
+		ereignisGP.setPadding(new Insets(5));
+		ereignisGP.setVgap(5);
+		ereignisGP.setHgap(5);
+		ereignisGP.setAlignment(Pos.CENTER);
+		
+		gp.add(ereignisGP, 2,0,1,2);
+		
+		Label ueberschrift=new Label("Spielereignisse");
+		ueberschrift.setFont(Font.font(20));
+		ereignisGP.add(ueberschrift, 0, 0,2,1);
+		
+		VBox ereignisBox=new VBox(); //Die Container für die Auflistung der Spielereignisse
+		ereignisBox.setPrefSize(275,500);
+		ScrollPane ereignisSP=new ScrollPane(ereignisBox);
+		ereignisGP.add(ereignisSP, 0, 1,2,1);
+		
+		Button hinzufuegen=new Button("Spielereignis hinzufügen"); //Die Buttons zum hinzufügen und entfernen von Ereignissen
+		ereignisGP.add(hinzufuegen, 0, 2);
+		
+		Button entfernen=new Button("Spielereignis entfernen");
+		ereignisGP.add(entfernen, 1, 2);
+		
+		GridPane ereignisDetailsGP=new GridPane(); //Container für die Detaildaten einer Ereignisses
+		ereignisDetailsGP.setPadding(new Insets(5));
+		ereignisDetailsGP.setVgap(5);
+		ereignisDetailsGP.setHgap(5);
+		ereignisDetailsGP.setAlignment(Pos.CENTER);
+		
+		ereignisGP.add(ereignisDetailsGP, 0, 3,2,1);
+		
+		//ereignisGP.add(new Label(sp.getHeimtoreDirekt().get(0).toString()), 0, 0); //Test für das Ausgeben voneinem Ereignis
 	}
 	
 	private class ZwLong{

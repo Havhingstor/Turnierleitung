@@ -125,4 +125,9 @@ public abstract class Spielaktivitaet implements Pickable {
 	public String getTyp() {
 		return typ;
 	}
+	
+	@Override
+	public String toString() {
+		return (isTor()?"Tor: ":"Strafe: ")+(IDPicker.pick(as.spieler,ausfuehrerID).toString())+(" ("+zeit+"+"+nachspielzeit+"')");
+	}
 }
