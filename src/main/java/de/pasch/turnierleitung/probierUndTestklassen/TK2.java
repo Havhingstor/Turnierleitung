@@ -23,7 +23,6 @@ public class TK2 {
 		try {
 			d.createNewFile();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		}

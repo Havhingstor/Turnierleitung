@@ -6,10 +6,9 @@ import org.jdom2.Element;
 
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
-import de.pasch.turnierleitung.steuerung.Pickable;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 
-public class KORunde extends Turnierelement implements Pickable{
+public class KORunde extends Turnierelement {
 	private final ArrayList<Long>rundensammlungen=new ArrayList<>();
 	private final ArrayList<PlatzierungInKORunde>platzierungen=new ArrayList<>();
 	private long ID=0;
