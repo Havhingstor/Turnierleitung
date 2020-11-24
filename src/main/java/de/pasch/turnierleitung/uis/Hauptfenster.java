@@ -61,7 +61,7 @@ public class Hauptfenster {
 				JOptionPane.showMessageDialog(null,e1.getMessage(),"FEHLER!",0);
 			}
         }else if(sf.getBeispielBool()) {
-        	steuerung.setName("Beispielturner");
+        	steuerung.setName("Beispielturnier");
         	aktSpeicherung=null;
         	beispielSetup();
         	spNoetig=false;
@@ -374,15 +374,17 @@ public class Hauptfenster {
 		steuerung.addSpieler("Thomas", "Müller",1000001 , 25);
 		steuerung.addSpieler("Joshua", "Kimmich",1000001 ,6);
 		steuerung.addSpieler("Joshua", "Zirkzee",1000001 ,14);
+		steuerung.addSpieler("Jiri", "Pavlenka",1000002 ,1);
 		steuerung.getTeams().get(0).setKapitaen(steuerung.getSpieler().get(0));
 		steuerung.getTeams().get(0).setVizekapitaen(steuerung.getSpieler().get(1));
 		steuerung.getSpiele().get(0).getAufstHeim().addSpielerStartelf(steuerung.getSpieler().get(0));
 		steuerung.getSpiele().get(0).getAufstHeim().addSpielerStartelf(steuerung.getSpieler().get(1));
 		steuerung.getSpiele().get(0).getAufstHeim().addSpielerStartelf(steuerung.getSpieler().get(2));
+		steuerung.getSpiele().get(0).getAufstAuswaerts().addSpielerStartelf(steuerung.getSpieler().get(4));
 		steuerung.getSpiele().get(0).getAufstHeim().addSpielerBank(steuerung.getSpieler().get(3));
 		steuerung.getSpiele().get(0).getAufstHeim().setKapitaenID(steuerung.getSpieler().get(0).getID());
         steuerung.addTor(true, steuerung.getSpieler().get(1).getID(), 0,steuerung.getSpiele().get(0).getID(), 17, 0, 2);
-        steuerung.addStrafe(true, steuerung.getSpieler().get(2).getID(), 0,steuerung.getSpiele().get(0).getID(), 35, 0, 0);
+        steuerung.addStrafe(true, steuerung.getSpieler().get(2).getID(), 0,steuerung.getSpiele().get(0).getID(), 45, 0, 0);
    }
    
    public static void setLink(Text text,Handler<Text> h) {

@@ -10,7 +10,7 @@ import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
 
-public abstract class Spielaktivitaet implements Pickable {
+public abstract class Spielaktivitaet implements Pickable,Comparable<Spielaktivitaet> {
 	
 	protected long ID=0;
 	protected int zeit=0;
@@ -161,5 +161,20 @@ public abstract class Spielaktivitaet implements Pickable {
 	
 	public String toStringGebrochen() {
 		return (isTor()?"Tor: ":"Strafe: ")+(IDPicker.pick(as.spieler,ausfuehrerID).toString())+("\n("+getZeitUndNachspielzeit()+")");
+	}
+	
+	@Override
+	public int compareTo(Spielaktivitaet o) {
+		if(o.getZeit()<zeit) {
+			return 1;
+		}else if(o.getZeit()>zeit) {
+			return -1;
+		}else if(o.getNachspielzeit()<nachspielzeit) {
+			return 1;
+		}else if(o.getNachspielzeit()>nachspielzeit) {
+			return -1;
+		}else {
+			return 0;
+		}
 	}
 }

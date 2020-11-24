@@ -1,6 +1,7 @@
 package de.pasch.turnierleitung.spiele;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.jdom2.Element;
 
@@ -624,6 +625,7 @@ public class Spiel implements Pickable {
 		ereignisse.addAll(getAuswaertstoreDirekt());
 		ereignisse.addAll(getHeimstrafen());
 		ereignisse.addAll(getAuswaertsstrafen());
+		Collections.sort(ereignisse);
 		return ereignisse;
 	}
 

@@ -591,8 +591,9 @@ public class Steuerung {
 					.forEachOrdered((spiel) -> {
 						spiel.removeStrafe(ID);
 					});
-			as.strafen.remove(strafe);
+			//as.strafen.remove(strafe);
 		});
+		as.strafen.removeIf((s)->(s.getID()==ID));
 	}
 
 	public ArrayList<Strafe> getStrafen() {

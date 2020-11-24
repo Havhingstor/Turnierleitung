@@ -423,13 +423,18 @@ public class HFSpiele {
 					}
 					if(erlaubt) {
 						int best=JOptionPane.showConfirmDialog(null, "Sollen wirklich alle Tore "
-								+ "(samt der vollständig eingegebenen) gelöscht werden?",
+								+ "(samt der vollständig eingegebenen) und Strafen gelöscht werden?",
 								"ACHTUNG!", JOptionPane.OK_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
 						if(best==JOptionPane.OK_OPTION) {
 							ArrayList<Tor> tore=new ArrayList<Tor>(sp.getHeimtoreDirekt());
 							tore.addAll(sp.getAuswaertstoreDirekt());
 							for(Tor t:tore) {
 								steuerung.removeTor(t.getID());
+							}
+							ArrayList<Strafe> strafen=new ArrayList<Strafe>(sp.getHeimstrafen());
+							strafen.addAll(sp.getAuswaertsstrafen());
+							for(Strafe s:strafen) {
+								steuerung.removeStrafe(s.getID());
 							}
 							sp.setMinimaleAuswaertstore(0);
 							sp.setMinimaleHeimtore(0);
@@ -807,6 +812,11 @@ public class HFSpiele {
 		
 		Button hinzufuegen=new Button("Spielereignis hinzufügen"); //Die Buttons zum hinzufügen und entfernen von Ereignissen
 		ereignisGP.add(hinzufuegen, 0, 2);
+		hinzufuegen.setOnAction((e)->{
+			if(sp!=null) {
+				new SpielereignisHinzufuegen(stage, akt, steuerung, sp);
+			}
+		});
 		
 		Button entfernen=new Button("Spielereignis entfernen");
 		ereignisGP.add(entfernen, 1, 2);
@@ -821,7 +831,7 @@ public class HFSpiele {
 		
 		if(!sp.getEreignisseSortiert().contains(letztesEreignis)&&sp.getEreignisseSortiert().size()>0) {
 			letztesEreignis=sp.getEreignisseSortiert().get(0); //Test für die Details eines Ereignisses
-		}else if(sp.getEreignisseSortiert().size()<0){
+		}else if(sp.getEreignisseSortiert().size()==0){
 			letztesEreignis=null;
 		}
 		
