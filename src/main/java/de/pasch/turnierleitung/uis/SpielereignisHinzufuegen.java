@@ -8,9 +8,13 @@ import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -60,6 +64,7 @@ public class SpielereignisHinzufuegen {
 		gp.add(zeitLbl, 0, 2);
 
 		NumberTextField zeitFeld = new NumberTextField();
+		zeitFeld.setText("" + 0);
 		gp.add(zeitFeld, 1, 2);
 
 		Label nZeitLbl = new Label("Nachspielzeit");
@@ -82,6 +87,36 @@ public class SpielereignisHinzufuegen {
 			addSpielerauswahl(teamCB, gp, spielerCB);
 			addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
 		});
+
+		Button speichern = new Button("Speichern");
+		speichern.setFont(Font.font(20));
+		speichern.setOnAction((e) -> {
+			if (typCB.getValue().equals("Tor")) {
+				try {
+					steuerung.addTor(teamCB.getValue().equals(spiel.getHeimteam()), spielerCB.getValue().getID(),
+							(andererSpielerCB.getValue() != null) ? andererSpielerCB.getValue().getID() : 0,
+							spiel.getID(), Integer.parseInt(zeitFeld.getText()), Integer.parseInt(nZeitFeld.getText()),
+							artCB.getValue());
+					stage.hide();
+					akt.aktualisieren();
+				} catch (IllegalArgumentException iae) {
+					Alert warnung = new Alert(AlertType.ERROR);
+					warnung.initModality(Modality.WINDOW_MODAL);
+					warnung.initOwner(stage);
+					warnung.setTitle("Tor hinzufügen nicht möglich!");
+					warnung.setHeaderText(null);
+					warnung.setContentText(iae.getMessage());
+					warnung.showAndWait();
+				}
+			} else {
+				steuerung.addStrafe(teamCB.getValue().equals(spiel.getHeimteam()), spielerCB.getValue().getID(),
+						(andererSpielerCB.getValue() != null) ? andererSpielerCB.getValue().getID() : 0, spiel.getID(),
+						Integer.parseInt(zeitFeld.getText()), Integer.parseInt(nZeitFeld.getText()), artCB.getValue());
+				stage.hide();
+				akt.aktualisieren();
+			}
+		});
+		gp.add(speichern, 0, 5, 2, 1);
 
 		Scene scene = new Scene(gp);
 		stage.setScene(scene);

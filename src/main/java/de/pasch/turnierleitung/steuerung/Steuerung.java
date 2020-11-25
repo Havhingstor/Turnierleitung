@@ -106,47 +106,47 @@ public class Steuerung {
 	public String getTrikotnummerEinesSpielersString(long ID) {
 		for (SpielerTeamConnector stc : as.connectoren) {
 			if (stc.getSpielerID() == ID && !stc.getAusgetreten()) {
-				if(stc.getTrikotnummer()>0) {
-					return ""+stc.getTrikotnummer();
-				}else {
+				if (stc.getTrikotnummer() > 0) {
+					return "" + stc.getTrikotnummer();
+				} else {
 					return "-";
 				}
 			}
 		}
 		return "-";
 	}
-	
+
 	public void editSpieler(String vorname, String nachname, int trikotnummer, long teamID, long spielerID) {
 		as.spieler.stream().filter((s) -> (s.getID() == spielerID)).forEachOrdered((s) -> {
 			s.setName(vorname, nachname);
 		});
 		boolean wechsel = false;
-		boolean schonSTC=false;
+		boolean schonSTC = false;
 		for (int i = 0; i < as.connectoren.size(); i++) {
 			SpielerTeamConnector stc = as.connectoren.get(i);
 			if (spielerID == stc.getSpielerID()) {
-				if ((teamID != stc.getTeamID())&&(!stc.getAusgetreten())) {
-					boolean erlaubt=true;
-					for(Aufstellung aufst:getAlleAufstellungen()) {
-						if(aufst.getAllespieler(as.spieler).contains(IDPicker.pick(as.spieler, spielerID))&&!aufst.isBeendet()) {
-							throw new IllegalArgumentException("A"+aufst.getSpielID());
+				if ((teamID != stc.getTeamID()) && (!stc.getAusgetreten())) {
+					boolean erlaubt = true;
+					for (Aufstellung aufst : getAlleAufstellungen()) {
+						if (aufst.getAllespieler(as.spieler).contains(IDPicker.pick(as.spieler, spielerID))
+								&& !aufst.isBeendet()) {
+							throw new IllegalArgumentException("A" + aufst.getSpielID());
 						}
-					
+
 					}
-					if(erlaubt) {
+					if (erlaubt) {
 						stc.setAusgetreten(true);
 						wechsel = true;
 					}
-				} else if(teamID == stc.getTeamID()) {
+				} else if (teamID == stc.getTeamID()) {
 					stc.setAusgetreten(false);
 					stc.setTrikotnummer(trikotnummer);
-					schonSTC=true;
+					schonSTC = true;
 				}
 			}
 		}
-		if (wechsel&&!schonSTC) {
-			SpielerTeamConnector stc2 = new SpielerTeamConnector
-					(spielerID, teamID, trikotnummer,idc.createID(), as);
+		if (wechsel && !schonSTC) {
+			SpielerTeamConnector stc2 = new SpielerTeamConnector(spielerID, teamID, trikotnummer, idc.createID(), as);
 			as.connectoren.add(stc2);
 		}
 	}
@@ -225,9 +225,9 @@ public class Steuerung {
 				t.setName(name);
 				t.setKurzname(kurzname);
 				t.setHeimstadion(heimstadion);
-				for(Spiel sp:as.spiele) {
-					if(sp.getHeimID()==t.getID()){
-						editSpiel(sp.getNeutralerPlatz(),sp.getSeperaterPlatzname(),sp.getStadion(), sp.getID());
+				for (Spiel sp : as.spiele) {
+					if (sp.getHeimID() == t.getID()) {
+						editSpiel(sp.getNeutralerPlatz(), sp.getSeperaterPlatzname(), sp.getStadion(), sp.getID());
 					}
 				}
 			}
@@ -270,7 +270,7 @@ public class Steuerung {
 			}
 		}
 		for (Liga liga : as.ligen) {
-			if (liga.getTeamIDs().contains(ID) ) {
+			if (liga.getTeamIDs().contains(ID)) {
 				erlaubt = false;
 				throw new IllegalArgumentException(
 						"Dises Team ist schon in einer Liga aufgeführt und kann deshalb nicht entfernt werden!");
@@ -314,7 +314,8 @@ public class Steuerung {
 			}
 		}
 		if (erlaubt) {
-			Rundensammlung rs = new Rundensammlung(name, idc.createID(), as,kor.getKriterium1(),kor.getKriterium2(),kor.getSpielanzahl());
+			Rundensammlung rs = new Rundensammlung(name, idc.createID(), as, kor.getKriterium1(), kor.getKriterium2(),
+					kor.getSpielanzahl());
 			as.rs.add(rs);
 			kor.addRundensammlung(rs.getID());
 		} else {
@@ -328,8 +329,9 @@ public class Steuerung {
 		});
 	}
 
-	public void addRunde(long RSID,KORunde kor, boolean auslosung, long heimID, long auswaertsID,boolean neutralePlaetze,String besPlnHeim, String besPlnAuswaerts) {
-		//Besonderer Platzname deaktiviert, wenn String leer
+	public void addRunde(long RSID, KORunde kor, boolean auslosung, long heimID, long auswaertsID,
+			boolean neutralePlaetze, String besPlnHeim, String besPlnAuswaerts) {
+		// Besonderer Platzname deaktiviert, wenn String leer
 		if (auslosung) {
 			long zw = 0;
 			int rd = (int) (Math.random() * 100);
@@ -340,31 +342,33 @@ public class Steuerung {
 			}
 		}
 		String heimstadion, auswaertsstadion;
-		boolean besPlnHeimbl=false,besPlnAuswaertsbl=false;
-		if(besPlnHeim.length()>0) {
-			besPlnHeimbl=true;
-			heimstadion=besPlnHeim;
-		}else {
-			heimstadion=IDPicker.pick(as.teams,heimID).getHeimstadion();
+		boolean besPlnHeimbl = false, besPlnAuswaertsbl = false;
+		if (besPlnHeim.length() > 0) {
+			besPlnHeimbl = true;
+			heimstadion = besPlnHeim;
+		} else {
+			heimstadion = IDPicker.pick(as.teams, heimID).getHeimstadion();
 		}
-		if(besPlnAuswaerts.length()>0) {
-			besPlnAuswaertsbl=true;
-			auswaertsstadion=besPlnAuswaerts;
-		}else {
-			auswaertsstadion=IDPicker.pick(as.teams,auswaertsID).getHeimstadion();
+		if (besPlnAuswaerts.length() > 0) {
+			besPlnAuswaertsbl = true;
+			auswaertsstadion = besPlnAuswaerts;
+		} else {
+			auswaertsstadion = IDPicker.pick(as.teams, auswaertsID).getHeimstadion();
 		}
-		Rundensammlung rs=IDPicker.pick(as.rs,RSID);
-		Runde runde = new Runde(heimID, auswaertsID, idc.createID(), as,rs.getKriteriumEins(),rs.getKriteriumZwei(),rs.getSpielanzahl(), heimstadion, auswaertsstadion);
+		Rundensammlung rs = IDPicker.pick(as.rs, RSID);
+		Runde runde = new Runde(heimID, auswaertsID, idc.createID(), as, rs.getKriteriumEins(), rs.getKriteriumZwei(),
+				rs.getSpielanzahl(), heimstadion, auswaertsstadion);
 		rs.addRunde(runde.getID());
 		as.runden.add(runde);
-		boolean erstHeim=true;
-		for(int i=0;i<rs.getSpielanzahl();++i) {
-			if(erstHeim) {
+		boolean erstHeim = true;
+		for (int i = 0; i < rs.getSpielanzahl(); ++i) {
+			if (erstHeim) {
 				this.addSpiel(heimID, auswaertsID, neutralePlaetze, besPlnHeimbl, besPlnHeim, runde.getID(), kor);
-			}else {
-				this.addSpiel(auswaertsID, heimID, neutralePlaetze, besPlnAuswaertsbl, besPlnAuswaerts, runde.getID(), kor);
+			} else {
+				this.addSpiel(auswaertsID, heimID, neutralePlaetze, besPlnAuswaertsbl, besPlnAuswaerts, runde.getID(),
+						kor);
 			}
-			erstHeim=!erstHeim;
+			erstHeim = !erstHeim;
 		}
 	}
 
@@ -411,14 +415,15 @@ public class Steuerung {
 	}
 
 	public void addSpiel(long heimID, long auswaertsID, boolean neutralerPlatz, boolean seperaterPlatzname,
-			String seperaterPlatznameName, long rundenOderSpieltagID,Turnierelement te) {
+			String seperaterPlatznameName, long rundenOderSpieltagID, Turnierelement te) {
 		long neueID = idc.createID();
-		Aufstellung heim=new Aufstellung(heimID, neueID, te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
-				te.getHoechstAuswechslung(),te.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
-		Aufstellung auswaerts=new Aufstellung(auswaertsID,neueID,te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
-				te.getHoechstAuswechslung(),te.getHoechstAuswechslungNachspielzeit(),idc.createID(), as);
+		Aufstellung heim = new Aufstellung(heimID, neueID, te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
+				te.getHoechstAuswechslung(), te.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
+		Aufstellung auswaerts = new Aufstellung(auswaertsID, neueID, te.getHoechstStartelf(),
+				te.getHoechstAuswechselspieler(), te.getHoechstAuswechslung(), te.getHoechstAuswechslungNachspielzeit(),
+				idc.createID(), as);
 		Spiel spiel = new Spiel(IDPicker.pick(as.teams, heimID), IDPicker.pick(as.teams, auswaertsID), neueID,
-				neutralerPlatz, as,heim,auswaerts);
+				neutralerPlatz, as, heim, auswaerts);
 		if (seperaterPlatzname) {
 			spiel.setStadion(seperaterPlatznameName);
 		} else {
@@ -456,49 +461,49 @@ public class Steuerung {
 	}
 
 	public void removeSpiel(long ID) {
-		Spiel spiel=IDPicker.pick(as.spiele, ID);
+		Spiel spiel = IDPicker.pick(as.spiele, ID);
 		as.spiele.remove(IDPicker.pick(as.spiele, ID));
 		as.runden.stream().filter((r) -> (r.getSpiele().contains(ID))).forEach((r) -> {
 			r.getSpiele().remove(ID);
 		});
-		as.spt.stream().filter((spt)->(spt.getSpieleIDs().contains(ID))).forEach((spt)->{
+		as.spt.stream().filter((spt) -> (spt.getSpieleIDs().contains(ID))).forEach((spt) -> {
 			spt.getSpieleIDs().remove(ID);
 		});
-		for(Tor t:spiel.getHeimtoreDirekt()) {
+		for (Tor t : spiel.getHeimtoreDirekt()) {
 			as.tore.remove(t);
 		}
-		for(Tor t:spiel.getAuswaertstoreDirekt()) {
+		for (Tor t : spiel.getAuswaertstoreDirekt()) {
 			as.tore.remove(t);
 		}
-		for(Strafe s:spiel.getHeimstrafen()) {
+		for (Strafe s : spiel.getHeimstrafen()) {
 			as.strafen.remove(s);
 		}
-		for(Strafe s:spiel.getAuswaertsstrafen()) {
+		for (Strafe s : spiel.getAuswaertsstrafen()) {
 			as.strafen.remove(s);
 		}
 	}
-	
-	public ArrayList<Aufstellung>getAlleAufstellungen(){
-		ArrayList<Aufstellung>aufst=new ArrayList<Aufstellung>();
-		for(Spiel sp:as.spiele) {
+
+	public ArrayList<Aufstellung> getAlleAufstellungen() {
+		ArrayList<Aufstellung> aufst = new ArrayList<Aufstellung>();
+		for (Spiel sp : as.spiele) {
 			aufst.add(sp.getAufstHeim());
 			aufst.add(sp.getAufstAuswaerts());
 		}
 		return aufst;
 	}
-	
+
 	public void removeSpieltag(long ID) {
-		Spieltag sp=IDPicker.pick(as.spt, ID);
-		sp.getSpiele().stream().forEach((spiel)->{
+		Spieltag sp = IDPicker.pick(as.spt, ID);
+		sp.getSpiele().stream().forEach((spiel) -> {
 			removeSpiel(spiel.getID());
 		});
-		for(Liga lg:as.ligen) {
+		for (Liga lg : as.ligen) {
 			lg.getSpieltageID().remove(ID);
 		}
 		as.spt.remove(sp);
 	}
 
-	public void addTor(boolean heimteam,long torschuetzeID, long vorlagengeberID, long spielID, int spielminute,
+	public void addTor(boolean heimteam, long torschuetzeID, long vorlagengeberID, long spielID, int spielminute,
 			int nachspielzeit, int torartIndex) {
 		long teamID = 0;
 		if (heimteam) {
@@ -514,6 +519,17 @@ public class Steuerung {
 			spiel.addTor(tor);
 		});
 		as.tore.add(tor);
+	}
+
+	public void addTor(boolean heimteam, long torschuetzeID, long vorlagengeberID, long spielID, int spielminute,
+			int nachspielzeit, String torart) {
+		int index = 0;
+		for (int i = 0; i < torarten.size(); ++i) {
+			if (torart.equals(torarten.get(i))) {
+				index = i;
+			}
+		}
+		addTor(heimteam, torschuetzeID, vorlagengeberID, spielID, spielminute, nachspielzeit, index);
 	}
 
 	public void editTor(long torschuetzeID, long vorlagengeberID, int spielminute, int nachspielzeit, int torartIndex,
@@ -539,9 +555,9 @@ public class Steuerung {
 					.forEachOrdered((spiel) -> {
 						spiel.removeTor(ID);
 					});
-			//as.tore.remove(tor);
+			// as.tore.remove(tor);
 		});
-		as.tore.removeIf((t)->(t.getID()==ID));
+		as.tore.removeIf((t) -> (t.getID() == ID));
 	}
 
 	public ArrayList<Tor> getTore() {
@@ -560,10 +576,19 @@ public class Steuerung {
 				IDPicker.pick(as.spieler, gefoulterID), IDPicker.pick(as.teams, teamID), idc.createID(), strafenarten,
 				as);
 		strafe.setTyp(strafenartIndex);
-		as.spiele.stream().filter((spiel) -> (spiel.getID() == spielID)).forEachOrdered((spiel) -> {
-			spiel.addStrafe(strafe);
-		});
+		IDPicker.pick(as.spiele, spielID).addStrafe(strafe);
 		as.strafen.add(strafe);
+	}
+
+	public void addStrafe(boolean heimteam, long foulenderID, long gefoulterID, long spielID, int spielminute,
+			int nachspielzeit, String strafenart) {
+		int index=0;
+		for(int i=0;i<strafenarten.size();++i) {
+			if(strafenart.equals(torarten.get(i))) {
+				index=i;
+			}
+		}
+		addStrafe(heimteam,foulenderID,gefoulterID,spielID,spielminute,nachspielzeit,index);
 	}
 
 	public void editStrafe(long foulenderID, long gefoulterID, int spielminute, int nachspielzeit, int strafenartIndex,
@@ -591,9 +616,9 @@ public class Steuerung {
 					.forEachOrdered((spiel) -> {
 						spiel.removeStrafe(ID);
 					});
-			//as.strafen.remove(strafe);
+			// as.strafen.remove(strafe);
 		});
-		as.strafen.removeIf((s)->(s.getID()==ID));
+		as.strafen.removeIf((s) -> (s.getID() == ID));
 	}
 
 	public ArrayList<Strafe> getStrafen() {
@@ -630,8 +655,8 @@ public class Steuerung {
 	}
 
 	public void removeLiga(long ID) {
-		Liga liga=IDPicker.pick(as.ligen, ID);
-		for(Spieltag spt:liga.getSpieltage()) {
+		Liga liga = IDPicker.pick(as.ligen, ID);
+		for (Spieltag spt : liga.getSpieltage()) {
 			this.removeSpieltag(spt.getID());
 		}
 		as.ligen.remove(liga);
@@ -724,13 +749,14 @@ public class Steuerung {
 			st.getSpiele().stream().map((sp) -> {
 				long heimID = sp.getAuswaertsID();
 				long auswaertsID = sp.getHeimID();
-				long neueID=idc.createID();
-				Liga te=IDPicker.pick(as.ligen, ligaID);
-				Aufstellung heim=new Aufstellung(heimID, neueID, te.getHoechstStartelf(), te.getHoechstAuswechselspieler(),
-						te.getHoechstAuswechslung(),te.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
-				Aufstellung auswaerts=new Aufstellung(auswaertsID,neueID,0,0,0,0,idc.createID(), as);
-				Spiel spiel = new Spiel(IDPicker.pick(as.teams, heimID), IDPicker.pick(as.teams, auswaertsID),
-						neueID, false, as, heim, auswaerts);
+				long neueID = idc.createID();
+				Liga te = IDPicker.pick(as.ligen, ligaID);
+				Aufstellung heim = new Aufstellung(heimID, neueID, te.getHoechstStartelf(),
+						te.getHoechstAuswechselspieler(), te.getHoechstAuswechslung(),
+						te.getHoechstAuswechslungNachspielzeit(), idc.createID(), as);
+				Aufstellung auswaerts = new Aufstellung(auswaertsID, neueID, 0, 0, 0, 0, idc.createID(), as);
+				Spiel spiel = new Spiel(IDPicker.pick(as.teams, heimID), IDPicker.pick(as.teams, auswaertsID), neueID,
+						false, as, heim, auswaerts);
 				return spiel;
 			}).map((spiel) -> {
 				as.spiele.add(spiel);
@@ -798,13 +824,13 @@ public class Steuerung {
 		liga.setPunkteProNiederlage(ppn);
 		liga.setReihenfolgeKriterien(rk);
 	}
-	
+
 	public void regeneriereAusDatei(File datei) throws IOException, JDOMException {
 		Document doc = new SAXBuilder().build(datei);
 		Element re = doc.getRootElement();
 		name = re.getAttributeValue("Name");
-		if(!version.equals(re.getAttributeValue("Version"))) {
-			JOptionPane.showMessageDialog(null, 
+		if (!version.equals(re.getAttributeValue("Version"))) {
+			JOptionPane.showMessageDialog(null,
 					"Diese Datei stammt aus einer anderen Version, möglicherweise werden nicht alle Daten richtig eingelesen!",
 					"ACHTUNG!", 2);
 		}
@@ -868,20 +894,20 @@ public class Steuerung {
 			el.addContent(o.toString());
 		}
 	}
-	
-	public Pair<Liga,Spieltag>getLSVonSpiel(long ID){
-		Spieltag rSpt=null;
-		for(Spieltag spt:as.spt) {
-			if(spt.getSpieleIDs().contains(ID)) {
-				rSpt=spt;
+
+	public Pair<Liga, Spieltag> getLSVonSpiel(long ID) {
+		Spieltag rSpt = null;
+		for (Spieltag spt : as.spt) {
+			if (spt.getSpieleIDs().contains(ID)) {
+				rSpt = spt;
 			}
 		}
 		Liga rLig = null;
-		for(Liga lig:as.ligen) {
-			if(lig.getSpieltageID().contains(rSpt.getID())) {
-				rLig=lig;
+		for (Liga lig : as.ligen) {
+			if (lig.getSpieltageID().contains(rSpt.getID())) {
+				rLig = lig;
 			}
 		}
-		return new Pair<Liga,Spieltag>(rLig,rSpt);
+		return new Pair<Liga, Spieltag>(rLig, rSpt);
 	}
 }
