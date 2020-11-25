@@ -35,6 +35,7 @@ public abstract class Spielaktivitaet implements Pickable,Comparable<Spielaktivi
 	}
 	
 	public abstract boolean isTor();
+	public abstract boolean isWechsel();
 	
 	public String getDateiString() {
 		String string="<ID>"+ID+"</ID>\n<Zeit>"+zeit+"</Zeit>\n<Nachspielzeit>"+nachspielzeit+"</Nachspielzeit>\n"

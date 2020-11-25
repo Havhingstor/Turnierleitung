@@ -11,6 +11,7 @@ import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.spiele.Strafe;
 import de.pasch.turnierleitung.spiele.Tor;
+import de.pasch.turnierleitung.spiele.Wechsel;
 import de.pasch.turnierleitung.turnierelemente.KORunde;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Runde;
@@ -32,6 +33,7 @@ public class ArraySpeicher {
 	public ArrayList<Liga>ligen=new ArrayList<Liga>();
 	public ArrayList<Link>links=new ArrayList<Link>();
 	public ArrayList<KORunde>koRunden=new ArrayList<KORunde>();
+	public ArrayList<Wechsel>wechsel=new ArrayList<Wechsel>();
 	
 	public void createXMLElements(Element parElement) {
 		Element teamEl=new Element("Teams");

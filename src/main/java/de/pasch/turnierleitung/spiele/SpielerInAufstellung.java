@@ -11,11 +11,15 @@ public class SpielerInAufstellung {
 	private long spielerID;
 	private boolean eingewechselt=false;
 	private boolean ausgewechselt=false;	
+	private boolean inStartaufstellung;
 	private int eingewechseltZeit=0;
+	private int eingewechseltNZeit=0;
 	private int ausgewechseltZeit=0;
+	private int ausgewechseltNZeit=0;
 	
-	protected SpielerInAufstellung(long spielerID) {
+	protected SpielerInAufstellung(long spielerID,boolean inStartaufstellung) {
 		this.spielerID=spielerID;
+		this.inStartaufstellung=inStartaufstellung;
 	}
 	
 	public void createXMLElements(Element parEl) {
@@ -71,6 +75,22 @@ public class SpielerInAufstellung {
 		return ausgewechseltZeit;
 	}
 	
+	public void setEingewechseltNZeit(int zeit) {
+		this.eingewechseltNZeit=zeit;
+	}
+	
+	public void setAusgewechseltNZeit(int zeit) {
+		this.ausgewechseltNZeit=zeit;
+	}
+	
+	public int getEingewechseltNZeit() {
+		return eingewechseltNZeit;
+	}
+	
+	public int getAusgewechseltNZeit() {
+		return ausgewechseltNZeit;
+	}
+	
 	public void setEingewechselt(boolean wahr) {
 		eingewechselt=wahr;
 	}
@@ -85,5 +105,53 @@ public class SpielerInAufstellung {
 	
 	public boolean getEingewechselt() {
 		return eingewechselt;
+	}
+	
+	public boolean istAufPlatz(int zeit, int nachspielzeit) {
+		boolean vorherEingewechselt=false;
+		boolean nichtVorherAusgewechselt=true;
+		
+		if(eingewechselt) {
+			vorherEingewechselt=true;
+			if(eingewechseltZeit>zeit) {
+				vorherEingewechselt=false;
+			}else if(eingewechseltZeit==zeit&&eingewechseltNZeit>nachspielzeit) {
+				vorherEingewechselt=false;
+			}
+		}
+		if(ausgewechselt) {
+			nichtVorherAusgewechselt=false;
+			if(ausgewechseltZeit>zeit) {
+				nichtVorherAusgewechselt=true;
+			}else if(ausgewechseltZeit==zeit&&ausgewechseltNZeit>nachspielzeit) {
+				nichtVorherAusgewechselt=true;
+			}
+		}
+		
+		return (inStartaufstellung||vorherEingewechselt)&&nichtVorherAusgewechselt;
+	}
+	
+	public boolean istAufBank(int zeit, int nachspielzeit) {
+		boolean nichtVorherEingewechselt=true;
+		boolean vorherAusgewechselt=false;
+		
+		if(eingewechselt) {
+			nichtVorherEingewechselt=false;
+			if(eingewechseltZeit>zeit) {
+				nichtVorherEingewechselt=true;
+			}else if(eingewechseltZeit==zeit&&eingewechseltNZeit>nachspielzeit) {
+				nichtVorherEingewechselt=true;
+			}
+		}
+		if(ausgewechselt) {
+			vorherAusgewechselt=true;
+			if(ausgewechseltZeit>zeit) {
+				vorherAusgewechselt=false;
+			}else if(ausgewechseltZeit==zeit&&ausgewechseltNZeit>nachspielzeit) {
+				vorherAusgewechselt=false;
+			}
+		}
+		
+		return (!inStartaufstellung&&nichtVorherEingewechselt)||vorherAusgewechselt;
 	}
 }

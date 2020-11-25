@@ -66,4 +66,10 @@ public class Tor extends Spielaktivitaet {
 	public boolean isTor() {
 		return true;
 	}
+
+	@Override
+	public boolean isWechsel() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -73,6 +73,12 @@ public class Strafe extends Spielaktivitaet {
 	public boolean isTor() {
 		return false;
 	}
+
+	@Override
+	public boolean isWechsel() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }
 
 

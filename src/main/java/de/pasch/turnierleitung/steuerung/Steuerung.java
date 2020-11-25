@@ -17,8 +17,10 @@ import de.pasch.turnierleitung.protagonisten.SpielerTeamConnector;
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Aufstellung;
 import de.pasch.turnierleitung.spiele.Spiel;
+import de.pasch.turnierleitung.spiele.Spielaktivitaet;
 import de.pasch.turnierleitung.spiele.Strafe;
 import de.pasch.turnierleitung.spiele.Tor;
+import de.pasch.turnierleitung.spiele.Wechsel;
 import de.pasch.turnierleitung.turnierelemente.KORunde;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import de.pasch.turnierleitung.turnierelemente.Runde;
@@ -33,7 +35,7 @@ public class Steuerung {
 	private String name = "";
 	private final ArrayList<String> torarten = new ArrayList<>();
 	private final ArrayList<String> strafenarten = new ArrayList<>();
-	public final String version = "0.4";
+	public final String version = "0.5";
 
 	public Steuerung() {
 		torarten.add("Rechtsschuss");
@@ -515,7 +517,7 @@ public class Steuerung {
 				IDPicker.pick(as.spieler, vorlagengeberID), IDPicker.pick(as.teams, teamID), idc.createID(), torarten,
 				as);
 		tor.setTyp(torartIndex);
-		as.spiele.stream().filter((spiel) -> (spiel.getID() == spielID)).forEachOrdered((spiel) -> {
+		as.spiele.stream().filter((spiel) -> (spiel.getID() == spielID)).forEach((spiel) -> {
 			spiel.addTor(tor);
 		});
 		as.tore.add(tor);
@@ -582,13 +584,13 @@ public class Steuerung {
 
 	public void addStrafe(boolean heimteam, long foulenderID, long gefoulterID, long spielID, int spielminute,
 			int nachspielzeit, String strafenart) {
-		int index=0;
-		for(int i=0;i<strafenarten.size();++i) {
-			if(strafenart.equals(torarten.get(i))) {
-				index=i;
+		int index = 0;
+		for (int i = 0; i < strafenarten.size(); ++i) {
+			if (strafenart.equals(torarten.get(i))) {
+				index = i;
 			}
 		}
-		addStrafe(heimteam,foulenderID,gefoulterID,spielID,spielminute,nachspielzeit,index);
+		addStrafe(heimteam, foulenderID, gefoulterID, spielID, spielminute, nachspielzeit, index);
 	}
 
 	public void editStrafe(long foulenderID, long gefoulterID, int spielminute, int nachspielzeit, int strafenartIndex,
@@ -623,6 +625,67 @@ public class Steuerung {
 
 	public ArrayList<Strafe> getStrafen() {
 		return as.strafen;
+	}
+
+	public void addWechsel(boolean heimteam, int zeit, int nachspielzeit, Spieler eingewechselt, Spieler ausgewechselt,
+			Spiel spiel) {
+		Wechsel neuerW = new Wechsel(zeit, nachspielzeit, eingewechselt, ausgewechselt, idc.createID(),
+				heimteam ? spiel.getHeimID() : spiel.getAuswaertsID(), as);
+		if (!ereignisseSpaeter(zeit, nachspielzeit, ausgewechselt, spiel, false, null)) {
+			if (heimteam) {
+				spiel.getAufstHeim().addWechsel(zeit, nachspielzeit, ausgewechselt.getID(), eingewechselt.getID());
+				spiel.addWechsel(neuerW);
+			} else {
+				spiel.getAufstAuswaerts().addWechsel(zeit, nachspielzeit, ausgewechselt.getID(), eingewechselt.getID());
+				spiel.addWechsel(neuerW);
+			}
+			as.wechsel.add(neuerW);
+		} else {
+			throw new IllegalArgumentException("Ausgewechselter Spieler war danach noch in Ereignisse involviert");
+		}
+
+	}
+
+	public void removeWechsel(long ID, Spiel spiel) {
+		Wechsel wechsel = IDPicker.pick(as.wechsel, ID);
+		Spieler eingewechselt = wechsel.getAusfuehrer();
+		Spieler ausgewechselt = wechsel.getAusgewechselt();
+		if (!ereignisseSpaeter(wechsel.getZeit(), wechsel.getNachspielzeit(), eingewechselt, spiel, true, wechsel)) {
+			spiel.removeWechsel(ID);
+			spiel.getAufstHeim().removeWechsel(ausgewechselt.getID(), eingewechselt.getID());
+			spiel.getAufstAuswaerts().removeWechsel(ausgewechselt.getID(), eingewechselt.getID());
+			as.wechsel.remove(wechsel);
+		} else {
+			throw new IllegalArgumentException("Eingewechselter Spieler war danach noch in Ereignisse involviert");
+		}
+	}
+
+	public boolean ereignisseSpaeter(int zeit, int nachspielzeit, Spieler spieler, Spiel spiel, boolean mitAktuell,
+			Spielaktivitaet ereignisLoeschen) {
+		ArrayList<Spielaktivitaet> ereignisse = spiel.getEreignisseSortiert();
+		for (int i = ereignisse.size() - 1; i >= 0; --i) {
+			Spielaktivitaet ereignis = ereignisse.get(i);
+			if ((ereignis.getZeit() > zeit)
+					|| (ereignis.getZeit() == zeit && ((mitAktuell && ereignis.getNachspielzeit() >= nachspielzeit)
+							|| (ereignis.getNachspielzeit() > nachspielzeit)))) {
+				if (ereignis.isTor()&&!ereignis.equals(ereignisLoeschen)) {
+					Tor tor = (Tor) ereignis;
+					if (tor.getAusfuehrerID() == spieler.getID() || tor.getVorbereiterID() == spieler.getID()) {
+						return true;
+					}
+				} else if (ereignis.isWechsel()&&!ereignis.equals(ereignisLoeschen)) {
+					Wechsel wechsel = (Wechsel) ereignis;
+					if (wechsel.getAusfuehrerID() == spieler.getID()
+							|| wechsel.getAusgewechselt().getID() == spieler.getID()) {
+						return true;
+					}
+				}
+			} else {
+				return false;
+			}
+
+		}
+		return false;
 	}
 
 	public void addElfmeterschießen(long ID) {

@@ -24,6 +24,9 @@ public class SpielereignisHinzufuegen {
 	Steuerung steuerung;
 	Stage primstage;
 	Spiel spiel;
+	Spieler letzterAusfuehrer;
+	Spieler letzterAndererSpieler;
+	boolean pausiert=false;
 
 	public SpielereignisHinzufuegen(Stage primstage, Aktualisierer akt, Steuerung steuerung, Spiel spiel) {
 		this.primstage = primstage;
@@ -43,7 +46,7 @@ public class SpielereignisHinzufuegen {
 		gp.setAlignment(Pos.TOP_CENTER);
 
 		ComboBox<String> typCB = new ComboBox<String>();
-		typCB.getItems().addAll("Tor", "Strafe");
+		typCB.getItems().addAll("Tor", "Strafe", "Wechsel");
 		typCB.setValue("Tor");
 		gp.add(typCB, 0, 0);
 
@@ -79,17 +82,82 @@ public class SpielereignisHinzufuegen {
 		Label andererSpielerLab = new Label();
 		gp.add(andererSpielerLab, 0, 4);
 		addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
-		typCB.setOnAction((e) -> {
-			addArtauswahl(typCB, gp, artCB);
-			addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
-		});
-		teamCB.setOnAction((e) -> {
-			addSpielerauswahl(teamCB, gp, spielerCB);
-			addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
-		});
-
+		
 		Button speichern = new Button("Speichern");
 		speichern.setFont(Font.font(20));
+		
+		typCB.setOnAction((e) -> {
+			if(!pausiert) {
+				pausiert=true;
+				if (typCB.getValue().equals("Wechsel")&&(teamCB.getValue().equals(spiel.getHeimteam())
+						? spiel.getAufstHeim().getAllespieler(steuerung.getSpieler()).size()<2
+						: spiel.getAufstAuswaerts().getAllespieler(steuerung.getSpieler()).size()<2)) {
+					speichern.setDisable(true);
+				}else {
+					speichern.setDisable(false);
+				}
+				addArtauswahl(typCB, gp, artCB);
+				addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
+				pausiert=false;
+			}
+		});
+		teamCB.setOnAction((e) -> {
+			if(!pausiert) {
+				pausiert=true;
+				if (typCB.getValue().equals("Wechsel")&&(teamCB.getValue().equals(spiel.getHeimteam())
+						? spiel.getAufstHeim().getAllespieler(steuerung.getSpieler()).size()<2
+						: spiel.getAufstAuswaerts().getAllespieler(steuerung.getSpieler()).size()<2)) {
+					speichern.setDisable(true);
+				}else {
+					speichern.setDisable(false);
+				}
+				addSpielerauswahl(teamCB, gp, spielerCB);
+				addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
+				pausiert=false;
+			}
+		});
+
+		letzterAusfuehrer = spielerCB.getValue();
+		letzterAndererSpieler = andererSpielerCB.getValue();
+		spielerCB.setOnAction((e) -> {
+			if(!pausiert) {
+				pausiert=true;
+				if(andererSpielerCB.getValue()!=null) {
+					if (spielerCB.getValue().equals(andererSpielerCB.getValue())) {
+						andererSpielerCB.setValue(letzterAusfuehrer);
+					}
+				}
+				letzterAusfuehrer = spielerCB.getValue();
+				pausiert=false;
+			}
+		});
+		andererSpielerCB.setOnAction((e) -> {
+			if(!pausiert) {
+				pausiert=true;
+				if (spielerCB.getValue().equals(andererSpielerCB.getValue())) {
+					if (letzterAndererSpieler != null) {
+						spielerCB.setValue(letzterAndererSpieler);
+					} else {
+						int zahl = 0;
+						for (int i = spielerCB.getItems().size() - 1; i >= 0; --i) {
+							if (!spielerCB.getItems().get(i).equals(andererSpielerCB.getValue())) {
+								spielerCB.setValue(spielerCB.getItems().get(i));
+								++zahl;
+							}
+						}
+						if (zahl < 1) {
+							andererSpielerCB.setValue(letzterAndererSpieler);
+							return;
+						}
+					}
+	
+				}
+				letzterAndererSpieler = andererSpielerCB.getValue();
+				pausiert=false;
+			}
+		});
+
+		
 		speichern.setOnAction((e) -> {
 			if (typCB.getValue().equals("Tor")) {
 				try {
@@ -108,12 +176,39 @@ public class SpielereignisHinzufuegen {
 					warnung.setContentText(iae.getMessage());
 					warnung.showAndWait();
 				}
+			} else if (typCB.getValue().equals("Wechsel")) {
+				try {
+					steuerung.addWechsel(teamCB.getValue().equals(spiel.getHeimteam()),
+							Integer.parseInt(zeitFeld.getText()), Integer.parseInt(nZeitFeld.getText()),
+							spielerCB.getValue(), andererSpielerCB.getValue(), spiel);
+					stage.hide();
+					akt.aktualisieren();
+				} catch (IllegalArgumentException iae) {
+					Alert warnung = new Alert(AlertType.ERROR);
+					warnung.initModality(Modality.WINDOW_MODAL);
+					warnung.initOwner(stage);
+					warnung.setTitle("Wechsel hinzufügen nicht möglich!");
+					warnung.setHeaderText(null);
+					warnung.setContentText(iae.getMessage());
+					warnung.showAndWait();
+				}
 			} else {
-				steuerung.addStrafe(teamCB.getValue().equals(spiel.getHeimteam()), spielerCB.getValue().getID(),
-						(andererSpielerCB.getValue() != null) ? andererSpielerCB.getValue().getID() : 0, spiel.getID(),
-						Integer.parseInt(zeitFeld.getText()), Integer.parseInt(nZeitFeld.getText()), artCB.getValue());
-				stage.hide();
-				akt.aktualisieren();
+				try {
+					steuerung.addStrafe(teamCB.getValue().equals(spiel.getHeimteam()), spielerCB.getValue().getID(),
+							(andererSpielerCB.getValue() != null) ? andererSpielerCB.getValue().getID() : 0,
+							spiel.getID(), Integer.parseInt(zeitFeld.getText()), Integer.parseInt(nZeitFeld.getText()),
+							artCB.getValue());
+					stage.hide();
+					akt.aktualisieren();
+				} catch (IllegalArgumentException iae) {
+					Alert warnung = new Alert(AlertType.ERROR);
+					warnung.initModality(Modality.WINDOW_MODAL);
+					warnung.initOwner(stage);
+					warnung.setTitle("Strafe hinzufügen nicht möglich!");
+					warnung.setHeaderText(null);
+					warnung.setContentText(iae.getMessage());
+					warnung.showAndWait();
+				}
 			}
 		});
 		gp.add(speichern, 0, 5, 2, 1);
@@ -127,6 +222,9 @@ public class SpielereignisHinzufuegen {
 		if (typCB.getValue().equals("Tor")) {
 			artCB.getItems().clear();
 			artCB.getItems().addAll(FXCollections.observableArrayList(steuerung.getTorarten()));
+		} else if (typCB.getValue().equals("Wechsel")) {
+			artCB.getItems().clear();
+			artCB.getItems().add("Eingewechselt");
 		} else {
 			artCB.getItems().clear();
 			artCB.getItems().addAll(FXCollections.observableArrayList(steuerung.getStrafenarten()));
@@ -165,6 +263,16 @@ public class SpielereignisHinzufuegen {
 				andererSpieler.getItems().addAll(FXCollections
 						.observableArrayList(spiel.getAufstAuswaerts().getAllespieler(steuerung.getSpieler())));
 			}
+		} else if (typCB.getValue().equals("Wechsel")) {
+			andererSpielerLab.setText("Ausgewechselt");
+			andererSpieler.getItems().clear();
+			if (heimteam) {
+				andererSpieler.getItems().addAll(
+						FXCollections.observableArrayList(spiel.getAufstHeim().getAllespieler(steuerung.getSpieler())));
+			} else {
+				andererSpieler.getItems().addAll(FXCollections
+						.observableArrayList(spiel.getAufstAuswaerts().getAllespieler(steuerung.getSpieler())));
+			}
 		} else {
 			andererSpielerLab.setText("Gefoulter");
 			andererSpieler.getItems().clear();
@@ -177,6 +285,8 @@ public class SpielereignisHinzufuegen {
 						.observableArrayList(spiel.getAufstAuswaerts().getAllespieler(steuerung.getSpieler())));
 			}
 		}
-		andererSpieler.setValue(andererSpieler.getItems().get(0));
+		if(andererSpieler.getItems().size()>0) {
+			andererSpieler.setValue(andererSpieler.getItems().get(0));
+		}
 	}
 }

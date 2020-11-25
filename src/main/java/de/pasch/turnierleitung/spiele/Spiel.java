@@ -20,6 +20,8 @@ public class Spiel implements Pickable {
 	private String stadion = "";
 	private ArrayList<Long> heimtore = new ArrayList<>();
 	private ArrayList<Long> auswaertstore = new ArrayList<>();
+	private ArrayList<Long>heimwechsel=new ArrayList<>();
+	private ArrayList<Long>auswaertswechsel=new ArrayList<>();
 	private int alternativeHeimtore = 0;
 	private int alternativeAuswaertstore = 0;
 	private ArrayList<Long> heimstrafen = new ArrayList<>();
@@ -363,7 +365,7 @@ public class Spiel implements Pickable {
 	}
 
 	public void addStrafe(Strafe strafe) {
-		if (strafe.getTeamID() == heimID ) {
+		if (strafe.getTeamID() == heimID) {
 			heimstrafen.add(strafe.getID());
 			ergebnis = true;
 		} else if (strafe.getTeamID() == auswaertsID) {
@@ -381,7 +383,7 @@ public class Spiel implements Pickable {
 			auswaertsstrafen.remove(ID);
 		} else {
 			throw new IllegalArgumentException(
-					"Diese Strafe ist weder als Heim- noch als " + "Ausw�rtsstrafe registriert!");
+					"Diese Strafe ist weder als Heim- noch als " + "Auswärtsstrafe registriert!");
 		}
 	}
 
@@ -408,7 +410,46 @@ public class Spiel implements Pickable {
 	public ArrayList<Long> getAuswaertsstrafenIDs() {
 		return auswaertsstrafen;
 	}
+	
+	public void addWechsel(Wechsel wechsel) {
+		if(wechsel.getTeamID()==heimID) {
+			heimwechsel.add(wechsel.getID());
+			ergebnis=true;
+		}else if(wechsel.getTeamID()==auswaertsID) {
+			auswaertswechsel.add(wechsel.getID());
+			ergebnis=true;
+		}else {
+			throw new IllegalArgumentException("Wechsel kann keinem Team zugeordnet werden!");
+		}
+	}
 
+	public void removeWechsel(long ID) {
+		if (heimwechsel.contains(ID)) {
+			heimwechsel.remove(ID);
+		} else if (auswaertswechsel.contains(ID)) {
+			auswaertswechsel.remove(ID);
+		} else {
+			throw new IllegalArgumentException(
+					"Dieser Wechsel ist weder als Heim- noch als " + "Auswärtswechsel registriert!");
+		}
+	}
+	
+	public ArrayList<Wechsel> getHeimwechsel() {
+		ArrayList<Wechsel> wechsel = new ArrayList<>();
+		heimwechsel.forEach((l) -> {
+			wechsel.add(IDPicker.pick(as.wechsel, l));
+		});
+		return wechsel;
+	}
+
+	public ArrayList<Wechsel> getAuswaertswechsel() {
+		ArrayList<Wechsel> wechsel = new ArrayList<>();
+		auswaertswechsel.forEach((l) -> {
+			wechsel.add(IDPicker.pick(as.wechsel, l));
+		});
+		return wechsel;
+	}
+	
 	public boolean abschließenUndGewinner() {
 		if (getHeimtoreZahl() > getAuswaertstoreZahl()) {
 			gewinnerID = heimID;
@@ -574,42 +615,46 @@ public class Spiel implements Pickable {
 	}
 
 	public <S extends Spielaktivitaet> boolean isInTime(S akt, boolean heim) {
-		if (heim && aufstHeim.getAktuelleAufstellung(akt.zeit + akt.getNachspielzeit()).size() > 0) {
+		if (heim && aufstHeim.getAktuelleAufstellung(akt.zeit , akt.getNachspielzeit()).size() > 0) {
 			if (akt.isTor()) {
 				Tor t = (Tor) akt;
-				if (t.getVorbereiterID() > 0 && !aufstHeim.getAktuelleAufstellung(t.getZeit() + t.getNachspielzeit())
+				if (t.getVorbereiterID() > 0 && !aufstHeim.getAktuelleAufstellung(t.getZeit() , t.getNachspielzeit())
 						.contains(t.getVorbereiterID())) {
 					return false;
 				}
-				if (t.getAusfuehrerID() > 0 && !aufstHeim.getAktuelleAufstellung(t.getZeit() + t.getNachspielzeit())
+				if (t.getAusfuehrerID() > 0 && !aufstHeim.getAktuelleAufstellung(t.getZeit() , t.getNachspielzeit())
 						.contains(t.getAusfuehrerID())) {
 					return false;
 				}
+			} else if (akt.isWechsel()) {
+
 			} else {
 				Strafe s = (Strafe) akt;
-				if (s.getAusfuehrerID() > 0 && !aufstHeim.getAktuelleAufstellung(s.getZeit() + s.getNachspielzeit())
+				if (s.getAusfuehrerID() > 0 && !aufstHeim.getAktuelleAufstellung(s.getZeit() , s.getNachspielzeit())
 						.contains(s.getAusfuehrerID())) {
 					return false;
 				}
-				if (s.getGefoultenID() > 0 && !aufstHeim.getAktuelleAufstellung(s.getZeit() + s.getNachspielzeit())
+				if (s.getGefoultenID() > 0 && !aufstHeim.getAktuelleAufstellung(s.getZeit() , s.getNachspielzeit())
 						.contains(s.getGefoultenID())) {
 					return false;
 				}
 			}
-		} else if (!heim && aufstAuswaerts.getAktuelleAufstellung(akt.zeit + akt.getNachspielzeit()).size() > 0) {
+		} else if (!heim && aufstAuswaerts.getAktuelleAufstellung(akt.zeit , akt.getNachspielzeit()).size() > 0) {
 			if (akt.getAusfuehrerID() > 0 && !aufstAuswaerts
-					.getAktuelleAufstellung(akt.getZeit() + akt.getNachspielzeit()).contains(akt.getAusfuehrerID())) {
+					.getAktuelleAufstellung(akt.getZeit() , akt.getNachspielzeit()).contains(akt.getAusfuehrerID())) {
 				return false;
 			}
 			if (akt.isTor()) {
 				Tor t = (Tor) akt;
 				if (t.getVorbereiterID() > 0 && !aufstAuswaerts
-						.getAktuelleAufstellung(t.getZeit() + t.getNachspielzeit()).contains(t.getVorbereiterID())) {
+						.getAktuelleAufstellung(t.getZeit() , t.getNachspielzeit()).contains(t.getVorbereiterID())) {
 					return false;
 				}
+			} else if (akt.isWechsel()) {
+
 			} else {
 				Strafe s = (Strafe) akt;
-				if (s.getGefoultenID() > 0 && !aufstAuswaerts.getAktuelleAufstellung(s.getZeit() + s.getNachspielzeit())
+				if (s.getGefoultenID() > 0 && !aufstAuswaerts.getAktuelleAufstellung(s.getZeit() ,s.getNachspielzeit())
 						.contains(s.getGefoultenID())) {
 					return false;
 				}
@@ -624,6 +669,8 @@ public class Spiel implements Pickable {
 		ereignisse.addAll(getAuswaertstoreDirekt());
 		ereignisse.addAll(getHeimstrafen());
 		ereignisse.addAll(getAuswaertsstrafen());
+		ereignisse.addAll(getHeimwechsel());
+		ereignisse.addAll(getAuswaertswechsel());
 		Collections.sort(ereignisse);
 		return ereignisse;
 	}
