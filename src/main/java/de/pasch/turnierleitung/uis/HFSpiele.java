@@ -839,8 +839,8 @@ public class HFSpiele {
 		Button entfernen = new Button("Spielereignis entfernen");
 		entfernen.setOnAction((e) -> {
 			if (sp.getEreignisseSortiert().size() > 0) {
-				new ListDialog<Spielaktivitaet>(sp.getEreignisseSortiert(), stage,
-						"Welches Spielereigniss soll gelöscht werden", "Spielereignis löschen", (f) -> {
+				new ListDialog<Spielaktivitaet>(sp.getEreignisseSortiert(), stage,350,
+						"Welches Spielereigniss soll gelöscht werden?", "Spielereignis löschen", (f) -> {
 							try {
 								if (f.isTor()) {
 									steuerung.removeTor(f.getID());
