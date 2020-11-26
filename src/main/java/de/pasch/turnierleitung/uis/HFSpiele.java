@@ -33,6 +33,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -771,6 +772,21 @@ public class HFSpiele {
 		kapitaen.setDisable(true);
 		btns.getChildren().add(kapitaen);
 
+		Label wechselLabel=new Label("getätigte/mögliche\nAuswechslungen");
+		wechselLabel.setFont(Font.font(15));
+		aufstellung.add(wechselLabel, 0, 2);
+		
+		Label wechselText=new Label(aufst.getAuswechslungen()+"/"+aufst.getHoechstAuswechslungenAktuell());
+		wechselText.setFont(Font.font(15));
+		wechselText.setPrefWidth(160);
+		wechselText.setAlignment(Pos.CENTER);
+		aufstellung.add(wechselText, 1, 2);
+		
+		if(!aufst.wechselMoeglich()) {
+			wechselLabel.setTextFill(Color.RED);
+			wechselText.setTextFill(Color.RED);
+		}
+		
 		tab.setContent(aufstellung);
 	}
 

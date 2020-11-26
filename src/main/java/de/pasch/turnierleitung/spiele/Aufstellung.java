@@ -285,6 +285,18 @@ public class Aufstellung implements Pickable {
 			return (hoechstAuswechslung > auswechslungen);
 		}
 	}
+	
+	public int getAuswechslungen() {
+		return auswechslungen;
+	}
+	
+	public int getHoechstAuswechslungenAktuell() {
+		if (verlaengerung) {
+			return (hoechstAuswechslungVerlaengerung) ;
+		} else {
+			return (hoechstAuswechslung );
+		}
+	}
 
 	public void addWechsel(int zeit, int nachspielzeit, long ausgewechseltID, long eingewechseltID) {
 		if (wechselMoeglich()) {
