@@ -81,7 +81,7 @@ public class SpielereignisHinzufuegen {
 		gp.add(andererSpielerCB, 1, 4);
 		Label andererSpielerLab = new Label();
 		gp.add(andererSpielerLab, 0, 4);
-		addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
+		addAnderenSpieler(typCB, gp, andererSpielerCB, spielerCB, andererSpielerLab, teamCB);
 		
 		Button speichern = new Button("Speichern");
 		speichern.setFont(Font.font(20));
@@ -97,8 +97,9 @@ public class SpielereignisHinzufuegen {
 					speichern.setDisable(false);
 				}
 				addArtauswahl(typCB, gp, artCB);
-				addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
+				addAnderenSpieler(typCB, gp, andererSpielerCB, spielerCB, andererSpielerLab, teamCB);
 				pausiert=false;
+				ueberpruefeBoxen(spielerCB,andererSpielerCB);
 			}
 		});
 		teamCB.setOnAction((e) -> {
@@ -112,8 +113,9 @@ public class SpielereignisHinzufuegen {
 					speichern.setDisable(false);
 				}
 				addSpielerauswahl(teamCB, gp, spielerCB);
-				addAnderenSpieler(typCB, gp, andererSpielerCB, andererSpielerLab, teamCB);
+				addAnderenSpieler(typCB, gp, andererSpielerCB, spielerCB, andererSpielerLab, teamCB);
 				pausiert=false;
+				ueberpruefeBoxen(spielerCB,andererSpielerCB);
 			}
 		});
 
@@ -249,7 +251,7 @@ public class SpielereignisHinzufuegen {
 		}
 	}
 
-	private void addAnderenSpieler(ComboBox<String> typCB, GridPane gp, ComboBox<Spieler> andererSpieler,
+	private void addAnderenSpieler(ComboBox<String> typCB, GridPane gp, ComboBox<Spieler> andererSpieler,ComboBox<Spieler> spielerCB,
 			Label andererSpielerLab, ComboBox<Team> teamCB) {
 		boolean heimteam = teamCB.getValue().equals(spiel.getHeimteam());
 		if (typCB.getValue().equals("Tor")) {
@@ -287,6 +289,16 @@ public class SpielereignisHinzufuegen {
 		}
 		if(andererSpieler.getItems().size()>0) {
 			andererSpieler.setValue(andererSpieler.getItems().get(0));
+		}
+	}
+	
+	private void ueberpruefeBoxen(ComboBox<Spieler> spielerCB,ComboBox<Spieler> andererSpielerCB) {
+		if(spielerCB.getValue()!=null&&spielerCB.getValue().equals(andererSpielerCB.getValue())) {
+			for(Spieler s: andererSpielerCB.getItems()) {
+				if(!spielerCB.getValue().equals(s)) {
+					andererSpielerCB.setValue(s);
+				}
+			}
 		}
 	}
 }
