@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.jdom2.Element;
 
 import de.pasch.turnierleitung.protagonisten.Spieler;
+import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Pickable;
@@ -378,7 +379,20 @@ public class Aufstellung implements Pickable {
 	public void setKapitaenID(long kapitaenID) {
 		this.kapitaenID = kapitaenID;
 	}
-
+	
+	public boolean setKapitaenAutomatisch() {
+		Team team=IDPicker.pick(as.teams,vereinsID);
+		boolean erfolgreich=false;
+		if(team.getKapitaen()!=null&&startelf.contains(team.getKapitaen().getID())){
+			kapitaenID=team.getKapitaen().getID();
+			erfolgreich=true;
+		}else if(team.getVizekapitaen()!=null&&startelf.contains(team.getVizekapitaen().getID())) {
+			kapitaenID=team.getVizekapitaen().getID();
+			erfolgreich=true;
+		}
+		return erfolgreich;
+	}
+	
 	public boolean isBeendet() {
 		return IDPicker.pick(as.spiele, spielID).isErgebnis();
 	}

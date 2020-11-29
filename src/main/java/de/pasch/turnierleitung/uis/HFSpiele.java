@@ -610,6 +610,9 @@ public class HFSpiele {
 				aufstStage.setTitle("Aufstellung bearbeiten");
 				aufstStage.initModality(Modality.WINDOW_MODAL);
 				aufstStage.initOwner(stage);
+				aufstStage.setOnCloseRequest((f)->{
+					f.consume();
+				});
 
 				GridPane aufstGp = new GridPane();
 				aufstGp.setPadding(new Insets(5));
@@ -749,13 +752,57 @@ public class HFSpiele {
 				kapStage.setTitle("Kapitän bestimmen");
 				kapStage.initModality(Modality.WINDOW_MODAL);
 				kapStage.initOwner(stage);
+				kapStage.setOnCloseRequest((f)->{
+					f.consume();
+				});
 
 				GridPane gp = new GridPane();
 				gp.setPadding(new Insets(5));
 				gp.setHgap(5);
 				gp.setVgap(5);
-
-				Scene scene = new Scene(gp);
+				
+				Button zuruecksetzen=new Button("Zurücksetzen");
+				zuruecksetzen.setFont(Font.font("Verdana"));
+				gp.add(zuruecksetzen, 0, 0);
+				zuruecksetzen.setOnAction((f)->{
+					aufst.setKapitaenID(0);
+					akt.aktualisieren();
+				});
+				
+				Button automatisch=new Button("Automatisch bestimmen");
+				automatisch.setFont(Font.font("Verdana"));
+				gp.add(automatisch, 1, 0);
+				automatisch.setOnAction((f)->{
+					boolean erfolgreich=aufst.setKapitaenAutomatisch();
+					akt.aktualisieren();
+					if(erfolgreich) {
+						Alert warnung = new Alert(AlertType.INFORMATION);
+						warnung.initModality(Modality.WINDOW_MODAL);
+						warnung.initOwner(stage);
+						warnung.setTitle("Kapitän setzen erfolgreich");
+						warnung.setHeaderText(null);
+						warnung.setContentText("Der Kapitän wurde erfolgreich gesetzt.");
+						warnung.showAndWait();
+					}else {
+						Alert warnung = new Alert(AlertType.INFORMATION);
+						warnung.initModality(Modality.WINDOW_MODAL);
+						warnung.initOwner(stage);
+						warnung.setTitle("Kapitän setzen nicht erfolgreich");
+						warnung.setHeaderText(null);
+						warnung.setContentText("Der Kapitän konnte leider nicht erfolgreich gesetzt werden.");
+						warnung.showAndWait();
+					}
+				});
+				
+				Button beenden=new Button("OK");
+				beenden.setFont(Font.font("Verdana"));
+				gp.add(beenden, 0, 2);
+				beenden.setOnAction((f)->{
+					kapStage.close();
+					akt.aktualisieren();
+				});
+				
+				Scene scene = new Scene(gp,300,100);
 				kapStage.setScene(scene);
 				kapStage.show();
 			} else {
@@ -769,7 +816,6 @@ public class HFSpiele {
 				warnung.showAndWait();
 			}
 		});
-		kapitaen.setDisable(true);
 		btns.getChildren().add(kapitaen);
 
 		Label wechselLabel=new Label("getätigte/mögliche\nAuswechslungen");
