@@ -746,6 +746,9 @@ public class HFSpiele {
 
 		Button kapitaen = new Button("Kapitän bestimmen");
 		kapitaen.setFont(Font.font("Verdana"));
+		if(aufst.getStartelfNummer()==0) {
+			kapitaen.setDisable(true);
+		}
 		kapitaen.setOnAction((e) -> {
 			if (!spiel.isErgebnis()) {
 				Stage kapStage = new Stage();
@@ -761,11 +764,27 @@ public class HFSpiele {
 				gp.setHgap(5);
 				gp.setVgap(5);
 				
+				ComboBox<Spieler> kapitaenCB=new ComboBox<Spieler>();
+				kapitaenCB.setStyle("-fx-font: 12px \"Verdana\";");
+				kapitaenCB.getItems().add(null);
+				kapitaenCB.getItems().addAll(aufst.getStartelf(steuerung.getSpieler()));
+				kapitaenCB.setValue(IDPicker.pick(steuerung.getSpieler(),aufst.getKapitaenID()));
+				gp.add(kapitaenCB, 1, 1);
+				kapitaenCB.setOnAction((f)->{
+					if(kapitaenCB.getValue()!=null) {
+						aufst.setKapitaenID(kapitaenCB.getValue().getID());
+					}else {
+						aufst.setKapitaenID(0);
+					}
+					akt.aktualisieren();
+				});
+				
 				Button zuruecksetzen=new Button("Zurücksetzen");
 				zuruecksetzen.setFont(Font.font("Verdana"));
 				gp.add(zuruecksetzen, 0, 0);
 				zuruecksetzen.setOnAction((f)->{
 					aufst.setKapitaenID(0);
+					kapitaenCB.setValue(null);
 					akt.aktualisieren();
 				});
 				
@@ -774,6 +793,7 @@ public class HFSpiele {
 				gp.add(automatisch, 1, 0);
 				automatisch.setOnAction((f)->{
 					boolean erfolgreich=aufst.setKapitaenAutomatisch();
+					kapitaenCB.setValue(IDPicker.pick(steuerung.getSpieler(),aufst.getKapitaenID()));
 					akt.aktualisieren();
 					if(erfolgreich) {
 						Alert warnung = new Alert(AlertType.INFORMATION);
@@ -793,6 +813,10 @@ public class HFSpiele {
 						warnung.showAndWait();
 					}
 				});
+				
+				Label kapitaenLab=new Label("Kapitän");
+				kapitaenLab.setFont(Font.font("Verdana"));
+				gp.add(kapitaenLab, 0, 1);
 				
 				Button beenden=new Button("OK");
 				beenden.setFont(Font.font("Verdana"));

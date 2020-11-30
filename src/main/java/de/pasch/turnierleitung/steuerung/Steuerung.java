@@ -35,7 +35,7 @@ public class Steuerung {
 	private String name = "";
 	private final ArrayList<String> torarten = new ArrayList<>();
 	private final ArrayList<String> strafenarten = new ArrayList<>();
-	public final String version = "0.5.1";
+	public final String version = "0.6";
 
 	public Steuerung() {
 		torarten.add("Rechtsschuss");
