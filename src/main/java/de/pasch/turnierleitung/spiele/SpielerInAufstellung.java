@@ -38,13 +38,25 @@ public class SpielerInAufstellung {
 		sia.addContent(ausgewEl);
 		ausgewEl.addContent(""+ausgewechselt);
 		
+		Element startelfEl=new Element("Startelf");
+		sia.addContent(startelfEl);
+		startelfEl.addContent(""+inStartaufstellung);
+		
 		Element eingewZeitEl=new Element("EingewechseltZeit");
 		sia.addContent(eingewZeitEl);
 		eingewZeitEl.addContent(""+eingewechseltZeit);
 		
+		Element eingewNZeitEl=new Element("EingewechseltNZeit");
+		sia.addContent(eingewNZeitEl);
+		eingewNZeitEl.addContent(""+eingewechseltNZeit);
+		
 		Element ausgewZeitEl=new Element("AusgewechseltZeit");
 		sia.addContent(ausgewZeitEl);
 		ausgewZeitEl.addContent(""+ausgewechseltZeit);
+		
+		Element ausgewNZeitEl=new Element("AusgewechseltNZeit");
+		sia.addContent(ausgewNZeitEl);
+		ausgewNZeitEl.addContent(""+ausgewechseltNZeit);
 	}
 	
 	public long getSpielerID() {

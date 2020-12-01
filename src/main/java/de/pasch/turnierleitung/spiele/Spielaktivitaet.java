@@ -64,6 +64,10 @@ public abstract class Spielaktivitaet implements Pickable,Comparable<Spielaktivi
 		ausfEl.addContent(""+ausfuehrerID);
 		parEl.addContent(ausfEl);
 		
+		Element teamEl=new Element("Team");
+		teamEl.addContent(""+teamID);
+		parEl.addContent(teamEl);
+		
 		Element typenEl=new Element("Typen");
 		parEl.addContent(typenEl);
 		for(String typ:typen) {

@@ -29,9 +29,6 @@ public class Tor extends Spielaktivitaet {
 		Element element=new Element("Tor");
 		parEl.addContent(element);
 		super.createXMLElements(element);
-		Element teamEl=new Element("Team");
-		teamEl.addContent(""+teamID);
-		element.addContent(teamEl);
 		Element vorbEl=new Element("Vorbereiter");
 		vorbEl.addContent(""+vorbereiterID);
 		element.addContent(vorbEl);

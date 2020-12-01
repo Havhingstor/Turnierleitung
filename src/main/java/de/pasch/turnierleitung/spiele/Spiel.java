@@ -33,10 +33,10 @@ public class Spiel implements Pickable {
 	private boolean elfWahr = false;
 	private boolean nachspielzeit = false;
 	private boolean seperaterPlatzname = false;
-	private ArraySpeicher as = null;
 	private Aufstellung aufstHeim;
 	private Aufstellung aufstAuswaerts;
 
+	private ArraySpeicher as = null;
 	public Spiel(Team heimteam, Team auswaertsteam, long ID, boolean neutralerPlatz, ArraySpeicher as, Aufstellung heim,
 			Aufstellung auswaerts) {
 		this.ID = ID;
@@ -132,6 +132,14 @@ public class Spiel implements Pickable {
 			torEl.addContent("" + tor);
 		}
 
+		Element heimwechselEl=new Element("Heimwechsel");
+		Steuerung.createALElements(heimwechselEl, heimwechsel, "Wechsel");
+		spiel.addContent(heimwechselEl);
+		
+		Element auswaertswechselEl=new Element("Auswaertswechsel");
+		Steuerung.createALElements(auswaertswechselEl, auswaertswechsel, "Wechsel");
+		spiel.addContent(auswaertswechselEl);
+		
 		Element heimstrafenEl = new Element("Heimstrafen");
 		spiel.addContent(heimstrafenEl);
 		for (long strafe : heimstrafen) {
@@ -147,7 +155,23 @@ public class Spiel implements Pickable {
 			auswaertstrafenEl.addContent(strafeEl);
 			strafeEl.addContent("" + strafe);
 		}
+		
+		Element alternHeimtoreEl=new Element("alternativeHeimtore");
+		alternHeimtoreEl.addContent(""+alternativeHeimtore);
+		spiel.addContent(alternHeimtoreEl);
+		
+		Element alternAuswaertstoreEl=new Element("alternativeAuswaertstore");
+		alternAuswaertstoreEl.addContent(""+alternativeAuswaertstore);
+		spiel.addContent(alternAuswaertstoreEl);
 
+		Element heimaufstellungEl=new Element("Heimaufstellung");
+		aufstHeim.createXMLElements(heimaufstellungEl);
+		spiel.addContent(heimaufstellungEl);
+		
+		Element auswaertsaufstellungEl=new Element("Auswaertsaufstellung");
+		aufstAuswaerts.createXMLElements(auswaertsaufstellungEl);
+		spiel.addContent(auswaertsaufstellungEl);
+		
 		if (elfmeterschießen != null) {
 			Element elfEl = new Element("Elfmeterschießen");
 			spiel.addContent(elfEl);

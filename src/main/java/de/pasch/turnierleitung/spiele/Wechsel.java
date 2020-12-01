@@ -2,6 +2,8 @@ package de.pasch.turnierleitung.spiele;
 
 import java.util.ArrayList;
 
+import org.jdom2.Element;
+
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.steuerung.ArraySpeicher;
 import de.pasch.turnierleitung.steuerung.IDPicker;
@@ -18,6 +20,15 @@ public class Wechsel extends Spielaktivitaet {
 		super.setTyp(0);
 	}
 
+	public void createXMLElements(Element parEl) {
+		Element element=new Element("Wechsel");
+		parEl.addContent(element);
+		super.createXMLElements(element);
+		Element ausgewechseltEl=new Element("Ausgewechselt");
+		ausgewechseltEl.addContent(""+ausgewechselt);
+		element.addContent(ausgewechseltEl);
+	}
+	
 	@Override
 	public boolean isTor() {
 		return false;

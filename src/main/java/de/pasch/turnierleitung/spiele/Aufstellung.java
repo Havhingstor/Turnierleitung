@@ -39,10 +39,7 @@ public class Aufstellung implements Pickable {
 		this.as = as;
 	}
 
-	public void createXMLElements(Element parEl) {
-		Element aufstellung = new Element("Aufstellung");
-		parEl.addContent(aufstellung);
-
+	public void createXMLElements(Element aufstellung) {
 		Element idEl = new Element("ID");
 		idEl.addContent("" + ID);
 		aufstellung.addContent(idEl);
@@ -97,6 +94,10 @@ public class Aufstellung implements Pickable {
 		for (SpielerInAufstellung sia : SIAs) {
 			sia.createXMLElements(siaEl);
 		}
+		
+		Element kapitaenEl=new Element("Kapitaen");
+		kapitaenEl.addContent(""+kapitaenID);
+		aufstellung.addContent(kapitaenEl);
 	}
 
 	public void addSpielerStartelf(Spieler spieler) {

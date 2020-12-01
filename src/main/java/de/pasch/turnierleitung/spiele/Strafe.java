@@ -28,13 +28,12 @@ public class Strafe extends Spielaktivitaet {
 	public void createXMLElements(Element parEl) {
 		Element strafe=new Element("Strafe");
 		parEl.addContent(strafe);
+		
 		super.createXMLElements(strafe);
-		Element teamEl=new Element("Team");
-		strafe.addContent(teamEl);
-		teamEl.addContent(""+teamID);
+		
 		Element gefoulterEl=new Element("Gefoulter");
+		gefoulterEl.addContent(""+gefoulterID);
 		strafe.addContent(gefoulterEl);
-		teamEl.addContent(""+gefoulterID);
 	}
 	
 	public void setTyp(int index) {
