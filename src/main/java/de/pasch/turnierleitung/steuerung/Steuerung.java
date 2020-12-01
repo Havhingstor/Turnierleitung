@@ -910,6 +910,7 @@ public class Steuerung {
 				}
 			}
 		}
+		as.regeneriereAusXMLElements(re);
 	}
 
 	/*

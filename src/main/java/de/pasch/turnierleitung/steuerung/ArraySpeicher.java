@@ -114,4 +114,31 @@ public class ArraySpeicher {
 		}
 		parElement.addContent(korEl);
 	}
+	
+	public void regeneriereAusXMLElements(Element rootElement) {
+		löscheUndRegeneriereAlle();
+		for(Element element:rootElement.getChildren()) {
+			if(element.getName().equals("Teams")) {
+				for(Element childEl:element.getChildren()) {
+					teams.add(new Team(childEl,this));
+				}
+			}
+		}
+	}
+	
+	private void löscheUndRegeneriereAlle() {
+		teams=new ArrayList<Team>();
+		spieler=new ArrayList<Spieler>();
+		tore=new ArrayList<Tor>();
+		spiele=new ArrayList<Spiel>();
+		strafen=new ArrayList<Strafe>();
+		connectoren=new ArrayList<SpielerTeamConnector>();
+		runden=new ArrayList<Runde>();
+		rs=new ArrayList<Rundensammlung>();
+		spt=new ArrayList<Spieltag>();
+		ligen=new ArrayList<Liga>();
+		links=new ArrayList<Link>();
+		koRunden=new ArrayList<KORunde>();
+		wechsel=new ArrayList<Wechsel>();
+	}
 }

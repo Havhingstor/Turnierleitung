@@ -19,6 +19,22 @@ public class Team extends Protagonist {
 		this.as=as;
 	}
 	
+	public Team(Element parEl,ArraySpeicher as) {
+		super(parEl);
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Kurzname")) {
+				kurzname=el.getValue();
+			}else if(el.getName().equals("Heimstadion")) {
+				heimstadion=el.getValue();
+			}else if(el.getName().equals("Kapitaen")) {
+				kapitaenID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Vizekapitaen")) {
+				vizekapitaenID=Long.parseLong(el.getValue());
+			}
+		}
+		this.as=as;
+	}
+	
 	public String getDateiString() {
 		String string="<Team>\n"+super.getDateiString()+"<Kurzname>"
 		+kurzname+"</Kurzname>\n<Heimstadion>"+heimstadion+"</Heimstadion>\n<Kapitaen>"

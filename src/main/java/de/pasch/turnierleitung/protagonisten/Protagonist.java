@@ -14,6 +14,16 @@ public class Protagonist implements Pickable {
 		this.name=name;
 	}
 	
+	protected Protagonist(Element parEl) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Name")) {
+				name=el.getValue();
+			}
+		}
+	}
+	
 	public long getID() {
 		return ID;
 	}
