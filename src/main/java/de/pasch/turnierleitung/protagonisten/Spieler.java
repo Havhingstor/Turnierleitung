@@ -12,7 +12,19 @@ public class Spieler extends Protagonist implements Linkface {
 		this.vorname=vorname;
 		this.nachname=nachname;
 	}
-
+	
+	public Spieler(Element parEl) {
+		super(parEl);
+		
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Vorname")) {
+				vorname=el.getValue();
+			}else if(el.getName().equals("Nachname")) {
+				nachname=el.getValue();
+			}
+		}
+	}
+	
 	public void setName(String vorname,String nachname) {
 		this.setName(vorname+" "+nachname);
 		this.vorname=vorname;

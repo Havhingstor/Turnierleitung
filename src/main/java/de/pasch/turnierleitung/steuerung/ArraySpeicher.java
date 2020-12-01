@@ -122,6 +122,10 @@ public class ArraySpeicher {
 				for(Element childEl:element.getChildren()) {
 					teams.add(new Team(childEl,this));
 				}
+			}else if(element.getName().equals("Spieler")) {
+				for(Element childEl:element.getChildren()) {
+					spieler.add(new Spieler(childEl));
+				}
 			}
 		}
 	}
