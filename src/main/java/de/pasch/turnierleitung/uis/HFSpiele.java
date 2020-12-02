@@ -12,6 +12,7 @@ import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.spiele.Spielaktivitaet;
 import de.pasch.turnierleitung.spiele.Strafe;
 import de.pasch.turnierleitung.spiele.Tor;
+import de.pasch.turnierleitung.spiele.Wechsel;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import de.pasch.turnierleitung.turnierelemente.Liga;
@@ -427,8 +428,8 @@ public class HFSpiele {
 					}
 					if (erlaubt) {
 						int best = JOptionPane.showConfirmDialog(null,
-								"Sollen wirklich alle Tore "
-										+ "(samt der vollständig eingegebenen) und Strafen gelöscht werden?",
+								"Sollen wirklich alle Tore, Wechsel und Strafen gelöscht werden?"
+								+ "\n(Achtung! Auch die direkt eingestellten Tore werden gelöscht!)",
 								"ACHTUNG!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 						if (best == JOptionPane.OK_OPTION) {
 							ArrayList<Tor> tore = new ArrayList<Tor>(sp.getHeimtoreDirekt());
@@ -440,6 +441,11 @@ public class HFSpiele {
 							strafen.addAll(sp.getAuswaertsstrafen());
 							for (Strafe s : strafen) {
 								steuerung.removeStrafe(s.getID());
+							}
+							ArrayList<Wechsel> wechsel = new ArrayList<Wechsel>(sp.getHeimwechsel());
+							wechsel.addAll(sp.getAuswaertswechsel());
+							for (Wechsel w : wechsel) {
+								steuerung.removeWechsel(w.getID(), sp);
 							}
 							sp.setMinimaleAuswaertstore(0);
 							sp.setMinimaleHeimtore(0);
@@ -610,7 +616,7 @@ public class HFSpiele {
 				aufstStage.setTitle("Aufstellung bearbeiten");
 				aufstStage.initModality(Modality.WINDOW_MODAL);
 				aufstStage.initOwner(stage);
-				aufstStage.setOnCloseRequest((f)->{
+				aufstStage.setOnCloseRequest((f) -> {
 					f.consume();
 				});
 
@@ -645,9 +651,9 @@ public class HFSpiele {
 								ComboBox<Spieler> cB = cBoxen.get(h);
 								if (cB.getValue() != null && !box.equals(cB) && box.getValue().equals(cB.getValue())) {
 									cB.setValue(IDPicker.pick(steuerung.getSpieler(), zwl[iE].getWert()));
-									if(cB.getValue()!=null) {
+									if (cB.getValue() != null) {
 										zwl[h].setWert(cB.getValue().getID());
-									}else {
+									} else {
 										zwl[h].setWert(0l);
 									}
 								}
@@ -655,7 +661,7 @@ public class HFSpiele {
 						}
 						if (box.getValue() != null) {
 							zwl[iE].setWert(box.getValue().getID());
-						}else {
+						} else {
 							zwl[iE].setWert(0l);
 						}
 					});
@@ -686,9 +692,9 @@ public class HFSpiele {
 								if (cB.getValue() != null && !box.equals(cB) && box.getValue().equals(cB.getValue())) {
 									cB.setValue(IDPicker.pick(steuerung.getSpieler(),
 											zwl[iE + aufst.getHoechstStartelf()].getWert()));
-									if(cB.getValue()!=null) {
+									if (cB.getValue() != null) {
 										zwl[h].setWert(cB.getValue().getID());
-									}else {
+									} else {
 										zwl[h].setWert(0l);
 									}
 								}
@@ -696,7 +702,7 @@ public class HFSpiele {
 						}
 						if (box.getValue() != null) {
 							zwl[iE + aufst.getHoechstStartelf()].setWert(box.getValue().getID());
-						}else {
+						} else {
 							zwl[iE + aufst.getHoechstStartelf()].setWert(0l);
 						}
 					});
@@ -746,7 +752,7 @@ public class HFSpiele {
 
 		Button kapitaen = new Button("Kapitän bestimmen");
 		kapitaen.setFont(Font.font("Verdana"));
-		if(aufst.getStartelfNummer()==0) {
+		if (aufst.getStartelfNummer() == 0) {
 			kapitaen.setDisable(true);
 		}
 		kapitaen.setOnAction((e) -> {
@@ -755,7 +761,7 @@ public class HFSpiele {
 				kapStage.setTitle("Kapitän bestimmen");
 				kapStage.initModality(Modality.WINDOW_MODAL);
 				kapStage.initOwner(stage);
-				kapStage.setOnCloseRequest((f)->{
+				kapStage.setOnCloseRequest((f) -> {
 					f.consume();
 				});
 
@@ -763,39 +769,39 @@ public class HFSpiele {
 				gp.setPadding(new Insets(5));
 				gp.setHgap(5);
 				gp.setVgap(5);
-				
-				ComboBox<Spieler> kapitaenCB=new ComboBox<Spieler>();
+
+				ComboBox<Spieler> kapitaenCB = new ComboBox<Spieler>();
 				kapitaenCB.setStyle("-fx-font: 12px \"Verdana\";");
 				kapitaenCB.getItems().add(null);
 				kapitaenCB.getItems().addAll(aufst.getStartelf(steuerung.getSpieler()));
-				kapitaenCB.setValue(IDPicker.pick(steuerung.getSpieler(),aufst.getKapitaenID()));
+				kapitaenCB.setValue(IDPicker.pick(steuerung.getSpieler(), aufst.getKapitaenID()));
 				gp.add(kapitaenCB, 1, 1);
-				kapitaenCB.setOnAction((f)->{
-					if(kapitaenCB.getValue()!=null) {
+				kapitaenCB.setOnAction((f) -> {
+					if (kapitaenCB.getValue() != null) {
 						aufst.setKapitaenID(kapitaenCB.getValue().getID());
-					}else {
+					} else {
 						aufst.setKapitaenID(0);
 					}
 					akt.aktualisieren();
 				});
-				
-				Button zuruecksetzen=new Button("Zurücksetzen");
+
+				Button zuruecksetzen = new Button("Zurücksetzen");
 				zuruecksetzen.setFont(Font.font("Verdana"));
 				gp.add(zuruecksetzen, 0, 0);
-				zuruecksetzen.setOnAction((f)->{
+				zuruecksetzen.setOnAction((f) -> {
 					aufst.setKapitaenID(0);
 					kapitaenCB.setValue(null);
 					akt.aktualisieren();
 				});
-				
-				Button automatisch=new Button("Automatisch bestimmen");
+
+				Button automatisch = new Button("Automatisch bestimmen");
 				automatisch.setFont(Font.font("Verdana"));
 				gp.add(automatisch, 1, 0);
-				automatisch.setOnAction((f)->{
-					boolean erfolgreich=aufst.setKapitaenAutomatisch();
-					kapitaenCB.setValue(IDPicker.pick(steuerung.getSpieler(),aufst.getKapitaenID()));
+				automatisch.setOnAction((f) -> {
+					boolean erfolgreich = aufst.setKapitaenAutomatisch();
+					kapitaenCB.setValue(IDPicker.pick(steuerung.getSpieler(), aufst.getKapitaenID()));
 					akt.aktualisieren();
-					if(erfolgreich) {
+					if (erfolgreich) {
 						Alert warnung = new Alert(AlertType.INFORMATION);
 						warnung.initModality(Modality.WINDOW_MODAL);
 						warnung.initOwner(stage);
@@ -803,7 +809,7 @@ public class HFSpiele {
 						warnung.setHeaderText(null);
 						warnung.setContentText("Der Kapitän wurde erfolgreich gesetzt.");
 						warnung.showAndWait();
-					}else {
+					} else {
 						Alert warnung = new Alert(AlertType.INFORMATION);
 						warnung.initModality(Modality.WINDOW_MODAL);
 						warnung.initOwner(stage);
@@ -813,20 +819,20 @@ public class HFSpiele {
 						warnung.showAndWait();
 					}
 				});
-				
-				Label kapitaenLab=new Label("Kapitän");
+
+				Label kapitaenLab = new Label("Kapitän");
 				kapitaenLab.setFont(Font.font("Verdana"));
 				gp.add(kapitaenLab, 0, 1);
-				
-				Button beenden=new Button("OK");
+
+				Button beenden = new Button("OK");
 				beenden.setFont(Font.font("Verdana"));
 				gp.add(beenden, 0, 2);
-				beenden.setOnAction((f)->{
+				beenden.setOnAction((f) -> {
 					kapStage.close();
 					akt.aktualisieren();
 				});
-				
-				Scene scene = new Scene(gp,300,100);
+
+				Scene scene = new Scene(gp, 300, 100);
 				kapStage.setScene(scene);
 				kapStage.show();
 			} else {
@@ -842,21 +848,21 @@ public class HFSpiele {
 		});
 		btns.getChildren().add(kapitaen);
 
-		Label wechselLabel=new Label("getätigte/mögliche\nAuswechslungen");
+		Label wechselLabel = new Label("getätigte/mögliche\nAuswechslungen");
 		wechselLabel.setFont(Font.font(15));
 		aufstellung.add(wechselLabel, 0, 2);
-		
-		Label wechselText=new Label(aufst.getAuswechslungen()+"/"+aufst.getHoechstAuswechslungenAktuell());
+
+		Label wechselText = new Label(aufst.getAuswechslungen() + "/" + aufst.getHoechstAuswechslungenAktuell());
 		wechselText.setFont(Font.font(15));
 		wechselText.setPrefWidth(160);
 		wechselText.setAlignment(Pos.CENTER);
 		aufstellung.add(wechselText, 1, 2);
-		
-		if(!aufst.wechselMoeglich()) {
+
+		if (!aufst.wechselMoeglich()) {
 			wechselLabel.setTextFill(Color.RED);
 			wechselText.setTextFill(Color.RED);
 		}
-		
+
 		tab.setContent(aufstellung);
 	}
 
@@ -925,7 +931,7 @@ public class HFSpiele {
 		Button entfernen = new Button("Spielereignis entfernen");
 		entfernen.setOnAction((e) -> {
 			if (sp.getEreignisseSortiert().size() > 0) {
-				new ListDialog<Spielaktivitaet>(sp.getEreignisseSortiert(), stage,350,
+				new ListDialog<Spielaktivitaet>(sp.getEreignisseSortiert(), stage, 350,
 						"Welches Spielereignis soll gelöscht werden?", "Spielereignis löschen", (f) -> {
 							try {
 								if (f.isTor()) {
@@ -936,7 +942,7 @@ public class HFSpiele {
 									steuerung.removeStrafe(f.getID());
 								}
 								akt.aktualisieren();
-							}catch (IllegalArgumentException iae) {
+							} catch (IllegalArgumentException iae) {
 								Alert warnung = new Alert(AlertType.ERROR);
 								warnung.initModality(Modality.WINDOW_MODAL);
 								warnung.initOwner(stage);
@@ -1028,39 +1034,39 @@ public class HFSpiele {
 			Text vorlagengeberText = new Text(beschriftungen[4]);
 			vorlagengeberText.setFont(Font.font(20));
 			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
-		} else if(ereignis.isWechsel()) {
-			
-		}else{
-		Label ueberschriftLabel = new Label("Strafe");
-		ueberschriftLabel.setFont(Font.font(20));
-		ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
+		} else if (ereignis.isWechsel()) {
 
-		Label gefoulterLabel = new Label("Gefoulter");
-		gefoulterLabel.setFont(Font.font(20));
-		ereignisDetailsGP.add(gefoulterLabel, 0, 5);
+		} else {
+			Label ueberschriftLabel = new Label("Strafe");
+			ueberschriftLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
 
-		String[] beschriftungen = getDetailsStrafe((Strafe) ereignis);
+			Label gefoulterLabel = new Label("Gefoulter");
+			gefoulterLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(gefoulterLabel, 0, 5);
 
-		Text spielerText = new Text(beschriftungen[0]);
-		spielerText.setFont(Font.font(20));
-		ereignisDetailsGP.add(spielerText, 1, 1);
+			String[] beschriftungen = getDetailsStrafe((Strafe) ereignis);
 
-		Text zeitText = new Text(beschriftungen[1]);
-		zeitText.setFont(Font.font(20));
-		ereignisDetailsGP.add(zeitText, 1, 2);
+			Text spielerText = new Text(beschriftungen[0]);
+			spielerText.setFont(Font.font(20));
+			ereignisDetailsGP.add(spielerText, 1, 1);
 
-		Text artText = new Text(beschriftungen[2]);
-		artText.setFont(Font.font(20));
-		ereignisDetailsGP.add(artText, 1, 3);
+			Text zeitText = new Text(beschriftungen[1]);
+			zeitText.setFont(Font.font(20));
+			ereignisDetailsGP.add(zeitText, 1, 2);
 
-		Text teamText = new Text(beschriftungen[3]);
-		teamText.setFont(Font.font(20));
-		ereignisDetailsGP.add(teamText, 1, 4);
+			Text artText = new Text(beschriftungen[2]);
+			artText.setFont(Font.font(20));
+			ereignisDetailsGP.add(artText, 1, 3);
 
-		Text vorlagengeberText = new Text(beschriftungen[4]);
-		vorlagengeberText.setFont(Font.font(20));
-		ereignisDetailsGP.add(vorlagengeberText, 1, 5);
-	}
+			Text teamText = new Text(beschriftungen[3]);
+			teamText.setFont(Font.font(20));
+			ereignisDetailsGP.add(teamText, 1, 4);
+
+			Text vorlagengeberText = new Text(beschriftungen[4]);
+			vorlagengeberText.setFont(Font.font(20));
+			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
+		}
 	}
 
 	private String[] getDetailsTor(Tor tor) {
