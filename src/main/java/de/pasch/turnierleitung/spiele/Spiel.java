@@ -29,8 +29,8 @@ public class Spiel implements Pickable {
 	private long gewinnerID = 0;
 	private boolean ergebnis = false;;
 	private boolean unentschieden = false;
-	private Elfmeterschießen elfmeterschießen = null;
-	private boolean elfWahr = false;
+//	private Elfmeterschießen elfmeterschießen = null;
+//	private boolean elfWahr = false;
 	private boolean nachspielzeit = false;
 	private boolean seperaterPlatzname = false;
 	private Aufstellung aufstHeim;
@@ -49,6 +49,67 @@ public class Spiel implements Pickable {
 		aufstAuswaerts = auswaerts;
 	}
 
+	public Spiel(Element parEl,ArraySpeicher as) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Heim")) {
+				heimID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Auswaerts")) {
+				auswaertsID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Link")) {
+				enthaeltLink=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Neutral")) {
+				neutralerPlatz=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Stadion")) {
+				stadion=el.getValue();
+			}else if(el.getName().equals("Gewinner")) {
+				gewinnerID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Ergebnis")) {
+				ergebnis=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Unentschieden")) {
+				unentschieden=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Nachspielzeit")) {
+				nachspielzeit=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Seperat")) {
+				seperaterPlatzname=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Heimtore")) {
+				for(Element childEl:el.getChildren()) {
+					heimtore.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Auswaertstore")) {
+				for(Element childEl:el.getChildren()) {
+					auswaertstore.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Heimwechsel")) {
+				for(Element childEl:el.getChildren()) {
+					heimwechsel.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Auswaertswechsel")) {
+				for(Element childEl:el.getChildren()) {
+					auswaertswechsel.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Heimstrafen")) {
+				for(Element childEl:el.getChildren()) {
+					heimstrafen.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Auswaertsstrafen")) {
+				for(Element childEl:el.getChildren()) {
+					auswaertsstrafen.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("AlternativeHeimtore")) {
+				alternativeHeimtore=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("AlternativeAuswaertstore")) {
+				alternativeAuswaertstore=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("Heimaufstellung")) {
+				aufstHeim=new Aufstellung(el, as);
+			}else if(el.getName().equals("Auswaertsaufstellung")) {
+				aufstAuswaerts=new Aufstellung(el,as);
+			}
+		}
+		this.as=as;
+	}
+	
 	/**
 	 * @return the ergebnis
 	 */
@@ -104,9 +165,9 @@ public class Spiel implements Pickable {
 		unentschiedenEl.addContent("" + unentschieden);
 		spiel.addContent(unentschiedenEl);
 
-		Element elfBoolEl = new Element("ElfBool");
-		elfBoolEl.addContent("" + elfWahr);
-		spiel.addContent(elfBoolEl);
+//		Element elfBoolEl = new Element("ElfBool");
+//		elfBoolEl.addContent("" + elfWahr);
+//		spiel.addContent(elfBoolEl);
 
 		Element nachEl = new Element("Nachspielzeit");
 		nachEl.addContent("" + nachspielzeit);
@@ -156,11 +217,11 @@ public class Spiel implements Pickable {
 			strafeEl.addContent("" + strafe);
 		}
 		
-		Element alternHeimtoreEl=new Element("alternativeHeimtore");
+		Element alternHeimtoreEl=new Element("AlternativeHeimtore");
 		alternHeimtoreEl.addContent(""+alternativeHeimtore);
 		spiel.addContent(alternHeimtoreEl);
 		
-		Element alternAuswaertstoreEl=new Element("alternativeAuswaertstore");
+		Element alternAuswaertstoreEl=new Element("AlternativeAuswaertstore");
 		alternAuswaertstoreEl.addContent(""+alternativeAuswaertstore);
 		spiel.addContent(alternAuswaertstoreEl);
 
@@ -172,42 +233,42 @@ public class Spiel implements Pickable {
 		aufstAuswaerts.createXMLElements(auswaertsaufstellungEl);
 		spiel.addContent(auswaertsaufstellungEl);
 		
-		if (elfmeterschießen != null) {
-			Element elfEl = new Element("Elfmeterschießen");
-			spiel.addContent(elfEl);
-
-			Element heimGetroffenEl = new Element("Heimtreffer");
-			spiel.addContent(heimGetroffenEl);
-			for (boolean treffer : elfmeterschießen.heimGetroffen) {
-				Element trefferEl = new Element("Treffer");
-				heimGetroffenEl.addContent(trefferEl);
-				trefferEl.addContent("" + treffer);
-			}
-
-			Element auswaertsGetroffenEl = new Element("Auswaertstreffer");
-			spiel.addContent(auswaertsGetroffenEl);
-			for (boolean treffer : elfmeterschießen.auswaertsGetroffen) {
-				Element trefferEl = new Element("Treffer");
-				auswaertsGetroffenEl.addContent(trefferEl);
-				trefferEl.addContent("" + treffer);
-			}
-
-			Element heimSpielerEl = new Element("Heimspieler");
-			spiel.addContent(heimSpielerEl);
-			for (boolean spieler : elfmeterschießen.heimGetroffen) {
-				Element spielerEl = new Element("Spieler");
-				heimSpielerEl.addContent(spielerEl);
-				spielerEl.addContent("" + spieler);
-			}
-
-			Element auswaertsSpielerEl = new Element("Auswaertsspieler");
-			spiel.addContent(auswaertsSpielerEl);
-			for (boolean spieler : elfmeterschießen.auswaertsGetroffen) {
-				Element spielerEl = new Element("Spieler");
-				auswaertsSpielerEl.addContent(spielerEl);
-				spielerEl.addContent("" + spieler);
-			}
-		}
+//		if (elfmeterschießen != null) {
+//			Element elfEl = new Element("Elfmeterschießen");
+//			spiel.addContent(elfEl);
+//
+//			Element heimGetroffenEl = new Element("Heimtreffer");
+//			spiel.addContent(heimGetroffenEl);
+//			for (boolean treffer : elfmeterschießen.heimGetroffen) {
+//				Element trefferEl = new Element("Treffer");
+//				heimGetroffenEl.addContent(trefferEl);
+//				trefferEl.addContent("" + treffer);
+//			}
+//
+//			Element auswaertsGetroffenEl = new Element("Auswaertstreffer");
+//			spiel.addContent(auswaertsGetroffenEl);
+//			for (boolean treffer : elfmeterschießen.auswaertsGetroffen) {
+//				Element trefferEl = new Element("Treffer");
+//				auswaertsGetroffenEl.addContent(trefferEl);
+//				trefferEl.addContent("" + treffer);
+//			}
+//
+//			Element heimSpielerEl = new Element("Heimspieler");
+//			spiel.addContent(heimSpielerEl);
+//			for (boolean spieler : elfmeterschießen.heimGetroffen) {
+//				Element spielerEl = new Element("Spieler");
+//				heimSpielerEl.addContent(spielerEl);
+//				spielerEl.addContent("" + spieler);
+//			}
+//
+//			Element auswaertsSpielerEl = new Element("Auswaertsspieler");
+//			spiel.addContent(auswaertsSpielerEl);
+//			for (boolean spieler : elfmeterschießen.auswaertsGetroffen) {
+//				Element spielerEl = new Element("Spieler");
+//				auswaertsSpielerEl.addContent(spielerEl);
+//				spielerEl.addContent("" + spieler);
+//			}
+//		}
 	}
 
 	public boolean isEnthaeltLink() {
@@ -535,69 +596,69 @@ public class Spiel implements Pickable {
 
 	}
 
-	public boolean elfmeterschießenNoetig() {
-		return unentschieden;
-	}
-
-	public void addElfmeterschießen() {
-		ergebnis = true;
-		if (!elfWahr) {
-			elfmeterschießen = new Elfmeterschießen();
-			elfWahr = true;
-		} else {
-			throw new IllegalArgumentException("Es ist bereits ein Elfmeterschießen vorhanden!");
-		}
-	}
-
-	public void removeElfmeterschießen() {
-		elfmeterschießen = null;
-	}
-
-	public boolean istElfmeterschießen() {
-		return elfWahr;
-	}
-
-	public void addBenoetigtesElfmeterschießen() {
-		if (elfmeterschießenNoetig()) {
-			addElfmeterschießen();
-		}
-	}
-
-	public void addElfmeterSchuss(boolean getroffen, boolean heim, long spielerID) {
-		if (heim) {
-			elfmeterschießen.heimGetroffen.add(getroffen);
-			elfmeterschießen.heimSpieler.add(spielerID);
-		} else {
-			elfmeterschießen.auswaertsGetroffen.add(getroffen);
-			elfmeterschießen.auswaertsSpieler.add(spielerID);
-		}
-	}
-
-	public void removeElfmeterschuss(int index, boolean heim) {
-		if (heim) {
-			elfmeterschießen.heimGetroffen.remove(index);
-			elfmeterschießen.heimSpieler.remove(index);
-		} else {
-			elfmeterschießen.auswaertsGetroffen.remove(index);
-			elfmeterschießen.auswaertsSpieler.remove(index);
-		}
-	}
-
-	public ArrayList<Boolean> getElfmeterschießen(boolean heim) {
-		if (heim) {
-			return elfmeterschießen.heimGetroffen;
-		} else {
-			return elfmeterschießen.auswaertsGetroffen;
-		}
-	}
-
-	public ArrayList<Long> getElfmeterspieler(boolean heim) {
-		if (heim) {
-			return elfmeterschießen.heimSpieler;
-		} else {
-			return elfmeterschießen.auswaertsSpieler;
-		}
-	}
+//	public boolean elfmeterschießenNoetig() {
+//		return unentschieden;
+//	}
+//
+//	public void addElfmeterschießen() {
+//		ergebnis = true;
+//		if (!elfWahr) {
+//			elfmeterschießen = new Elfmeterschießen();
+//			elfWahr = true;
+//		} else {
+//			throw new IllegalArgumentException("Es ist bereits ein Elfmeterschießen vorhanden!");
+//		}
+//	}
+//
+//	public void removeElfmeterschießen() {
+//		elfmeterschießen = null;
+//	}
+//
+//	public boolean istElfmeterschießen() {
+//		return elfWahr;
+//	}
+//
+//	public void addBenoetigtesElfmeterschießen() {
+//		if (elfmeterschießenNoetig()) {
+//			addElfmeterschießen();
+//		}
+//	}
+//
+//	public void addElfmeterSchuss(boolean getroffen, boolean heim, long spielerID) {
+//		if (heim) {
+//			elfmeterschießen.heimGetroffen.add(getroffen);
+//			elfmeterschießen.heimSpieler.add(spielerID);
+//		} else {
+//			elfmeterschießen.auswaertsGetroffen.add(getroffen);
+//			elfmeterschießen.auswaertsSpieler.add(spielerID);
+//		}
+//	}
+//
+//	public void removeElfmeterschuss(int index, boolean heim) {
+//		if (heim) {
+//			elfmeterschießen.heimGetroffen.remove(index);
+//			elfmeterschießen.heimSpieler.remove(index);
+//		} else {
+//			elfmeterschießen.auswaertsGetroffen.remove(index);
+//			elfmeterschießen.auswaertsSpieler.remove(index);
+//		}
+//	}
+//
+//	public ArrayList<Boolean> getElfmeterschießen(boolean heim) {
+//		if (heim) {
+//			return elfmeterschießen.heimGetroffen;
+//		} else {
+//			return elfmeterschießen.auswaertsGetroffen;
+//		}
+//	}
+//
+//	public ArrayList<Long> getElfmeterspieler(boolean heim) {
+//		if (heim) {
+//			return elfmeterschießen.heimSpieler;
+//		} else {
+//			return elfmeterschießen.auswaertsSpieler;
+//		}
+//	}
 
 	public void setNachspielzeit(boolean wahr) {
 		this.nachspielzeit = wahr;
@@ -631,12 +692,12 @@ public class Spiel implements Pickable {
 		}
 	}
 
-	private class Elfmeterschießen {
-		private ArrayList<Boolean> heimGetroffen = new ArrayList<Boolean>();
-		private ArrayList<Boolean> auswaertsGetroffen = new ArrayList<Boolean>();
-		private ArrayList<Long> heimSpieler = new ArrayList<Long>();
-		private ArrayList<Long> auswaertsSpieler = new ArrayList<Long>();
-	}
+//	private class Elfmeterschießen {
+//		private ArrayList<Boolean> heimGetroffen = new ArrayList<Boolean>();
+//		private ArrayList<Boolean> auswaertsGetroffen = new ArrayList<Boolean>();
+//		private ArrayList<Long> heimSpieler = new ArrayList<Long>();
+//		private ArrayList<Long> auswaertsSpieler = new ArrayList<Long>();
+//	}
 
 	public <S extends Spielaktivitaet> boolean isInTime(S akt, boolean heim) {
 		if (heim && aufstHeim.getAktuelleAufstellung(akt.zeit , akt.getNachspielzeit()).size() > 0) {

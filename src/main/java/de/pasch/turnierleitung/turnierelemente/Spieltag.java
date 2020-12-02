@@ -24,6 +24,25 @@ public class Spieltag implements Pickable {
 		this.as=as;
 	}
 	
+	public Spieltag(Element parEl, ArraySpeicher as) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Teams")) {
+				for(Element childEl:el.getChildren()) {
+					teamIDs.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Spiele")) {
+				for(Element childEl:el.getChildren()) {
+					spielIDs.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Name")) {
+				name=el.getValue();
+			}
+		}
+		this.as=as;
+	}
+	
 	public void createXMLElements(Element parEl) {
 		Element spieltagEl=new Element("Spieltag");
 		parEl.addContent(spieltagEl);

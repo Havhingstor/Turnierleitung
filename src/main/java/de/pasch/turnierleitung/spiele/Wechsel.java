@@ -20,8 +20,17 @@ public class Wechsel extends Spielaktivitaet {
 		super.setTyp(0);
 	}
 
+	public Wechsel(Element parEl,ArraySpeicher as) {
+		super(parEl,as);
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Ausgewechselt")) {
+				ausgewechselt=Long.parseLong(el.getValue());
+			}
+		}
+	}
+	
 	public void createXMLElements(Element parEl) {
-		Element element=new Element("Wechsel");
+		Element element=new Element("EinWechsel");
 		parEl.addContent(element);
 		super.createXMLElements(element);
 		Element ausgewechseltEl=new Element("Ausgewechselt");

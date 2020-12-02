@@ -34,6 +34,29 @@ public abstract class Spielaktivitaet implements Pickable,Comparable<Spielaktivi
 		this.as=as;
 	}
 	
+	public Spielaktivitaet(Element parEl,ArraySpeicher as) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Zeit")) {
+				zeit=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("Nachspielzeit")) {
+				nachspielzeit=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("Ausfuehrer")) {
+				ausfuehrerID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Team")) {
+				teamID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Typen")) {
+				for(Element childEl:el.getChildren()) {
+					typen.add(childEl.getValue());
+				}
+			}else if(el.getName().equals("Typ")) {
+				typ=el.getValue();
+			}
+		}
+		this.as=as;
+	}
+	
 	public abstract boolean isTor();
 	public abstract boolean isWechsel();
 	

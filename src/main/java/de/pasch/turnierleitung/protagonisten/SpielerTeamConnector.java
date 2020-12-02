@@ -22,6 +22,23 @@ public class SpielerTeamConnector implements Pickable{
 		this.trikotnummer=trikotnummer;
 		this.as=as;
 	}
+ 	
+ 	public SpielerTeamConnector(Element parEl,ArraySpeicher as) {
+ 		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Team")) {
+				teamID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Spieler")) {
+				spielerID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Trikotnummer")) {
+				trikotnummer=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("Ausgetreten")) {
+				ausgetreten=Boolean.parseBoolean(el.getValue());
+			}
+		}
+		this.as=as;
+ 	}
 	
 	public String getDateiString() {
 		return "<Connector>\n<ID>"+ID+"</ID>\n<Team>"+teamID+"</Team>\n<Spieler>"+spielerID+"</Spieler>\n<Trikotnummer>"+trikotnummer+"</Trikotnummer>\n<Ausgetreten>"+ausgetreten+"</Ausgetreten>\n</Connector>\n";

@@ -35,7 +35,7 @@ public class Steuerung {
 	private String name = "";
 	private final ArrayList<String> torarten = new ArrayList<>();
 	private final ArrayList<String> strafenarten = new ArrayList<>();
-	public final String version = "0.7";
+	public final String version = "1.0";
 
 	public Steuerung() {
 		torarten.add("Rechtsschuss");
@@ -688,18 +688,18 @@ public class Steuerung {
 		return false;
 	}
 
-	public void addElfmeterschießen(long ID) {
-		as.spiele.stream().filter((spiel) -> (spiel.getID() == ID)).forEachOrdered((spiel) -> {
-			spiel.addBenoetigtesElfmeterschießen();
-		});
-	}
-
-	public void addElfmeterschießenSchuss(long spielID, boolean heim, boolean getroffen, long spielerID) {
-		as.spiele.stream().filter((spiel) -> (spiel.getID() == spielID))
-				.filter((spiel) -> (spiel.istElfmeterschießen())).forEachOrdered((spiel) -> {
-					spiel.addElfmeterSchuss(getroffen, heim, spielerID);
-				});
-	}
+//	public void addElfmeterschießen(long ID) {
+//		as.spiele.stream().filter((spiel) -> (spiel.getID() == ID)).forEachOrdered((spiel) -> {
+//			spiel.addBenoetigtesElfmeterschießen();
+//		});
+//	}
+//
+//	public void addElfmeterschießenSchuss(long spielID, boolean heim, boolean getroffen, long spielerID) {
+//		as.spiele.stream().filter((spiel) -> (spiel.getID() == spielID))
+//				.filter((spiel) -> (spiel.istElfmeterschießen())).forEachOrdered((spiel) -> {
+//					spiel.addElfmeterSchuss(getroffen, heim, spielerID);
+//				});
+//	}
 
 	public void addLiga(int pps, int ppu, int ppn, String name, int[] rk) {
 		Liga liga = new Liga(pps, ppu, ppn, name, idc.createID(), as, rk);
@@ -911,6 +911,7 @@ public class Steuerung {
 			}
 		}
 		as.regeneriereAusXMLElements(re);
+		System.out.println();
 	}
 
 	/*
@@ -958,7 +959,7 @@ public class Steuerung {
 			el.addContent(o.toString());
 		}
 	}
-
+	
 	public Pair<Liga, Spieltag> getLSVonSpiel(long ID) {
 		Spieltag rSpt = null;
 		for (Spieltag spt : as.spt) {

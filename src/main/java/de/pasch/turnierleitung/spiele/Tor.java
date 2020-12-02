@@ -21,6 +21,15 @@ public class Tor extends Spielaktivitaet {
 		}
 	}
 	
+	public Tor(Element parEl,ArraySpeicher as) {
+		super(parEl,as);
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Vorbereiter")) {
+				vorbereiterID=Long.parseLong(el.getValue());
+			}
+		}
+	}
+	
 	public String getDateiString() {
 		return "<Tor>\n"+super.getDateiString()+"<Team>"+teamID+"</Team>\n<Vorbereiter>"+vorbereiterID+"</Vorbereiter>\n</Tor>\n";
 	}

@@ -43,6 +43,35 @@ public class Liga extends Turnierelement {
 		this.reihenfolgeKriterien=rk;
 	}
 	
+	public Liga(Element parEl,ArraySpeicher as) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Spieltage")) {
+				for(Element childEl:el.getChildren()) {
+					spt.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Teams")) {
+				for(Element childEl:el.getChildren()) {
+					teams.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Name")) {
+				name=el.getValue();
+			}else if(el.getName().equals("PPS")) {
+				punkteProSieg=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("PPU")) {
+				punkteProUnentschieden=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("PPN")) {
+				punkteProNiederlage=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("RK")) {
+				for(int i=0;i<5;++i) {
+					reihenfolgeKriterien[i]=Integer.parseInt(el.getChildren().get(i).getValue());
+				}
+			}
+		}
+		this.as=as;
+	}
+	
 	public void createXMLElements(Element parEl) {
 		Element ligaEl=new Element("Liga");
 		parEl.addContent(ligaEl);

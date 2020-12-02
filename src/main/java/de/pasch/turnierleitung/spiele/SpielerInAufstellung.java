@@ -22,6 +22,28 @@ public class SpielerInAufstellung {
 		this.inStartaufstellung=inStartaufstellung;
 	}
 	
+	public SpielerInAufstellung(Element parEl) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Spieler")) {
+				spielerID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Eingewechselt")) {
+				eingewechselt=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Ausgewechselt")) {
+				ausgewechselt=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("Startelf")) {
+				inStartaufstellung=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("EingewechseltZeit")) {
+				eingewechseltZeit=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("EingewechseltNZeit")) {
+				eingewechseltNZeit=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("AusgewechseltZeit")) {
+				ausgewechseltZeit=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("AusgewechseltNZeit")) {
+				ausgewechseltNZeit=Integer.parseInt(el.getValue());
+			}
+		}
+	}
+	
 	public void createXMLElements(Element parEl) {
 		Element sia=new Element("SIA");
 		parEl.addContent(sia);

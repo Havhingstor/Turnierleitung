@@ -48,47 +48,17 @@ public class ArraySpeicher {
 		}
 		parElement.addContent(spielerEl);
 		
-		Element torEl=new Element("Tore");
-		for(Tor tor:tore) {
-			tor.createXMLElements(torEl);
-		}
-		parElement.addContent(torEl);
-		
-		Element spieleEl=new Element("Spiele");
-		for(Spiel spiel:spiele) {
-			spiel.createXMLElements(spieleEl);
-		}
-		parElement.addContent(spieleEl);
-		
-		Element strafenEl=new Element("Strafen");
-		for(Strafe strafe:strafen) {
-			strafe.createXMLElements(strafenEl);
-		}
-		parElement.addContent(strafenEl);
-		
 		Element connectorenEl=new Element("Connectoren");
 		for(SpielerTeamConnector stc:connectoren) {
 			stc.createXMLElements(connectorenEl);
 		}
 		parElement.addContent(connectorenEl);
 		
-		/*Element aufstellungenEl=new Element("Aufstellungen");
-		for(Aufstellung auf:aufstellungen) {
-			auf.createXMLElements(aufstellungenEl);
+		Element ligenEl=new Element("Ligen");
+		for(Liga liga:ligen) {
+			liga.createXMLElements(ligenEl);
 		}
-		parElement.addContent(aufstellungenEl);*/
-		
-		Element rundenEl=new Element("Runden");
-		for(Runde runde:runden) {
-			runde.createXMLElements(rundenEl);
-		}
-		parElement.addContent(rundenEl);
-		
-		Element rsEl=new Element("Rundensammlungen");
-		for(Rundensammlung rus:rs) {
-			rus.createXMLElements(rsEl);
-		}
-		parElement.addContent(rsEl);
+		parElement.addContent(ligenEl);
 		
 		Element spieltageEl=new Element("Spieltage");
 		for(Spieltag sp:spt) {
@@ -96,11 +66,41 @@ public class ArraySpeicher {
 		}
 		parElement.addContent(spieltageEl);
 		
-		Element ligenEl=new Element("Ligen");
-		for(Liga liga:ligen) {
-			liga.createXMLElements(ligenEl);
+		Element spieleEl=new Element("Spiele");
+		for(Spiel spiel:spiele) {
+			spiel.createXMLElements(spieleEl);
 		}
-		parElement.addContent(ligenEl);
+		parElement.addContent(spieleEl);
+		
+		Element torEl=new Element("Tore");
+		for(Tor tor:tore) {
+			tor.createXMLElements(torEl);
+		}
+		parElement.addContent(torEl);
+		
+		Element wechselEl=new Element("Wechsel");
+		for(Wechsel w:wechsel) {
+			w.createXMLElements(wechselEl);
+		}
+		parElement.addContent(wechselEl);
+		
+		Element strafenEl=new Element("Strafen");
+		for(Strafe strafe:strafen) {
+			strafe.createXMLElements(strafenEl);
+		}
+		parElement.addContent(strafenEl);
+		
+		/*Element aufstellungenEl=new Element("Aufstellungen");
+		for(Aufstellung auf:aufstellungen) {
+			auf.createXMLElements(aufstellungenEl);
+		}
+		parElement.addContent(aufstellungenEl);*/
+		
+		Element rsEl=new Element("Rundensammlungen");
+		for(Rundensammlung rus:rs) {
+			rus.createXMLElements(rsEl);
+		}
+		parElement.addContent(rsEl);
 		
 		Element linksEl=new Element("Links");
 		for(Link link:links) {
@@ -117,14 +117,42 @@ public class ArraySpeicher {
 	
 	public void regeneriereAusXMLElements(Element rootElement) {
 		löscheUndRegeneriereAlle();
-		for(Element element:rootElement.getChildren()) {
-			if(element.getName().equals("Teams")) {
-				for(Element childEl:element.getChildren()) {
+		for(Element el:rootElement.getChildren()) {
+			if(el.getName().equals("Teams")) {
+				for(Element childEl:el.getChildren()) {
 					teams.add(new Team(childEl,this));
 				}
-			}else if(element.getName().equals("Spieler")) {
-				for(Element childEl:element.getChildren()) {
+			}else if(el.getName().equals("Spieler")) {
+				for(Element childEl:el.getChildren()) {
 					spieler.add(new Spieler(childEl));
+				}
+			}else if(el.getName().equals("Connectoren")) {
+				for(Element childEl:el.getChildren()) {
+					connectoren.add(new SpielerTeamConnector(childEl,this));
+				}
+			}else if(el.getName().equals("Ligen")) {
+				for(Element childEl:el.getChildren()) {
+					ligen.add(new Liga(childEl,this));
+				}
+			}else if(el.getName().equals("Spieltage")) {
+				for(Element childEl:el.getChildren()) {
+					spt.add(new Spieltag(childEl,this));
+				}
+			}else if(el.getName().equals("Spiele")){
+				for(Element childEl:el.getChildren()) {
+					spiele.add(new Spiel(childEl,this));
+				}
+			}else if(el.getName().equals("Tore")) {
+				for(Element childEl:el.getChildren()) {
+					tore.add(new Tor(childEl,this));
+				}
+			}else if(el.getName().equals("Wechsel")) {
+				for(Element childEl:el.getChildren()) {
+					wechsel.add(new Wechsel(childEl,this));
+				}
+			}else if(el.getName().equals("Strafen")) {
+				for(Element childEl:el.getChildren()) {
+					strafen.add(new Strafe(childEl,this));
 				}
 			}
 		}

@@ -38,7 +38,46 @@ public class Aufstellung implements Pickable {
 		this.spielID = spielID;
 		this.as = as;
 	}
-
+	
+	public Aufstellung(Element parEl,ArraySpeicher as) {
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("ID")) {
+				ID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Verein")) {
+				vereinsID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Spiel")) {
+				spielID=Long.parseLong(el.getValue());
+			}else if(el.getName().equals("Auswechslungen")) {
+				auswechslungen=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("hoechstStartelf")) {
+				hoechstStartelf=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("hoechstAuswechselspieler")) {
+				hoechstAuswechselspieler=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("hoechstAuswechselungen")) {
+				hoechstAuswechslung=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("Verlängerung")) {
+				verlaengerung=Boolean.parseBoolean(el.getValue());
+			}else if(el.getName().equals("AuswechslungenVerlängerung")) {
+				hoechstAuswechslungVerlaengerung=Integer.parseInt(el.getValue());
+			}else if(el.getName().equals("Startelf")) {
+				for(Element childEl:el.getChildren()) {
+					startelf.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("Auswechselspieler")) {
+				for(Element childEl:el.getChildren()) {
+					auswechselspieler.add(Long.parseLong(childEl.getValue()));
+				}
+			}else if(el.getName().equals("SIAs")) {
+				for(Element childEl:el.getChildren()) {
+					SIAs.add(new SpielerInAufstellung(childEl));
+				}
+			}else if(el.getName().equals("Kapitaen")) {
+				kapitaenID=Long.parseLong(el.getValue());
+			}
+		}
+		this.as=as;
+	}
+	
 	public void createXMLElements(Element aufstellung) {
 		Element idEl = new Element("ID");
 		idEl.addContent("" + ID);

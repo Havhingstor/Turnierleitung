@@ -21,6 +21,15 @@ public class Strafe extends Spielaktivitaet {
 		}
 	}
 	
+	public Strafe(Element parEl,ArraySpeicher as) {
+		super(parEl,as);
+		for(Element el:parEl.getChildren()) {
+			if(el.getName().equals("Gefoulter")) {
+				gefoulterID=Long.parseLong(el.getValue());
+			}
+		}
+	}
+	
 	public String getDateiString() {
 		return "<Strafe>\n"+super.getDateiString()+"<Team>"+teamID+"</Team>\n<Gefoulter>"+gefoulterID+"</Gefoulter>\n</Strafe>\n";
 	}
