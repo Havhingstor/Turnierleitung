@@ -161,7 +161,7 @@ public class HFSpieltag {
 			neu.setFont(Font.font(15));
 			sptAuswahl.add(neu, 0, 2);
 			neu.setOnAction((e)->{
-				new SpieltagHinzufuegen(liga,stage, steuerung, akt);
+				new SpieltagHinzufuegen(liga,stage, steuerung, akt,this);
 			});
 			
 			Button loe=new Button("Spieltag löschen");
@@ -719,5 +719,9 @@ public class HFSpieltag {
 			
 			return beschr;
 		}
+	}
+	
+	public void setLetzterSpieltag(long letzterSpieltag) {
+		this.letzterSpt=letzterSpieltag;
 	}
 }

@@ -730,6 +730,9 @@ public class Steuerung {
 	}
 
 	public Spieltag addSpieltag(long ligaID, String name) {
+		if(name!="") {
+			name=IDPicker.pick(as.ligen, ligaID).getSpieltage().size() + 1 + ". Spieltag";
+		}
 		boolean erlaubt = true;
 		for (Spieltag spt : IDPicker.pick(as.ligen, ligaID).getSpieltage()) {
 			if (spt.getName().equals(name)) {
@@ -908,10 +911,11 @@ public class Steuerung {
 				for (Element child : e.getChildren()) {
 					strafenarten.add(child.getValue());
 				}
+			}else if(e.getName().equals("IDCreator")) {
+				idc.setLetzteID(Long.parseLong(e.getValue()));
 			}
 		}
 		as.regeneriereAusXMLElements(re);
-		System.out.println();
 	}
 
 	/*
@@ -948,6 +952,9 @@ public class Steuerung {
 			strafenartEl.addContent(strafenart);
 			strafenartenElement.addContent(strafenartEl);
 		}
+		Element idcElement=new Element("IDCreator");
+		el.addContent(idcElement);
+		idcElement.addContent(""+idc.getLetzteID());
 		as.createXMLElements(el);
 		return el;
 	}

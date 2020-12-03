@@ -1,7 +1,5 @@
 package de.pasch.turnierleitung.uis;
 
-import javax.swing.JOptionPane;
-
 import de.pasch.turnierleitung.steuerung.Steuerung;
 import de.pasch.turnierleitung.turnierelemente.Liga;
 import javafx.geometry.Insets;
@@ -20,7 +18,7 @@ public class SpieltagHinzufuegen {
 	Steuerung steuerung;
 	Aktualisierer akt;
 	
-	public SpieltagHinzufuegen(Liga liga,Stage primStage,Steuerung steuerung,Aktualisierer akt) {
+	public SpieltagHinzufuegen(Liga liga,Stage primStage,Steuerung steuerung,Aktualisierer akt,HFSpieltag hfs) {
 		this.steuerung=steuerung;
 		this.akt=akt;
 		stage=new Stage();
@@ -49,13 +47,19 @@ public class SpieltagHinzufuegen {
 		speichern.setFont(Font.font(15));
 		gp.add(speichern, 0, 2);
 		speichern.setOnAction((e)->{
-			try {
-				steuerung.addSpieltag(liga.getID(), nameFeld.getText());
-				akt.aktualisieren();
-				stage.hide();
-			}catch(IllegalArgumentException iae) {
-				JOptionPane.showMessageDialog(null, iae.getMessage(),"FEHLER!",0);
+			String name=nameLab.getText();
+			if(name.equals("")){
+				try {
+				steuerung.addSpieltag(liga.getID(), name);
+				}catch(IllegalArgumentException iae) {
+					hfs.fehlerbehandlungSpieltagsbenennung(liga,liga.getSpieltage().size()+2);
+				}
+			}else {
+				steuerung.addAusgelosterSpieltag(liga.getID(),name);
 			}
+			hfs.setLetzterSpieltag(steuerung.getSpieltage().get(steuerung.getSpieltage().size()-1).getID());
+			stage.hide();
+			akt.aktualisieren();
 		});
 		
 		Scene scene=new Scene(gp,400,170);
