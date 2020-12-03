@@ -164,6 +164,15 @@ public class Hauptfenster {
 		            	File neuDatei=null;
 		            	neuDatei=fc.showSaveDialog(stage);
 		        		if(neuDatei!=null) {
+		        			if(fc.getSelectedExtensionFilter().getDescription().equals("Turnierleitungsdatei")) {
+		        				if(!neuDatei.getAbsolutePath().toLowerCase().endsWith(".tul")) {
+		        					neuDatei=new File(neuDatei.getAbsolutePath()+".tul");
+		        				}
+		        			}else if(fc.getSelectedExtensionFilter().getDescription().equals("XML-Datei")) {
+		        				if(!neuDatei.getAbsolutePath().toLowerCase().endsWith(".xml")) {
+		        					neuDatei=new File(neuDatei.getAbsolutePath()+".xml");
+		        				}
+		        			}
 		    	        	Document doc=new Document();
 		    	    		doc.setRootElement(steuerung.getRootElement());
 		    	            Format format = Format.getPrettyFormat();
@@ -255,6 +264,15 @@ public class Hauptfenster {
             	File neuDatei=null;
             	neuDatei=fc.showSaveDialog(stage);
         		if(neuDatei!=null) {
+        			if(fc.getSelectedExtensionFilter().getDescription().equals("Turnierleitungsdatei")) {
+        				if(!neuDatei.getAbsolutePath().toLowerCase().endsWith(".tul")) {
+        					neuDatei=new File(neuDatei.getAbsolutePath()+".tul");
+        				}
+        			}else if(fc.getSelectedExtensionFilter().getDescription().equals("XML-Datei")) {
+        				if(!neuDatei.getAbsolutePath().toLowerCase().endsWith(".xml")) {
+        					neuDatei=new File(neuDatei.getAbsolutePath()+".xml");
+        				}
+        			}
     	        	Document doc=new Document();
     	    		doc.setRootElement(steuerung.getRootElement());
     	            Format format = Format.getPrettyFormat();
@@ -280,6 +298,15 @@ public class Hauptfenster {
         	File neuDatei=null;
     		neuDatei=fc.showSaveDialog(stage);
     		if(neuDatei!=null) {
+    			if(fc.getSelectedExtensionFilter().getDescription().equals("Turnierleitungsdatei")) {
+    				if(!neuDatei.getAbsolutePath().toLowerCase().endsWith(".tul")) {
+    					neuDatei=new File(neuDatei.getAbsolutePath()+".tul");
+    				}
+    			}else if(fc.getSelectedExtensionFilter().getDescription().equals("XML-Datei")) {
+    				if(!neuDatei.getAbsolutePath().toLowerCase().endsWith(".xml")) {
+    					neuDatei=new File(neuDatei.getAbsolutePath()+".xml");
+    				}
+    			}
 	        	Document doc=new Document();
 	    		doc.setRootElement(steuerung.getRootElement());
 	            Format format = Format.getPrettyFormat();
