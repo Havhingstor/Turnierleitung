@@ -22,6 +22,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -424,6 +425,19 @@ public class Hauptfenster {
 	   });
 	   text.setOnMouseClicked((e)->{
 		   h.handle(text);
+	   });
+   }
+   
+   public static void setLink(Label label,Handler<Label> h) {
+	   label.setUnderline(true);
+	   label.setOnMouseEntered((e)->{
+		   label.setTextFill(Color.BLUE);
+	   });
+	   label.setOnMouseExited((e)->{
+		   label.setTextFill(Color.BLACK);
+	   });
+	   label.setOnMouseClicked((e)->{
+		   h.handle(label);
 	   });
    }
 }

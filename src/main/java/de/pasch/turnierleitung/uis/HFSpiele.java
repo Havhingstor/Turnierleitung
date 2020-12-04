@@ -235,7 +235,7 @@ public class HFSpiele {
 		Text heimText = new Text(beschr[0]);
 		heimText.setFont(Font.font(20));
 		if (sp != null) {
-			heimText.setOnMouseClicked((e) -> {
+			Hauptfenster.setLink(heimText, (e) -> {
 				hfp = new HFProtagonisten(sp.getHeimteam(), stage, bp, steuerung, akt);
 			});
 		}
@@ -248,7 +248,7 @@ public class HFSpiele {
 		Text auswText = new Text(beschr[1]);
 		auswText.setFont(Font.font(20));
 		if (sp != null) {
-			auswText.setOnMouseClicked((e) -> {
+			Hauptfenster.setLink(auswText, (e) -> {
 				hfp = new HFProtagonisten(sp.getAuswaertsteam(), stage, bp, steuerung, akt);
 			});
 		}
@@ -282,7 +282,7 @@ public class HFSpiele {
 		teamnamenHeim.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		teamnamenHeim.setAlignment(Pos.CENTER);
 		if (sp != null) {
-			teamnamenHeim.setOnMouseClicked((e) -> {
+			Hauptfenster.setLink(teamnamenHeim, (e)->{
 				hfp = new HFProtagonisten(sp.getHeimteam(), stage, bp, steuerung, akt);
 			});
 		}
@@ -292,7 +292,7 @@ public class HFSpiele {
 		teamnamenAuswaerts.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		teamnamenAuswaerts.setAlignment(Pos.CENTER);
 		if (sp != null) {
-			teamnamenAuswaerts.setOnMouseClicked((e) -> {
+			Hauptfenster.setLink(teamnamenAuswaerts, (e)->{
 				hfp = new HFProtagonisten(sp.getAuswaertsteam(), stage, bp, steuerung, akt);
 			});
 		}
@@ -565,15 +565,24 @@ public class HFSpiele {
 		for (Spieler s : aufst.getStartelf(steuerung.getSpieler())) {
 			Text trikotnummer = new Text(steuerung.getTrikotnummerEinesSpielersString(s.getID()));
 			trikotnummer.setFont(Font.font("Verdana"));
+			Hauptfenster.setLink(trikotnummer, (e)->{
+				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			});
 			start.add(trikotnummer, 0, zaehler);
 
 			Text name = new Text(s.getName());
 			name.setFont(Font.font("Verdana"));
+			Hauptfenster.setLink(name, (e)->{
+				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			});
 			start.add(name, 1, zaehler);
 
 			if (aufst.getKapitaenID() == s.getID()) {
 				Text kapt = new Text("C");
-				name.setFont(Font.font("Verdana"));
+				kapt.setFont(Font.font("Verdana"));
+				Hauptfenster.setLink(kapt, (e)->{
+					hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+				});
 				start.add(kapt, 2, zaehler);
 			}
 			++zaehler;
@@ -596,10 +605,16 @@ public class HFSpiele {
 		for (Spieler s : aufst.getAuswechselspieler(steuerung.getSpieler())) {
 			Text trikotnummer = new Text(steuerung.getTrikotnummerEinesSpielersString(s.getID()));
 			trikotnummer.setFont(Font.font("Verdana"));
+			Hauptfenster.setLink(trikotnummer, (e)->{
+				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			});
 			bank.add(trikotnummer, 0, zaehler);
 
 			Text name = new Text(s.getName());
 			name.setFont(Font.font("Verdana"));
+			Hauptfenster.setLink(name, (e)->{
+				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			});
 			bank.add(name, 1, zaehler);
 			++zaehler;
 		}
@@ -892,12 +907,18 @@ public class HFSpiele {
 			heimUeberschrift.setFont(Font.font(20));
 			heimUeberschrift.setPrefWidth(140);
 			heimUeberschrift.setAlignment(Pos.CENTER);
+			Hauptfenster.setLink(heimUeberschrift, (e)->{
+				hfp=new HFProtagonisten(sp.getHeimteam(), stage, bp, steuerung, akt);
+			});
 			ereignisListeGP.add(heimUeberschrift, 0, 0);
 
 			Label auswaertsUeberschrift = new Label(sp.getAuswaertsteam().getMoeglichKN());
 			auswaertsUeberschrift.setFont(Font.font(20));
 			auswaertsUeberschrift.setPrefWidth(140);
 			auswaertsUeberschrift.setAlignment(Pos.CENTER);
+			Hauptfenster.setLink(auswaertsUeberschrift, (e)->{
+				hfp=new HFProtagonisten(sp.getAuswaertsteam(), stage, bp, steuerung, akt);
+			});
 			ereignisListeGP.add(auswaertsUeberschrift, 1, 0);
 
 			ArrayList<Spielaktivitaet> ereignisse = sp.getEreignisseSortiert();
@@ -1013,10 +1034,15 @@ public class HFSpiele {
 			vorlagengeberLabel.setFont(Font.font(20));
 			ereignisDetailsGP.add(vorlagengeberLabel, 0, 5);
 
-			String[] beschriftungen = getDetailsTor((Tor) ereignis);
-
+			Tor tor=(Tor)ereignis;
+			
+			String[] beschriftungen = getDetailsTor(tor);
+						
 			Text spielerText = new Text(beschriftungen[0]);
 			spielerText.setFont(Font.font(20));
+			Hauptfenster.setLink(spielerText, (e)->{
+				hfp=new HFProtagonisten(tor.getAusfuehrer(), stage, bp, steuerung, akt);
+			});
 			ereignisDetailsGP.add(spielerText, 1, 1);
 
 			Text zeitText = new Text(beschriftungen[1]);
@@ -1029,10 +1055,18 @@ public class HFSpiele {
 
 			Text teamText = new Text(beschriftungen[3]);
 			teamText.setFont(Font.font(20));
+			Hauptfenster.setLink(teamText, (e)->{
+				hfp=new HFProtagonisten(tor.getTeam(), stage, bp, steuerung, akt);
+			});
 			ereignisDetailsGP.add(teamText, 1, 4);
 
 			Text vorlagengeberText = new Text(beschriftungen[4]);
 			vorlagengeberText.setFont(Font.font(20));
+			if(tor.getVorbereiter()!=null) {
+				Hauptfenster.setLink(vorlagengeberText, (e)->{
+					hfp=new HFProtagonisten(tor.getVorbereiter(), stage, bp, steuerung, akt);
+				});
+			}
 			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
 		} else if (ereignis.isWechsel()) {
 
@@ -1044,11 +1078,16 @@ public class HFSpiele {
 			Label gefoulterLabel = new Label("Gefoulter");
 			gefoulterLabel.setFont(Font.font(20));
 			ereignisDetailsGP.add(gefoulterLabel, 0, 5);
-
-			String[] beschriftungen = getDetailsStrafe((Strafe) ereignis);
+			
+			Strafe strafe=(Strafe)ereignis;
+			
+			String[] beschriftungen = getDetailsStrafe(strafe);
 
 			Text spielerText = new Text(beschriftungen[0]);
 			spielerText.setFont(Font.font(20));
+			Hauptfenster.setLink(spielerText, (e)->{
+				hfp=new HFProtagonisten(strafe.getAusfuehrer(), stage, bp, steuerung, akt);
+			});
 			ereignisDetailsGP.add(spielerText, 1, 1);
 
 			Text zeitText = new Text(beschriftungen[1]);
@@ -1061,11 +1100,19 @@ public class HFSpiele {
 
 			Text teamText = new Text(beschriftungen[3]);
 			teamText.setFont(Font.font(20));
+			Hauptfenster.setLink(teamText, (e)->{
+				hfp=new HFProtagonisten(strafe.getAusfuehrer(), stage, bp, steuerung, akt);
+			});
 			ereignisDetailsGP.add(teamText, 1, 4);
 
-			Text vorlagengeberText = new Text(beschriftungen[4]);
-			vorlagengeberText.setFont(Font.font(20));
-			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
+			Text gefoulterText = new Text(beschriftungen[4]);
+			gefoulterText.setFont(Font.font(20));
+			if(strafe.getGefoulten()!=null) {
+				Hauptfenster.setLink(gefoulterText, (e)->{
+					hfp=new HFProtagonisten(strafe.getGefoulten(), stage, bp, steuerung, akt);
+				});
+			}
+			ereignisDetailsGP.add(gefoulterText, 1, 5);
 		}
 	}
 
