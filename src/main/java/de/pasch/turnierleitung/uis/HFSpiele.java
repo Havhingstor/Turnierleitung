@@ -1069,7 +1069,46 @@ public class HFSpiele {
 			}
 			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
 		} else if (ereignis.isWechsel()) {
-
+			Label ueberschriftLabel = new Label("Wechsel");
+			ueberschriftLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
+			
+			spielerLabel.setText("Eingewechselt");
+			
+			Label ausgewechseltLabel = new Label("Ausgewechselt");
+			ausgewechseltLabel.setFont(Font.font(20));
+			ereignisDetailsGP.add(ausgewechseltLabel, 0, 5);
+			
+			Wechsel wechsel=(Wechsel)ereignis;
+			
+			Text spielerText = new Text(wechsel.getAusfuehrer().getName());
+			spielerText.setFont(Font.font(20));
+			Hauptfenster.setLink(spielerText, (e)->{
+				hfp=new HFProtagonisten(wechsel.getAusfuehrer(), stage, bp, steuerung, akt);
+			});
+			ereignisDetailsGP.add(spielerText, 1, 1);
+			
+			Text zeitText = new Text(wechsel.getZeitUndNachspielzeit());
+			zeitText.setFont(Font.font(20));
+			ereignisDetailsGP.add(zeitText, 1, 2);
+			
+			Text artText = new Text("Wechsel");
+			artText.setFont(Font.font(20));
+			ereignisDetailsGP.add(artText, 1, 3);
+			
+			Text teamText = new Text(wechsel.getTeam().getMoeglichKN());
+			teamText.setFont(Font.font(20));
+			Hauptfenster.setLink(teamText, (e)->{
+				hfp=new HFProtagonisten(wechsel.getTeam(), stage, bp, steuerung, akt);
+			});
+			ereignisDetailsGP.add(teamText, 1, 4);
+			
+			Text ausgewechseltText = new Text(wechsel.getAusgewechselt().getName());
+			ausgewechseltText.setFont(Font.font(20));
+			Hauptfenster.setLink(ausgewechseltText, (e)->{
+				hfp=new HFProtagonisten(wechsel.getAusgewechselt(), stage, bp, steuerung, akt);
+			});
+			ereignisDetailsGP.add(ausgewechseltText, 1, 5);
 		} else {
 			Label ueberschriftLabel = new Label("Strafe");
 			ueberschriftLabel.setFont(Font.font(20));
@@ -1101,7 +1140,7 @@ public class HFSpiele {
 			Text teamText = new Text(beschriftungen[3]);
 			teamText.setFont(Font.font(20));
 			Hauptfenster.setLink(teamText, (e)->{
-				hfp=new HFProtagonisten(strafe.getAusfuehrer(), stage, bp, steuerung, akt);
+				hfp=new HFProtagonisten(strafe.getTeam(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(teamText, 1, 4);
 
