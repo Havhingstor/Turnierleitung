@@ -3,8 +3,6 @@ package de.pasch.turnierleitung.uis;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import javax.swing.JOptionPane;
-
 import de.pasch.turnierleitung.protagonisten.Spieler;
 import de.pasch.turnierleitung.protagonisten.Team;
 import de.pasch.turnierleitung.spiele.Aufstellung;
@@ -282,7 +280,7 @@ public class HFSpiele {
 		teamnamenHeim.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		teamnamenHeim.setAlignment(Pos.CENTER);
 		if (sp != null) {
-			Hauptfenster.setLink(teamnamenHeim, (e)->{
+			Hauptfenster.setLink(teamnamenHeim, (e) -> {
 				hfp = new HFProtagonisten(sp.getHeimteam(), stage, bp, steuerung, akt);
 			});
 		}
@@ -292,7 +290,7 @@ public class HFSpiele {
 		teamnamenAuswaerts.setFont(Font.font("Verdana", FontWeight.BOLD, 20));
 		teamnamenAuswaerts.setAlignment(Pos.CENTER);
 		if (sp != null) {
-			Hauptfenster.setLink(teamnamenAuswaerts, (e)->{
+			Hauptfenster.setLink(teamnamenAuswaerts, (e) -> {
 				hfp = new HFProtagonisten(sp.getAuswaertsteam(), stage, bp, steuerung, akt);
 			});
 		}
@@ -335,9 +333,9 @@ public class HFSpiele {
 					sp.setMinimaleHeimtore(t);
 					akt.aktualisieren();
 				} else {
-					JOptionPane.showMessageDialog(null,
-							"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", "FEHLER!",
-							JOptionPane.ERROR_MESSAGE);
+					Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+							"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", stage)
+							.showAndWait();
 				}
 			});
 		});
@@ -352,9 +350,9 @@ public class HFSpiele {
 				sp.setMinimaleHeimtore(sp.getHeimtoreZahl() - 1);
 				akt.aktualisieren();
 			} else {
-				JOptionPane.showMessageDialog(null,
-						"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", "FEHLER!",
-						JOptionPane.ERROR_MESSAGE);
+				Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+						"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", stage)
+						.showAndWait();
 			}
 		});
 		schalterHeim.getChildren().add(minusHeim);
@@ -379,9 +377,9 @@ public class HFSpiele {
 					sp.setMinimaleHeimtore(t);
 					akt.aktualisieren();
 				} else {
-					JOptionPane.showMessageDialog(null,
-							"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", "FEHLER!",
-							JOptionPane.ERROR_MESSAGE);
+					Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+							"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", stage)
+							.showAndWait();
 				}
 			});
 		});
@@ -396,9 +394,9 @@ public class HFSpiele {
 				sp.setMinimaleAuswaertstore(sp.getAuswaertstoreZahl() - 1);
 				akt.aktualisieren();
 			} else {
-				JOptionPane.showMessageDialog(null,
-						"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", "FEHLER!",
-						JOptionPane.ERROR_MESSAGE);
+				Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+						"Es sind zu viele Tore direkt eingetragen worden," + " bitte diese entfernen!", stage)
+						.showAndWait();
 			}
 		});
 		schalterAuswaerts.getChildren().add(minusAuswaerts);
@@ -426,32 +424,43 @@ public class HFSpiele {
 							break;
 						}
 					}
+					final Spieler fS2=fS;
 					if (erlaubt) {
-						int best = JOptionPane.showConfirmDialog(null,
-								"Sollen wirklich alle Tore, Wechsel und Strafen gelöscht werden?"
-								+ "\n(Achtung! Auch die direkt eingestellten Tore werden gelöscht!)",
-								"ACHTUNG!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
-						if (best == JOptionPane.OK_OPTION) {
-							ArrayList<Tor> tore = new ArrayList<Tor>(sp.getHeimtoreDirekt());
-							tore.addAll(sp.getAuswaertstoreDirekt());
-							for (Tor t : tore) {
-								steuerung.removeTor(t.getID());
-							}
-							ArrayList<Strafe> strafen = new ArrayList<Strafe>(sp.getHeimstrafen());
-							strafen.addAll(sp.getAuswaertsstrafen());
-							for (Strafe s : strafen) {
-								steuerung.removeStrafe(s.getID());
-							}
-							ArrayList<Wechsel> wechsel = new ArrayList<Wechsel>(sp.getHeimwechsel());
-							wechsel.addAll(sp.getAuswaertswechsel());
-							for (Wechsel w : wechsel) {
-								steuerung.removeWechsel(w.getID(), sp);
-							}
-							sp.setMinimaleAuswaertstore(0);
-							sp.setMinimaleHeimtore(0);
-							sp.setErgebnis(false);
-							akt.aktualisieren();
-						}
+						Hauptfenster.getAlert(AlertType.WARNING, "ACHTUNG!", null, "Sollen wirklich alle Tore, Wechsel und Strafen gelöscht werden?"
+										+ "\n(Achtung! Auch die direkt eingestellten Tore werden gelöscht!)", stage, ButtonType.YES,ButtonType.CANCEL)
+							.showAndWait().filter((answer)->(answer==ButtonType.YES)).ifPresentOrElse((answer)->{
+								ArrayList<Tor> tore = new ArrayList<Tor>(sp.getHeimtoreDirekt());
+								tore.addAll(sp.getAuswaertstoreDirekt());
+								for (Tor t : tore) {
+									steuerung.removeTor(t.getID());
+								}
+								ArrayList<Strafe> strafen = new ArrayList<Strafe>(sp.getHeimstrafen());
+								strafen.addAll(sp.getAuswaertsstrafen());
+								for (Strafe s : strafen) {
+									steuerung.removeStrafe(s.getID());
+								}
+								ArrayList<Wechsel> wechsel = new ArrayList<Wechsel>(sp.getHeimwechsel());
+								wechsel.addAll(sp.getAuswaertswechsel());
+								for (Wechsel w : wechsel) {
+									steuerung.removeWechsel(w.getID(), sp);
+								}
+								sp.setMinimaleAuswaertstore(0);
+								sp.setMinimaleHeimtore(0);
+								sp.setErgebnis(false);
+								akt.aktualisieren();
+							},()->{
+								ButtonType sA = new ButtonType("Spieler anzeigen");
+								Alert al = new Alert(AlertType.ERROR);
+								al.getButtonTypes().add(sA);
+								al.setTitle("Fehler");
+								al.setHeaderText(null);
+								al.setContentText(fS2.getName()
+										+ " spielt nicht mehr bei seinem Verein. Deshalb kann das Ergebnis nicht mehr entfernt werden!");
+								Optional<ButtonType> btn = al.showAndWait();
+								if (btn.get().equals(sA)) {
+									hfp = new HFProtagonisten(fS2, stage, bp, steuerung, akt);
+								}
+							});
 					} else {
 						ButtonType sA = new ButtonType("Spieler anzeigen");
 						Alert al = new Alert(AlertType.ERROR);
@@ -565,23 +574,23 @@ public class HFSpiele {
 		for (Spieler s : aufst.getStartelf(steuerung.getSpieler())) {
 			Text trikotnummer = new Text(steuerung.getTrikotnummerEinesSpielersString(s.getID()));
 			trikotnummer.setFont(Font.font("Verdana"));
-			Hauptfenster.setLink(trikotnummer, (e)->{
-				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			Hauptfenster.setLink(trikotnummer, (e) -> {
+				hfp = new HFProtagonisten(s, stage, bp, steuerung, akt);
 			});
 			start.add(trikotnummer, 0, zaehler);
 
 			Text name = new Text(s.getName());
 			name.setFont(Font.font("Verdana"));
-			Hauptfenster.setLink(name, (e)->{
-				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			Hauptfenster.setLink(name, (e) -> {
+				hfp = new HFProtagonisten(s, stage, bp, steuerung, akt);
 			});
 			start.add(name, 1, zaehler);
 
 			if (aufst.getKapitaenID() == s.getID()) {
 				Text kapt = new Text("C");
 				kapt.setFont(Font.font("Verdana"));
-				Hauptfenster.setLink(kapt, (e)->{
-					hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+				Hauptfenster.setLink(kapt, (e) -> {
+					hfp = new HFProtagonisten(s, stage, bp, steuerung, akt);
 				});
 				start.add(kapt, 2, zaehler);
 			}
@@ -605,15 +614,15 @@ public class HFSpiele {
 		for (Spieler s : aufst.getAuswechselspieler(steuerung.getSpieler())) {
 			Text trikotnummer = new Text(steuerung.getTrikotnummerEinesSpielersString(s.getID()));
 			trikotnummer.setFont(Font.font("Verdana"));
-			Hauptfenster.setLink(trikotnummer, (e)->{
-				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			Hauptfenster.setLink(trikotnummer, (e) -> {
+				hfp = new HFProtagonisten(s, stage, bp, steuerung, akt);
 			});
 			bank.add(trikotnummer, 0, zaehler);
 
 			Text name = new Text(s.getName());
 			name.setFont(Font.font("Verdana"));
-			Hauptfenster.setLink(name, (e)->{
-				hfp=new HFProtagonisten(s, stage, bp, steuerung, akt);
+			Hauptfenster.setLink(name, (e) -> {
+				hfp = new HFProtagonisten(s, stage, bp, steuerung, akt);
 			});
 			bank.add(name, 1, zaehler);
 			++zaehler;
@@ -907,8 +916,8 @@ public class HFSpiele {
 			heimUeberschrift.setFont(Font.font(20));
 			heimUeberschrift.setPrefWidth(140);
 			heimUeberschrift.setAlignment(Pos.CENTER);
-			Hauptfenster.setLink(heimUeberschrift, (e)->{
-				hfp=new HFProtagonisten(sp.getHeimteam(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(heimUeberschrift, (e) -> {
+				hfp = new HFProtagonisten(sp.getHeimteam(), stage, bp, steuerung, akt);
 			});
 			ereignisListeGP.add(heimUeberschrift, 0, 0);
 
@@ -916,8 +925,8 @@ public class HFSpiele {
 			auswaertsUeberschrift.setFont(Font.font(20));
 			auswaertsUeberschrift.setPrefWidth(140);
 			auswaertsUeberschrift.setAlignment(Pos.CENTER);
-			Hauptfenster.setLink(auswaertsUeberschrift, (e)->{
-				hfp=new HFProtagonisten(sp.getAuswaertsteam(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(auswaertsUeberschrift, (e) -> {
+				hfp = new HFProtagonisten(sp.getAuswaertsteam(), stage, bp, steuerung, akt);
 			});
 			ereignisListeGP.add(auswaertsUeberschrift, 1, 0);
 
@@ -1034,14 +1043,14 @@ public class HFSpiele {
 			vorlagengeberLabel.setFont(Font.font(20));
 			ereignisDetailsGP.add(vorlagengeberLabel, 0, 5);
 
-			Tor tor=(Tor)ereignis;
-			
+			Tor tor = (Tor) ereignis;
+
 			String[] beschriftungen = getDetailsTor(tor);
-						
+
 			Text spielerText = new Text(beschriftungen[0]);
 			spielerText.setFont(Font.font(20));
-			Hauptfenster.setLink(spielerText, (e)->{
-				hfp=new HFProtagonisten(tor.getAusfuehrer(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(spielerText, (e) -> {
+				hfp = new HFProtagonisten(tor.getAusfuehrer(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(spielerText, 1, 1);
 
@@ -1055,16 +1064,16 @@ public class HFSpiele {
 
 			Text teamText = new Text(beschriftungen[3]);
 			teamText.setFont(Font.font(20));
-			Hauptfenster.setLink(teamText, (e)->{
-				hfp=new HFProtagonisten(tor.getTeam(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(teamText, (e) -> {
+				hfp = new HFProtagonisten(tor.getTeam(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(teamText, 1, 4);
 
 			Text vorlagengeberText = new Text(beschriftungen[4]);
 			vorlagengeberText.setFont(Font.font(20));
-			if(tor.getVorbereiter()!=null) {
-				Hauptfenster.setLink(vorlagengeberText, (e)->{
-					hfp=new HFProtagonisten(tor.getVorbereiter(), stage, bp, steuerung, akt);
+			if (tor.getVorbereiter() != null) {
+				Hauptfenster.setLink(vorlagengeberText, (e) -> {
+					hfp = new HFProtagonisten(tor.getVorbereiter(), stage, bp, steuerung, akt);
 				});
 			}
 			ereignisDetailsGP.add(vorlagengeberText, 1, 5);
@@ -1072,41 +1081,41 @@ public class HFSpiele {
 			Label ueberschriftLabel = new Label("Wechsel");
 			ueberschriftLabel.setFont(Font.font(20));
 			ereignisDetailsGP.add(ueberschriftLabel, 0, 0);
-			
+
 			spielerLabel.setText("Eingewechselt");
-			
+
 			Label ausgewechseltLabel = new Label("Ausgewechselt");
 			ausgewechseltLabel.setFont(Font.font(20));
 			ereignisDetailsGP.add(ausgewechseltLabel, 0, 5);
-			
-			Wechsel wechsel=(Wechsel)ereignis;
-			
+
+			Wechsel wechsel = (Wechsel) ereignis;
+
 			Text spielerText = new Text(wechsel.getAusfuehrer().getName());
 			spielerText.setFont(Font.font(20));
-			Hauptfenster.setLink(spielerText, (e)->{
-				hfp=new HFProtagonisten(wechsel.getAusfuehrer(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(spielerText, (e) -> {
+				hfp = new HFProtagonisten(wechsel.getAusfuehrer(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(spielerText, 1, 1);
-			
+
 			Text zeitText = new Text(wechsel.getZeitUndNachspielzeit());
 			zeitText.setFont(Font.font(20));
 			ereignisDetailsGP.add(zeitText, 1, 2);
-			
+
 			Text artText = new Text("Wechsel");
 			artText.setFont(Font.font(20));
 			ereignisDetailsGP.add(artText, 1, 3);
-			
+
 			Text teamText = new Text(wechsel.getTeam().getMoeglichKN());
 			teamText.setFont(Font.font(20));
-			Hauptfenster.setLink(teamText, (e)->{
-				hfp=new HFProtagonisten(wechsel.getTeam(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(teamText, (e) -> {
+				hfp = new HFProtagonisten(wechsel.getTeam(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(teamText, 1, 4);
-			
+
 			Text ausgewechseltText = new Text(wechsel.getAusgewechselt().getName());
 			ausgewechseltText.setFont(Font.font(20));
-			Hauptfenster.setLink(ausgewechseltText, (e)->{
-				hfp=new HFProtagonisten(wechsel.getAusgewechselt(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(ausgewechseltText, (e) -> {
+				hfp = new HFProtagonisten(wechsel.getAusgewechselt(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(ausgewechseltText, 1, 5);
 		} else {
@@ -1117,15 +1126,15 @@ public class HFSpiele {
 			Label gefoulterLabel = new Label("Gefoulter");
 			gefoulterLabel.setFont(Font.font(20));
 			ereignisDetailsGP.add(gefoulterLabel, 0, 5);
-			
-			Strafe strafe=(Strafe)ereignis;
-			
+
+			Strafe strafe = (Strafe) ereignis;
+
 			String[] beschriftungen = getDetailsStrafe(strafe);
 
 			Text spielerText = new Text(beschriftungen[0]);
 			spielerText.setFont(Font.font(20));
-			Hauptfenster.setLink(spielerText, (e)->{
-				hfp=new HFProtagonisten(strafe.getAusfuehrer(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(spielerText, (e) -> {
+				hfp = new HFProtagonisten(strafe.getAusfuehrer(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(spielerText, 1, 1);
 
@@ -1139,16 +1148,16 @@ public class HFSpiele {
 
 			Text teamText = new Text(beschriftungen[3]);
 			teamText.setFont(Font.font(20));
-			Hauptfenster.setLink(teamText, (e)->{
-				hfp=new HFProtagonisten(strafe.getTeam(), stage, bp, steuerung, akt);
+			Hauptfenster.setLink(teamText, (e) -> {
+				hfp = new HFProtagonisten(strafe.getTeam(), stage, bp, steuerung, akt);
 			});
 			ereignisDetailsGP.add(teamText, 1, 4);
 
 			Text gefoulterText = new Text(beschriftungen[4]);
 			gefoulterText.setFont(Font.font(20));
-			if(strafe.getGefoulten()!=null) {
-				Hauptfenster.setLink(gefoulterText, (e)->{
-					hfp=new HFProtagonisten(strafe.getGefoulten(), stage, bp, steuerung, akt);
+			if (strafe.getGefoulten() != null) {
+				Hauptfenster.setLink(gefoulterText, (e) -> {
+					hfp = new HFProtagonisten(strafe.getGefoulten(), stage, bp, steuerung, akt);
 				});
 			}
 			ereignisDetailsGP.add(gefoulterText, 1, 5);
