@@ -1,7 +1,5 @@
 package de.pasch.turnierleitung.uis;
 
-import javax.swing.JOptionPane;
-
 import de.pasch.turnierleitung.spiele.Spiel;
 import de.pasch.turnierleitung.steuerung.IDPicker;
 import de.pasch.turnierleitung.steuerung.Steuerung;
@@ -12,7 +10,9 @@ import de.pasch.turnierleitung.turnierelemente.Rundensammlung;
 import de.pasch.turnierleitung.turnierelemente.Spieltag;
 import de.pasch.turnierleitung.turnierelemente.Turnierelement;
 import javafx.geometry.Insets;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -174,7 +174,9 @@ public class HFSpieltag {
 						steuerung.removeSpieltag(f.getID());
 						akt.aktualisieren();
 					}catch(IllegalArgumentException iae) {
-						JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
+						Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+								iae.getMessage(), stage)
+								.showAndWait();
 					}
 				});
 			});
@@ -217,7 +219,9 @@ public class HFSpieltag {
 						kor.removeRundensammlung(f.getID());
 						akt.aktualisieren();
 					}catch(IllegalArgumentException iae) {
-						JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
+						Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+								iae.getMessage(), stage)
+								.showAndWait();
 					}
 				});
 			});
@@ -273,9 +277,7 @@ public class HFSpieltag {
 		auslosen.setPrefWidth(370);
 		auslosen.setOnAction((e)->{
 			if(liga!=null) {
-				String name=JOptionPane.showInputDialog(null,"Welchen Namen soll der Spieltag haben?",
-						"Neuen Spieltag auslosen",JOptionPane.QUESTION_MESSAGE);
-				if(name!=null) {
+				Hauptfenster.getTIP("Neuen Spieltag auslosen", null, "Welchen Namen soll der Spieltag haben?", stage).showAndWait().ifPresent((name)->{
 					if(name.equals("")){
 						try {
 						steuerung.addAusgelosterSpieltag(liga.getID());
@@ -287,7 +289,7 @@ public class HFSpieltag {
 					}
 					letzterSpt=steuerung.getSpieltage().get(steuerung.getSpieltage().size()-1).getID();
 					akt.aktualisieren();
-				}
+				});
 			}
 		});
 		detailGP.add(auslosen, 0,1);
@@ -296,20 +298,26 @@ public class HFSpieltag {
 		spielplanBer.setFont(Font.font(15));
 		spielplanBer.setPrefWidth(370);
 		spielplanBer.setOnAction((e)->{
-			int rueckrunde=JOptionPane.showConfirmDialog(null,"Soll auch die Rückrunde berechnet werden?","Spielplan berechnen",JOptionPane.YES_NO_OPTION,JOptionPane.QUESTION_MESSAGE);
-			if(rueckrunde==JOptionPane.YES_OPTION) {
-				try {
-					steuerung.ligaspielplanBerechnen(liga.getID(), true);
-				}catch(IllegalArgumentException iae) {
-					JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
-				}
-			}else {
-				try {
-					steuerung.ligaspielplanBerechnen(liga.getID(), false);
-				}catch(IllegalArgumentException iae) {
-					JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
-				}
-			}
+			Hauptfenster.getAlert(AlertType.CONFIRMATION, "Spielplan berechnen", null, "Soll auch die Rückrunde berechnet werden?", stage,
+					ButtonType.YES,ButtonType.NO,ButtonType.CANCEL).showAndWait().ifPresent((answer)->{
+						if(answer==ButtonType.YES) {
+							try {
+								steuerung.ligaspielplanBerechnen(liga.getID(), true);
+							}catch(IllegalArgumentException iae) {
+								Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+										iae.getMessage(), stage)
+										.showAndWait();
+							}
+						}else if(answer==ButtonType.NO) {
+							try {
+								steuerung.ligaspielplanBerechnen(liga.getID(), false);
+							}catch(IllegalArgumentException iae) {
+								Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+										iae.getMessage(), stage)
+										.showAndWait();
+							}
+						}
+					});
 			letzterSpt=steuerung.getSpieltage().get(steuerung.getSpieltage().size()-1).getID();
 			akt.aktualisieren();
 		});
@@ -462,7 +470,9 @@ public class HFSpieltag {
 						steuerung.removeSpiel(f.getID());
 						akt.aktualisieren();
 					}catch(IllegalArgumentException iae) {
-						JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
+						Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+								iae.getMessage(), stage)
+								.showAndWait();
 					}
 				});
 			}
@@ -525,7 +535,9 @@ public class HFSpieltag {
 						rs.removeRunde(f.getID());
 						akt.aktualisieren();
 					}catch(IllegalArgumentException iae) {
-						JOptionPane.showMessageDialog(null,iae.getMessage(),"FEHLER!",0);
+						Hauptfenster.getAlert(AlertType.ERROR, "FEHLER!", null,
+								iae.getMessage(), stage)
+								.showAndWait();
 					}
 				});
 			}
