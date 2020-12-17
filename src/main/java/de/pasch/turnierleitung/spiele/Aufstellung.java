@@ -38,46 +38,46 @@ public class Aufstellung implements Pickable {
 		this.spielID = spielID;
 		this.as = as;
 	}
-	
-	public Aufstellung(Element parEl,ArraySpeicher as) {
-		for(Element el:parEl.getChildren()) {
-			if(el.getName().equals("ID")) {
-				ID=Long.parseLong(el.getValue());
-			}else if(el.getName().equals("Verein")) {
-				vereinsID=Long.parseLong(el.getValue());
-			}else if(el.getName().equals("Spiel")) {
-				spielID=Long.parseLong(el.getValue());
-			}else if(el.getName().equals("Auswechslungen")) {
-				auswechslungen=Integer.parseInt(el.getValue());
-			}else if(el.getName().equals("hoechstStartelf")) {
-				hoechstStartelf=Integer.parseInt(el.getValue());
-			}else if(el.getName().equals("hoechstAuswechselspieler")) {
-				hoechstAuswechselspieler=Integer.parseInt(el.getValue());
-			}else if(el.getName().equals("hoechstAuswechselungen")) {
-				hoechstAuswechslung=Integer.parseInt(el.getValue());
-			}else if(el.getName().equals("Verlängerung")) {
-				verlaengerung=Boolean.parseBoolean(el.getValue());
-			}else if(el.getName().equals("AuswechslungenVerlängerung")) {
-				hoechstAuswechslungVerlaengerung=Integer.parseInt(el.getValue());
-			}else if(el.getName().equals("Startelf")) {
-				for(Element childEl:el.getChildren()) {
+
+	public Aufstellung(Element parEl, ArraySpeicher as) {
+		for (Element el : parEl.getChildren()) {
+			if (el.getName().equals("ID")) {
+				ID = Long.parseLong(el.getValue());
+			} else if (el.getName().equals("Verein")) {
+				vereinsID = Long.parseLong(el.getValue());
+			} else if (el.getName().equals("Spiel")) {
+				spielID = Long.parseLong(el.getValue());
+			} else if (el.getName().equals("Auswechslungen")) {
+				auswechslungen = Integer.parseInt(el.getValue());
+			} else if (el.getName().equals("hoechstStartelf")) {
+				hoechstStartelf = Integer.parseInt(el.getValue());
+			} else if (el.getName().equals("hoechstAuswechselspieler")) {
+				hoechstAuswechselspieler = Integer.parseInt(el.getValue());
+			} else if (el.getName().equals("hoechstAuswechselungen")) {
+				hoechstAuswechslung = Integer.parseInt(el.getValue());
+			} else if (el.getName().equals("Verlängerung")) {
+				verlaengerung = Boolean.parseBoolean(el.getValue());
+			} else if (el.getName().equals("AuswechslungenVerlängerung")) {
+				hoechstAuswechslungVerlaengerung = Integer.parseInt(el.getValue());
+			} else if (el.getName().equals("Startelf")) {
+				for (Element childEl : el.getChildren()) {
 					startelf.add(Long.parseLong(childEl.getValue()));
 				}
-			}else if(el.getName().equals("Auswechselspieler")) {
-				for(Element childEl:el.getChildren()) {
+			} else if (el.getName().equals("Auswechselspieler")) {
+				for (Element childEl : el.getChildren()) {
 					auswechselspieler.add(Long.parseLong(childEl.getValue()));
 				}
-			}else if(el.getName().equals("SIAs")) {
-				for(Element childEl:el.getChildren()) {
+			} else if (el.getName().equals("SIAs")) {
+				for (Element childEl : el.getChildren()) {
 					SIAs.add(new SpielerInAufstellung(childEl));
 				}
-			}else if(el.getName().equals("Kapitaen")) {
-				kapitaenID=Long.parseLong(el.getValue());
+			} else if (el.getName().equals("Kapitaen")) {
+				kapitaenID = Long.parseLong(el.getValue());
 			}
 		}
-		this.as=as;
+		this.as = as;
 	}
-	
+
 	public void createXMLElements(Element aufstellung) {
 		Element idEl = new Element("ID");
 		idEl.addContent("" + ID);
@@ -133,9 +133,9 @@ public class Aufstellung implements Pickable {
 		for (SpielerInAufstellung sia : SIAs) {
 			sia.createXMLElements(siaEl);
 		}
-		
-		Element kapitaenEl=new Element("Kapitaen");
-		kapitaenEl.addContent(""+kapitaenID);
+
+		Element kapitaenEl = new Element("Kapitaen");
+		kapitaenEl.addContent("" + kapitaenID);
 		aufstellung.addContent(kapitaenEl);
 	}
 
@@ -326,16 +326,16 @@ public class Aufstellung implements Pickable {
 			return (hoechstAuswechslung > auswechslungen);
 		}
 	}
-	
+
 	public int getAuswechslungen() {
 		return auswechslungen;
 	}
-	
+
 	public int getHoechstAuswechslungenAktuell() {
 		if (verlaengerung) {
-			return (hoechstAuswechslungVerlaengerung) ;
+			return (hoechstAuswechslungVerlaengerung);
 		} else {
-			return (hoechstAuswechslung );
+			return (hoechstAuswechslung);
 		}
 	}
 
@@ -351,7 +351,8 @@ public class Aufstellung implements Pickable {
 				}
 			}
 			if ((getAktuelleAufstellung(zeit, nachspielzeit).contains(ausgewechseltID))
-					&& (getAktuelleBank(zeit,nachspielzeit).contains(eingewechseltID)) && !ausgewechselt && !eingewechselt) {
+					&& (getAktuelleBank(zeit, nachspielzeit).contains(eingewechseltID)) && !ausgewechselt
+					&& !eingewechselt) {
 				auswechslungen++;
 				for (SpielerInAufstellung s : SIAs) {
 					if (s.getSpielerID() == eingewechseltID) {
@@ -373,27 +374,27 @@ public class Aufstellung implements Pickable {
 	}
 
 	public void removeWechsel(long ausgewechseltID, long eingewechseltID) {
-			boolean eingewechselt = false;
-			boolean ausgewechselt = false;
+		boolean eingewechselt = false;
+		boolean ausgewechselt = false;
+		for (SpielerInAufstellung s : SIAs) {
+			if (s.getSpielerID() == eingewechseltID) {
+				eingewechselt = s.getEingewechselt();
+			} else if (s.getSpielerID() == ausgewechseltID) {
+				ausgewechselt = s.getAusgewechselt();
+			}
+		}
+		if (ausgewechselt && eingewechselt) {
+			auswechslungen--;
 			for (SpielerInAufstellung s : SIAs) {
 				if (s.getSpielerID() == eingewechseltID) {
-					eingewechselt = s.getEingewechselt();
+					s.setEingewechseltZeit(0);
+					s.setEingewechselt(false);
 				} else if (s.getSpielerID() == ausgewechseltID) {
-					ausgewechselt = s.getAusgewechselt();
+					s.setAusgewechseltZeit(0);
+					s.setAusgewechselt(false);
 				}
 			}
-			if (ausgewechselt && eingewechselt) {
-				auswechslungen--;
-				for (SpielerInAufstellung s : SIAs) {
-					if (s.getSpielerID() == eingewechseltID) {
-						s.setEingewechseltZeit(0);
-						s.setEingewechselt(false);
-					} else if (s.getSpielerID() == ausgewechseltID) {
-						s.setAusgewechseltZeit(0);
-						s.setAusgewechselt(false);
-					}
-				}
-			}
+		}
 	}
 
 	/*
@@ -419,20 +420,20 @@ public class Aufstellung implements Pickable {
 	public void setKapitaenID(long kapitaenID) {
 		this.kapitaenID = kapitaenID;
 	}
-	
+
 	public boolean setKapitaenAutomatisch() {
-		Team team=IDPicker.pick(as.teams,vereinsID);
-		boolean erfolgreich=false;
-		if(team.getKapitaen()!=null&&startelf.contains(team.getKapitaen().getID())){
-			kapitaenID=team.getKapitaen().getID();
-			erfolgreich=true;
-		}else if(team.getVizekapitaen()!=null&&startelf.contains(team.getVizekapitaen().getID())) {
-			kapitaenID=team.getVizekapitaen().getID();
-			erfolgreich=true;
+		Team team = IDPicker.pick(as.teams, vereinsID);
+		boolean erfolgreich = false;
+		if (team.getKapitaen() != null && startelf.contains(team.getKapitaen().getID())) {
+			kapitaenID = team.getKapitaen().getID();
+			erfolgreich = true;
+		} else if (team.getVizekapitaen() != null && startelf.contains(team.getVizekapitaen().getID())) {
+			kapitaenID = team.getVizekapitaen().getID();
+			erfolgreich = true;
 		}
 		return erfolgreich;
 	}
-	
+
 	public boolean isBeendet() {
 		return IDPicker.pick(as.spiele, spielID).isErgebnis();
 	}
