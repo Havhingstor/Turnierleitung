@@ -8,9 +8,9 @@ import de.pasch.turnierleitung.steuerung.Pickable;
 
 public class SpielerTeamConnector implements Pickable{
 	
-	public long ID=0;
-	public long teamID=0;
-	public long spielerID=0;
+	private long ID=0;
+	private long teamID=0;
+	private long spielerID=0;
 	private int trikotnummer=0;
 	private boolean ausgetreten=false;
 	private ArraySpeicher as=null;
