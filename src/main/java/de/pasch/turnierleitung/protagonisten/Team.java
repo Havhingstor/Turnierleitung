@@ -111,12 +111,12 @@ public class Team extends Protagonist {
 		return IDPicker.pick(as.spieler,vizekapitaenID);
 	}
 
-	public void setVizekapitaen(int ID) {
+	public void setVizekapitaen(long ID) {
 		this.vizekapitaenID=ID;
 		
 	}
 
-	public void setKapitaen(int ID) {
+	public void setKapitaen(long ID) {
 		this.kapitaenID=ID;
 		
 	}
